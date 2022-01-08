@@ -1,1 +1,11 @@
-/data.db
+.DS_Store
+.idea/
+
+.gradle/
+build/
+!**/src/**/build
+!**/test/**/build
+*.iml
+
+data.db
+manga/
