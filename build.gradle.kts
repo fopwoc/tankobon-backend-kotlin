@@ -10,7 +10,6 @@ plugins {
 }
 
 group = "moe.aspirin"
-version = "0.0.1"
 application {
     mainClass.set("moe.aspirin.ApplicationKt")
 }
