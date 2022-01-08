@@ -29,7 +29,7 @@ class UtilDB {
             SchemaUtils.create(Manga)
 
             utilInitSecret()
-            UsersDB().addUser("user1", "foobar")
+            UsersDB().addUser(System.getenv("tkbn_username") ?: "user", System.getenv("tkbn_password") ?: "password")
         }
     }
 
