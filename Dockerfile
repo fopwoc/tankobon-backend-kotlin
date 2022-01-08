@@ -6,4 +6,5 @@ RUN gradle build --no-daemon
 FROM openjdk:latest
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/ /app/
-ENTRYPOINT ["java","-jar","/app/tankobon-server-kotlin-standalone.jar"]
+WORKDIR /app
+ENTRYPOINT ["java","-jar","./tankobon-server-kotlin-standalone.jar"]
