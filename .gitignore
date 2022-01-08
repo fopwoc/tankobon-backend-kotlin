@@ -7,5 +7,5 @@ build/
 !**/test/**/build
 *.iml
 
-data.db
+data/
 manga/

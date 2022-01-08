@@ -10,6 +10,7 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
 import java.util.*
 
 
@@ -20,7 +21,10 @@ object Utils : Table() {
 class UtilDB {
 
     fun init() {
-        Database.connect("jdbc:sqlite:./data.db", driver = "org.sqlite.JDBC")
+        val mangaPath = File("data")
+        mangaPath.mkdir()
+
+        Database.connect("jdbc:sqlite:./data/data.db", driver = "org.sqlite.JDBC")
         transaction {
             //addLogger(StdOutSqlLogger)
             SchemaUtils.createDatabase("data")
