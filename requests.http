@@ -1,0 +1,33 @@
+### get token
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "user1",
+  "password": "foobar"
+}
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+
+### test token
+GET http://localhost:8080/hello
+Authorization: Bearer {{auth_token}}
+
+
+### get list
+GET http://localhost:8080/list
+Authorization: Bearer {{auth_token}}
+
+> {% client.global.set("title", response.body[0].uuid); %}
+
+
+### get page
+GET http://localhost:8080/manga/{{title}}/0/0
+Authorization: Bearer {{auth_token}}
+
+
+### get thumb
+GET http://localhost:8080/thumb/{{title}}/0/0
+Authorization: Bearer {{auth_token}}
+
