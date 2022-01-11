@@ -78,20 +78,39 @@ class MangaService {
     private fun volumePrepare(volumePath: File) {
         println("volumePrepare ${volumePath.absolutePath}, thumb gen")
 
+        volumePath.listFiles()?.filter { e -> e.isDirectory && e.name != "thumb" }
+            ?.forEach { e ->
+                fileLevelRecursion(e, volumePath.absolutePath)
+                e.delete()
+            }
+
         val thumb = File("${volumePath.absolutePath}/thumb")
         thumb.mkdir()
 
         if (thumb.listFiles().isNullOrEmpty()) volumePath.listFiles()
             ?.filter { e -> e.isFile && !e.name.contains(".DS_Store") }
             ?.map { e -> Thumbnails.of(e.absolutePath)
-                .size(300,420)
+                .size(245,340)
                 .outputFormat("jpg")
                 .toFiles(thumb, Rename.PREFIX_DOT_THUMBNAIL) }
     }
 
+    private fun fileLevelRecursion(file: File, origin: String) {
+        file.listFiles()?.forEach { e ->
+            if (e.isDirectory) {
+                fileLevelRecursion(e, origin)
+                e.delete()
+            }
+            if (e.isFile) {
+                e.copyTo(File("$origin/${e.name}"), true)
+                e.delete()
+            }
+        }
+    }
+
     private fun titleUnzip(path: File) {
         println("unzip $path")
-        ZipFile(path.path).extractAll("${path.parent}/${path.name.split(".")[0]}")
+        ZipFile(path.path).extractAll("${path.parent}/${path.nameWithoutExtension}")
         path.delete()
     }
 
