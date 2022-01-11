@@ -28,7 +28,7 @@ docker build -t tankobon-server-kotlin ./
 sudo docker run -d \
     -e tkbn_username='username' \
     -e tkbn_password='password' \
-    -v "tankobon-data:/app/data" \
-    -v "path/to/manga:/app/manga" \
+    -v "tankobon-data:/data" \
+    -v "path/to/manga:/manga" \
     tankobon-server-kotlin
 ```

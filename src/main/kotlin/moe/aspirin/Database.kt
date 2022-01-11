@@ -21,13 +21,13 @@ object Utils : Table() {
 class UtilDB {
 
     fun init() {
-        val mangaPath = File("data")
-        mangaPath.mkdir()
+        val mangaPath = File("data/data.db")
+        mangaPath.parentFile.mkdirs()
+        mangaPath.createNewFile()
 
         Database.connect("jdbc:sqlite:./data/data.db", driver = "org.sqlite.JDBC")
         transaction {
             //addLogger(StdOutSqlLogger)
-            SchemaUtils.createDatabase("data")
             SchemaUtils.create(Utils)
             SchemaUtils.create(Users)
             SchemaUtils.create(Manga)
