@@ -78,21 +78,25 @@ class MangaService {
     private fun volumePrepare(volumePath: File) {
         println("volumePrepare ${volumePath.absolutePath}, thumb gen")
 
-        volumePath.listFiles()?.filter { e -> e.isDirectory && e.name != "thumb" }
+        volumePath.listFiles()?.filter { e -> e.isDirectory }
             ?.forEach { e ->
                 fileLevelRecursion(e, volumePath.absolutePath)
                 e.delete()
             }
 
-        val thumb = File("${volumePath.absolutePath}/thumb")
-        thumb.mkdir()
+        val mangaThumbPath = File("data/thumb")
+        mangaThumbPath.mkdir()
 
-        if (thumb.listFiles().isNullOrEmpty()) volumePath.listFiles()
+        val volumeThumb = File("${mangaThumbPath.path}/${volumePath.parentFile.name}/${volumePath.name}")
+        volumeThumb.parentFile.mkdir()
+        volumeThumb.mkdir()
+
+        if (volumeThumb.listFiles().isNullOrEmpty()) volumePath.listFiles()
             ?.filter { e -> e.isFile && !e.name.contains(".DS_Store") }
-            ?.map { e -> Thumbnails.of(e.absolutePath)
+            ?.map { e -> Thumbnails.of("${volumePath.absolutePath}/${e.name}")
                 .size(245,340)
                 .outputFormat("jpg")
-                .toFiles(thumb, Rename.PREFIX_DOT_THUMBNAIL) }
+                .toFiles(volumeThumb, Rename.PREFIX_DOT_THUMBNAIL) }
     }
 
     private fun fileLevelRecursion(file: File, origin: String) {
