@@ -40,10 +40,10 @@ fun Application.configureRouting() {
 
             get("/thumb/{uuid}/{volume}/{page}") {
                 call.respondFile(
-                    File("${File("manga/${MangaDB().getPathByUUID(UUID.fromString(call.parameters["uuid"]))}").listFiles()
+                    File("${File("data/thumb/${MangaDB().getPathByUUID(UUID.fromString(call.parameters["uuid"]))}").listFiles()
                         ?.filter { e -> e.isDirectory }
                         ?.sortedBy { it.name.toString() }
-                        ?.get(call.parameters["volume"]!!.toInt())!!.absoluteFile}/thumb")
+                        ?.get(call.parameters["volume"]!!.toInt())!!.absoluteFile}")
                         .listFiles()
                         ?.filter { e -> e.isFile && !e.name.contains(".DS_Store") }
                         ?.sortedBy { it.name.toString() }
