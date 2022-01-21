@@ -40,7 +40,7 @@ jobs:
           images: |
             aspirinmoe/tankobon-server-kotlin
             ghcr.io/${{ github.repository }}
-          flavor: latest=yes
+          flavor: latest=true
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
