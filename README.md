@@ -1,8 +1,6 @@
 Tankobon-server-kotlin
 ======================
 
-[![Build Status](https://app.travis-ci.com/ASPIRINmoe/tankobon-server-kotlin.svg?branch=master)](https://app.travis-ci.com/ASPIRINmoe/tankobon-server-kotlin)
-
 Server for Tankōbon - a flutter manga reader app. WIP.
 
 ### Summary info
