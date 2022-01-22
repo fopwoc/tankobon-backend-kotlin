@@ -1,8 +1,8 @@
 FROM gradle:latest AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build --no-daemon
+RUN gradle shadowJar --no-daemon
 
 FROM openjdk:latest
-COPY --from=build /home/gradle/src/build/libs/ /
-ENTRYPOINT ["java","-jar","/tankobon-server-kotlin-standalone.jar"]
+COPY --from=build /home/gradle/src/build/libs/tankobon-server-kotlin-*-all.jar /tankobon-server.jar
+ENTRYPOINT ["java","-jar","/tankobon-server.jar"]
