@@ -11,7 +11,7 @@ Content-Type: application/json
 
 
 ### test token
-GET http://localhost:8080/hello
+GET http://localhost:8080/me
 Authorization: Bearer {{auth_token}}
 
 
