@@ -6,8 +6,6 @@ import io.ktor.auth.jwt.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import moe.aspirin.MangaDB
 import java.io.File
 import java.util.*
@@ -22,7 +20,7 @@ fun Application.configureRouting() {
         authenticate("auth-jwt") {
             get("/me") {
                 val principal = call.principal<JWTPrincipal>()
-                call.respondText(Json.encodeToString(UserJwt(principal!!.payload.getClaim("username").asString())))
+                call.respond(UserJwt(principal!!.payload.getClaim("username").asString()))
             }
 
             get("/list") {
