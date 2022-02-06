@@ -5,20 +5,24 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import moe.aspirin.MangaDB
 import java.io.File
 import java.util.*
+
+@Serializable
+data class UserJwt(val username: String)
 
 fun Application.configureRouting() {
 
     routing {
 
         authenticate("auth-jwt") {
-            get("/hello") {
+            get("/me") {
                 val principal = call.principal<JWTPrincipal>()
-                val username = principal!!.payload.getClaim("username").asString()
-                val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
-                call.respondText("Hello, $username! Token is expired at $expiresAt ms.")
+                call.respondText(Json.encodeToString(UserJwt(principal!!.payload.getClaim("username").asString())))
             }
 
             get("/list") {
