@@ -19,7 +19,7 @@ Authorization: Bearer {{auth_token}}
 GET http://localhost:8080/list
 Authorization: Bearer {{auth_token}}
 
-> {% client.global.set("title", response.body[0].uuid); %}
+> {% client.global.set("title", response.body[0].id); %}
 
 
 ### get page
@@ -31,3 +31,14 @@ Authorization: Bearer {{auth_token}}
 GET http://localhost:8080/thumb/{{title}}/0/0
 Authorization: Bearer {{auth_token}}
 
+
+### test newuser
+POST http://localhost:8080/newuser
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "username": "user2",
+  "password": "password",
+  "admin": false
+}
