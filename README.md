@@ -15,7 +15,7 @@ Kotlin REST API server build on top of Kotr+Exposed+Hikari. It serves your local
 - Auto soring all images and folders for specific structure in `manga` folder
 - Thumbnail generation
 - Possibly designed for high load and many users usage
-- Multiplatform. Designed without non-java dependencies, can run anywhere.
+- Multiplatform. Designed without non-java dependencies, can run anywhere
 
 ## Build and run
 2. Install java 9 or newer
