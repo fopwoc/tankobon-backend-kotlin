@@ -36,7 +36,7 @@ val logger: Logger = LoggerFactory.getLogger("tankobon")
 
 @DelicateCoroutinesApi
 fun main() {
-    logger.info("Tankōbon-server has started!")
+    logger.info("Tankōbon-server is starting!")
 
     val serviceDB = DatabaseFactory.init()
 
@@ -45,6 +45,7 @@ fun main() {
     val utilService = UtilService(serviceDB)
 
     MangaWatcher(mangaService).watchFolder()
+    logger.info("Library is ready! webserver has started!")
 
     embeddedServer(
         Netty,

@@ -15,46 +15,42 @@ class MangaWatcher(private val mangaService: MangaService) {
         globalMangaPath.mkdirs()
         globalThumbPath.mkdirs()
 
-        GlobalScope.launch {
+        runBlocking {
             logger.info("Library preparation")
-            withContext(Dispatchers.Default) {
-                mangaService.updateMangaList(
-                    prepareLibrary()
-                )
-            }
+            mangaService.updateMangaList(
+                prepareLibrary()
+            )
 
-            try {
-                logger.info("Watching directory for changes")
-                val watchKey = withContext(Dispatchers.IO) {
-                    Path.of(globalMangaPath.path)
-                        .register(
-                            FileSystems.getDefault().newWatchService(),
-                            StandardWatchEventKinds.ENTRY_CREATE,
-                            StandardWatchEventKinds.ENTRY_MODIFY,
-                            StandardWatchEventKinds.ENTRY_DELETE,
-                        )
-                }
+            GlobalScope.launch {
+                try {
+                    logger.info("Watching directory for changes")
+                    val watchKey = withContext(Dispatchers.IO) {
+                        Path.of(globalMangaPath.path)
+                            .register(
+                                FileSystems.getDefault().newWatchService(),
+                                StandardWatchEventKinds.ENTRY_CREATE,
+                                StandardWatchEventKinds.ENTRY_MODIFY,
+                                StandardWatchEventKinds.ENTRY_DELETE,
+                            )
+                    }
 
-                while (true) {
-                    for (event in watchKey.pollEvents()) {
-                        withContext(Dispatchers.Default) {
+                    while (true) {
+                        for (event in watchKey.pollEvents()) {
                             mangaService.updateMangaList(
                                 prepareLibrary(event.kind().name())
                             )
                         }
-                    }
 
-                    withContext(Dispatchers.IO) {
-                        Thread.sleep(10000)
-                    }
+                        delay(10000L)
 
-                    val valid = watchKey.reset()
-                    if (!valid) {
-                        break
+                        val valid = watchKey.reset()
+                        if (!valid) {
+                            break
+                        }
                     }
+                } catch (e: Exception) {
+                    logger.error(e.stackTraceToString())
                 }
-            } catch (e: Exception) {
-                logger.error(e.stackTraceToString())
             }
         }
     }
