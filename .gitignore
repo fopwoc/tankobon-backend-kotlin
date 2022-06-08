@@ -8,5 +8,6 @@ build/
 !**/test/**/build
 *.iml
 
-data/
-!/manga/
+/data/
+/manga/
+/unsupported/
