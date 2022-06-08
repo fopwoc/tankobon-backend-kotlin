@@ -9,11 +9,12 @@ Kotlin REST API server build on top of Kotr+Exposed+Hikari. It serves your local
 ## Features
 - Authentication (JWT)
 - Users management and basic privilege system
-- Decompression of cbz/zip and cbr/rar formats
+- Decompression of cbz/zip and cbr/rar (no rar5 support) formats
 - Converting all images for one specific format
 - Library hot reload on any changes in `manga` folder
 - Auto soring all images and folders for specific structure in `manga` folder
 - Thumbnail generation
+- Some kind of multithreading while library processing
 - Possibly designed for high load and many users usage
 - Multiplatform. Designed without non-java dependencies, can run anywhere
 
@@ -50,7 +51,7 @@ sudo docker run -d \
 
 ## Usage
 1. Copy cbz/zip, cbr/rar or folders with images to `manga` generated folder.
-2. Wait a little bit... (thumbnail generation takes some time).
+2. Wait a little bit... (thumbnail generation and image converting takes some time).
 3. Have fun!
 
 After library procession, all content will be available via http only for authenticated users. To see what http request are can be used - see [`requests.http`](https://github.com/ASPIRINmoe/tankobon-server-kotlin/blob/dev/requests.http) file.
