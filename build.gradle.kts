@@ -41,7 +41,7 @@ dependencies {
     implementation("com.h2database:h2:$h2_version")
     implementation("com.zaxxer:HikariCP:5.0.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
     implementation("com.github.junrar:junrar:7.5.1")
     implementation("net.lingala.zip4j:zip4j:2.10.0")
