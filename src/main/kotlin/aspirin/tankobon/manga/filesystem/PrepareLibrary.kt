@@ -4,40 +4,51 @@ import aspirin.tankobon.database.model.MangaUpdate
 import aspirin.tankobon.globalMangaPath
 import aspirin.tankobon.logger
 import aspirin.tankobon.utils.isValidUUID
-import java.nio.file.Files
+import kotlinx.coroutines.*
 import java.nio.file.Path
 import java.util.*
+import kotlin.system.measureTimeMillis
 
-fun prepareLibrary(trigger: String?): List<MangaUpdate> {
-    logger.info("Library prepare. Trigger: $trigger")
-    return prepareLibrary()
-}
+fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
+   if (trigger?.isNotEmpty() == true) logger.info("Library prepare") else logger.info("Library prepare. Trigger: $trigger")
 
-fun prepareLibrary(): List<MangaUpdate> {
-    globalMangaPath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
-        ?.forEach { archiveNavigator(it) }
+    val updateList: MutableList<MangaUpdate> = Collections.synchronizedList(mutableListOf<MangaUpdate>())
 
-    val updateList: MutableList<MangaUpdate> = emptyList<MangaUpdate>().toMutableList()
-
-    globalMangaPath.listFiles()?.filter { it.isDirectory }
-        ?.forEach { e ->
-            if (isValidUUID(e.name)) {
-                updateList.add(
-                    MangaUpdate(e.name, null, prepareTitle(e))
-                )
-            } else {
-                val uuid = UUID.randomUUID()
-                val path = Files.move(e.toPath(), Path.of("${e.parentFile}/$uuid")).toFile()
-                updateList.add(
-                    MangaUpdate(
-                        uuid.toString(),
-                        e.name,
-                        prepareTitle(path),
-                    )
-                )
+    val elapsed = measureTimeMillis {
+        runBlocking {
+            coroutineScope {
+                globalMangaPath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
+                    ?.forEach {
+                        println("prepareLibrary archiveNavigator ${Thread.currentThread().name}")
+                        withContext(Dispatchers.Default ) { fileNavigator(it) }
+                    }
             }
-        }
 
-    logger.info("Library preparation successfully completed")
+            globalMangaPath.listFiles()?.filter { it.isDirectory }
+                ?.forEach { e ->
+                    if (isValidUUID(e.name)) {
+                        println("updateList add  $e.name ${Thread.currentThread().name}")
+                        updateList.add(
+                            MangaUpdate(e.name, null, prepareTitle(e))
+                        )
+
+                    } else {
+                        val uuid = UUID.randomUUID()
+                        val path = Path.of("${e.parentFile}/$uuid").toFile()
+                        e.renameTo(path)
+                        println("updateList add $uuid.toString() ${Thread.currentThread().name}")
+                        updateList.add(
+                            MangaUpdate(
+                                uuid.toString(),
+                                e.name,
+                                prepareTitle(path),
+                            )
+                        )
+                    }
+                }
+        }
+    }
+
+    logger.info("Library preparation successfully completed. Time elapsed: ${elapsed / 1000} seconds")
     return updateList
 }

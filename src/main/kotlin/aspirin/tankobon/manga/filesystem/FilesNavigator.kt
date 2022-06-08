@@ -6,21 +6,17 @@ import aspirin.tankobon.utils.imageConverter
 import java.io.File
 import java.nio.file.Files
 
-fun archiveNavigator(file: File) {
+fun fileNavigator(file: File) {
     when {
+        //archives
         Regex("^(zip|cbz)\$").matches(file.extension) -> unZIP(file)
         Regex("^(rar|cbr)\$").matches(file.extension) -> unRAR(file)
-        else -> unsupportedExtension(file)
-    }
-}
-
-fun imageNavigator(file: File) {
-    when {
+        //images
         Regex("^(jpg)\$").matches(file.extension) -> {}
         Regex("^(png|PNG)\$").matches(file.extension) ->
             imageConverter(file)
         Regex("^(jpeg|jpe|JPEG|JPE|JPG)\$").matches(file.extension) ->
-            Files.move(file.toPath(), File("${file.parentFile.path}/${file.nameWithoutExtension}.jpg").toPath())
+            file.renameTo(File("${file.parentFile.path}/${file.nameWithoutExtension}.jpg"))
         else -> unsupportedExtension(file)
     }
 }
