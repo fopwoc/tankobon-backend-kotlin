@@ -32,3 +32,9 @@ data class UserAuth(
     val username: String,
     val password: String,
 )
+
+@Serializable
+data class UserHash(
+    val id: String,
+    val password: String,
+)

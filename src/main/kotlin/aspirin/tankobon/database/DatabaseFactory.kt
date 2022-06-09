@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.mindrot.jbcrypt.BCrypt
 import java.util.*
 
 object DatabaseFactory {
@@ -18,11 +19,15 @@ object DatabaseFactory {
         val serviceDB = Database.connect(hikariPersist())
         transaction(serviceDB) {
 
+            //TODO refactor to use UserService.addUser
             if (!UserModel.exists()) {
                 create(UserModel)
                 UserModel.insert {
                     it[username] = System.getenv("tkbn_username") ?: "user"
-                    it[password] = System.getenv("tkbn_password") ?: "password"
+                    it[password] = BCrypt.hashpw(
+                        System.getenv("tkbn_password") ?: "password",
+                        BCrypt.gensalt(),
+                    )
                     it[registerDate] = System.currentTimeMillis()
                     it[active] = true
                     it[admin] = true

@@ -1,13 +1,14 @@
 package aspirin.tankobon.database.service
 
 import aspirin.tankobon.database.model.User
+import aspirin.tankobon.database.model.UserHash
 import aspirin.tankobon.database.model.UserModel
 import aspirin.tankobon.webserver.AuthenticationException
 import aspirin.tankobon.webserver.UserExistException
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.mindrot.jbcrypt.BCrypt
 import java.util.*
 
 class UserService(val database: Database) {
@@ -22,7 +23,7 @@ class UserService(val database: Database) {
         if (UserModel.selectAll().andWhere { UserModel.username eq newUsername }.toList().isEmpty()) {
             UserModel.insert {
                 it[username] = newUsername
-                it[password] = newPassword
+                it[password] = BCrypt.hashpw(newPassword, BCrypt.gensalt())
                 it[registerDate] = System.currentTimeMillis()
                 it[active] = true
                 it[admin] = newAdmin ?: false
@@ -34,11 +35,11 @@ class UserService(val database: Database) {
 
     suspend fun authUser(username: String, password: String): String {
         return newSuspendedTransaction(db = database) {
-            val userQuery: Query = UserModel.select(UserModel.username.eq(username) and UserModel.password.eq(password))
-            if (userQuery.empty()) {
-                throw AuthenticationException()
+            val userHash: UserHash = UserModel.select { UserModel.username eq username }.map { toHash(it) }.first()
+            if (BCrypt.checkpw(password, userHash.password)) {
+                return@newSuspendedTransaction userHash.id
             }
-            return@newSuspendedTransaction userQuery.first()[UserModel.id].toString()
+            throw AuthenticationException()
         }
     }
 
@@ -49,6 +50,13 @@ class UserService(val database: Database) {
             registerDate = row[UserModel.registerDate],
             active = row[UserModel.active],
             admin = row[UserModel.admin],
+        )
+    }
+
+    private fun toHash(row: ResultRow): UserHash {
+        return UserHash(
+            id = row[UserModel.id].toString(),
+            password = row[UserModel.password]
         )
     }
 }
