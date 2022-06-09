@@ -8,8 +8,9 @@ Kotlin REST API server build on top of Kotr+Exposed+Hikari. It serves your local
 
 ## Features
 - Authentication (JWT)
+- Passwords bcrypt hashing
 - Users management and basic privilege system
-- Decompression of cbz/zip and cbr/rar (no rar5 support) formats
+- Decompression of cbz/zip and cbr/rar (*no rar5 support*) formats
 - Converting all images for one specific format
 - Library hot reload on any changes in `manga` folder
 - Auto soring all images and folders for specific structure in `manga` folder
