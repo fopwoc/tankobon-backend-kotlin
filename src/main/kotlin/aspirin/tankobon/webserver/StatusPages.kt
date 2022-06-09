@@ -6,23 +6,23 @@ import io.ktor.server.response.*
 
 fun StatusPagesConfig.configureErrorStatusPages() {
 
-    exception<InternalServerError> { call, cause ->
+    exception<InternalServerError> { call, _ ->
         call.respond(HttpStatusCode.InternalServerError)
     }
 
-    exception<BadRequestError> { call, cause ->
+    exception<BadRequestError> { call, _ ->
         call.respond(HttpStatusCode.BadRequest)
     }
 
-    exception<AuthenticationException> { call, cause ->
+    exception<AuthenticationException> { call, _ ->
         call.respond(HttpStatusCode.Unauthorized)
     }
 
-    exception<AdminAuthenticationException> { call, cause ->
+    exception<AdminAuthenticationException> { call, _ ->
         call.respond(HttpStatusCode.Unauthorized, "no admin privileges")
     }
 
-    exception<UserExistException> { call, cause ->
+    exception<UserExistException> { call, _ ->
         call.respond(HttpStatusCode.Conflict, "this username already exist")
     }
 
