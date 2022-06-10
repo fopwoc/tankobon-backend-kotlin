@@ -1,7 +1,7 @@
 Tankobon-server-kotlin
 ======================
 
-Server for Tankōbon - a flutter manga reader app. WIP.
+Backend for Tankōbon - a flutter manga reader app. WIP.
 
 ### Summary info
 Kotlin REST API server build on top of Kotr+Exposed+Hikari. It serves your local manga library via Http, also has users privilege system, manga library management system and some more. Designed for [Tankōbon flutter client](https://github.com/ASPIRINmoe/tankobon-flutter).
