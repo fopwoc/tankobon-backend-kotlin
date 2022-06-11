@@ -11,7 +11,9 @@ import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
-import java.util.UUID
+import java.security.KeyPair
+import java.security.KeyPairGenerator
+import java.util.*
 
 object DatabaseFactory {
 
@@ -26,7 +28,7 @@ object DatabaseFactory {
                     it[username] = System.getenv("tkbn_username") ?: "user"
                     it[password] = BCrypt.hashpw(
                         System.getenv("tkbn_password") ?: "password",
-                        BCrypt.gensalt(),
+                        BCrypt.gensalt(12),
                     )
                     it[registerDate] = System.currentTimeMillis()
                     it[active] = true
@@ -36,8 +38,12 @@ object DatabaseFactory {
 
             if (!UtilsModel.exists()) {
                 create(UtilsModel)
+                val encoder: Base64.Encoder = Base64.getEncoder()
+                val kp: KeyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
+
                 UtilsModel.insert {
-                    it[secret] = UUID.randomUUID().toString()
+                    it[public] = encoder.encodeToString(kp.public.encoded)
+                    it[private] = encoder.encodeToString(kp.private.encoded)
                     it[creationDate] = System.currentTimeMillis()
                 }
             }

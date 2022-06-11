@@ -18,11 +18,12 @@ fun Route.authRoute(userService: UserService, utilService: UtilService) {
     post("/login") {
         val user = call.receive<UserAuth>()
         val uuid = userService.authUser(user.username, user.password)
+
         if (uuid.isNotEmpty()) {
             val token = JWT.create()
                 .withIssuer(globalIssuer)
                 .withClaim("uuid", uuid)
-                .sign(Algorithm.HMAC256(utilService.getSecret()))
+                .sign(Algorithm.RSA256(null, utilService.getPrivateKey()))
             call.respond(hashMapOf("token" to token))
         } else throw AuthenticationException()
     }
