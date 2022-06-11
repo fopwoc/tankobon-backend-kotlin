@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
-import java.util.*
+import java.util.UUID
 
 object DatabaseFactory {
 
@@ -19,7 +19,7 @@ object DatabaseFactory {
         val serviceDB = Database.connect(hikariPersist())
         transaction(serviceDB) {
 
-            //TODO refactor to use UserService.addUser
+            // TODO refactor to use UserService.addUser
             if (!UserModel.exists()) {
                 create(UserModel)
                 UserModel.insert {
@@ -45,7 +45,6 @@ object DatabaseFactory {
             if (!MangaModel.exists()) {
                 create(MangaModel)
             }
-
         }
         return serviceDB
     }
@@ -60,5 +59,4 @@ object DatabaseFactory {
         config.validate()
         return HikariDataSource(config)
     }
-
 }

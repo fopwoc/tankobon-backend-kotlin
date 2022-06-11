@@ -4,13 +4,17 @@ import aspirin.tankobon.database.model.MangaUpdate
 import aspirin.tankobon.globalMangaPath
 import aspirin.tankobon.logger
 import aspirin.tankobon.utils.isValidUUID
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.nio.file.Path
-import java.util.*
+import java.util.Collections
+import java.util.UUID
 import kotlin.system.measureTimeMillis
 
 fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
-   if (trigger?.isNotEmpty() == true) logger.info("Library prepare") else logger.info("Library prepare. Trigger: $trigger")
+    if (trigger?.isNotEmpty() == true) logger.info("Library prepare") else logger.info("Library prepare. Trigger: $trigger")
 
     val updateList: MutableList<MangaUpdate> = Collections.synchronizedList(mutableListOf<MangaUpdate>())
 
@@ -20,7 +24,7 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
                 globalMangaPath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                     ?.forEach {
                         println("prepareLibrary archiveNavigator ${Thread.currentThread().name}")
-                        withContext(Dispatchers.Default ) { fileNavigator(it) }
+                        withContext(Dispatchers.Default) { fileNavigator(it) }
                     }
             }
 
@@ -31,7 +35,6 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
                         updateList.add(
                             MangaUpdate(e.name, null, prepareTitle(e))
                         )
-
                     } else {
                         val uuid = UUID.randomUUID()
                         val path = Path.of("${e.parentFile}/$uuid").toFile()

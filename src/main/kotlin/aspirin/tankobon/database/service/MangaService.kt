@@ -7,10 +7,15 @@ import aspirin.tankobon.globalThumbPath
 import aspirin.tankobon.utils.intListUtils
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.update
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 class MangaService(val database: Database) {
 
@@ -66,5 +71,4 @@ class MangaService(val database: Database) {
             volume = intListUtils(row[MangaModel.volume]),
         )
     }
-
 }

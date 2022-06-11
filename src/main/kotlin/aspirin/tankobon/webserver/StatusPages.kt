@@ -1,8 +1,8 @@
 package aspirin.tankobon.webserver
 
-import io.ktor.http.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.response.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.plugins.statuspages.StatusPagesConfig
+import io.ktor.server.response.respond
 
 fun StatusPagesConfig.configureErrorStatusPages() {
 
@@ -25,5 +25,4 @@ fun StatusPagesConfig.configureErrorStatusPages() {
     exception<UserExistException> { call, _ ->
         call.respond(HttpStatusCode.Conflict, "this username already exist")
     }
-
 }

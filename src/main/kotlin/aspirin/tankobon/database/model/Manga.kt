@@ -25,4 +25,3 @@ data class MangaUpdate(
     val title: String?,
     val volume: List<Int>,
 )
-

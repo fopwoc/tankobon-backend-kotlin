@@ -4,10 +4,12 @@ import aspirin.tankobon.database.service.MangaService
 import aspirin.tankobon.globalMangaPath
 import aspirin.tankobon.globalThumbPath
 import aspirin.tankobon.utils.callToFile
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondFile
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 
 fun Route.mangaRoute(mangaService: MangaService) {
     authenticate("auth-jwt") {
@@ -23,7 +25,5 @@ fun Route.mangaRoute(mangaService: MangaService) {
         get("/thumb/{uuid}/{volume}/{page}") {
             call.respondFile(callToFile(call, globalThumbPath))
         }
-
     }
 }
-
