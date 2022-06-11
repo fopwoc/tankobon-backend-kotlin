@@ -3,6 +3,8 @@
 
 .gradle/
 gradle/
+!/gradle/wrapper/gradle-wrapper.jar
+
 build/
 !**/src/**/build
 !**/test/**/build
