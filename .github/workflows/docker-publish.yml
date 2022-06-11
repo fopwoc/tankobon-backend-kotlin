@@ -67,7 +67,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
   update_dockerhub:
-    name: Push Docker image to multiple registries
+    name: Update Docker Hub page
     needs: push_to_registries
     runs-on: ubuntu-latest
     steps:
