@@ -21,7 +21,7 @@ Kotlin REST API server build on top of Kotr+Exposed+Hikari. It serves your local
 - Multiplatform. Designed without non-java dependencies, can run anywhere
 
 ## Build and run
-2. Install java 9 or newer
+2. Install jdk 11 or newer
 3. Clone repo somewhere you like
 4. Run server with `gradle run`. Also `gradle build` can build standalone jar file.
 
