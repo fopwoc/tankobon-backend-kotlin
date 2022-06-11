@@ -13,7 +13,7 @@ fun imageConverter(file: File) {
 
     val g: Graphics2D = thumbnail.createGraphics()
     g.drawImage(originalBuffer, 0, 0, originalBuffer.width, originalBuffer.height, null)
-    ImageIO.write(thumbnail , "JPG", File("${file.parentFile.path}/${file.nameWithoutExtension}.jpg"))
+    ImageIO.write(thumbnail, "JPG", File("${file.parentFile.path}/${file.nameWithoutExtension}.jpg"))
     g.dispose()
 
     file.delete()
@@ -28,4 +28,3 @@ fun thumbnailGenerator(originalPath: File, thumbnailPath: File) {
             File("${thumbnailPath.path}/${originalPath.nameWithoutExtension}.jpg")
         )
 }
-

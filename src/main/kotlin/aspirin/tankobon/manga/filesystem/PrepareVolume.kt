@@ -3,7 +3,10 @@ package aspirin.tankobon.manga.filesystem
 import aspirin.tankobon.globalThumbPath
 import aspirin.tankobon.logger
 import aspirin.tankobon.utils.thumbnailGenerator
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 
 fun prepareVolume(volumePath: File) {
@@ -41,7 +44,7 @@ fun prepareVolume(volumePath: File) {
                     ?.sortedBy { it.name.toString() }
                     ?.forEachIndexed { i, e ->
                         val newFile = if (!Regex("^\\d*\$").matches(e.nameWithoutExtension)) {
-                            val path = File("${e.parentFile.path}/${i}.${e.extension}")
+                            val path = File("${e.parentFile.path}/$i.${e.extension}")
                             e.renameTo(path)
                             path
                         } else e

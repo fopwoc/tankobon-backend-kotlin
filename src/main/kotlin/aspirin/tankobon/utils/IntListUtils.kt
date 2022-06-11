@@ -6,4 +6,3 @@ fun intListUtils(str: String): List<Int> {
         ?.split(",")?.map { Integer.parseInt(it) }
         ?: emptyList()
 }
-

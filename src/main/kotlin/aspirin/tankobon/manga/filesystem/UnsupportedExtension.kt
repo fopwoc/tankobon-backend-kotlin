@@ -2,7 +2,6 @@ package aspirin.tankobon.manga.filesystem
 
 import aspirin.tankobon.logger
 import java.io.File
-import java.nio.file.Files
 
 private val unsupportedPath = File("unsupported")
 

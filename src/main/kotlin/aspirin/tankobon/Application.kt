@@ -10,14 +10,14 @@ import aspirin.tankobon.webserver.configureSecurity
 import aspirin.tankobon.webserver.route.authRoute
 import aspirin.tankobon.webserver.route.mangaRoute
 import aspirin.tankobon.webserver.route.userRoute
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.plugins.callloging.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.routing.*
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.routing.Routing
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,7 +27,7 @@ import java.io.File
 val globalAddress = System.getenv("tkbn_address") ?: "0.0.0.0"
 val globalPort = Integer.parseInt(System.getenv("tkbn_port") ?: "8080")
 
-val globalIssuer = "http://${globalAddress}:${globalPort}/"
+val globalIssuer = "http://$globalAddress:$globalPort/"
 
 val globalMangaPath = File("manga")
 val globalThumbPath = File("data/thumb")
@@ -71,6 +71,5 @@ fun main() {
             userRoute(userService)
             mangaRoute(mangaService)
         }
-
     }.start(wait = true)
 }

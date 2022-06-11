@@ -1,9 +1,11 @@
 package aspirin.tankobon.manga.filesystem
 
 import aspirin.tankobon.logger
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
-import java.nio.file.Files
 
 fun prepareTitle(titleDir: File): List<Int> {
     logger.info("Title preparation: ${titleDir.path}")
@@ -24,11 +26,10 @@ fun prepareTitle(titleDir: File): List<Int> {
             ?.forEachIndexed { i, e ->
                 prepareVolume(
                     if (!Regex("^\\d*\$").matches(e.name)) {
-                        val path = File("${e.parentFile.path}/${i}");
+                        val path = File("${e.parentFile.path}/$i")
                         e.renameTo(path)
                         path
-                    }
-                    else e,
+                    } else e,
                 )
             }
     }

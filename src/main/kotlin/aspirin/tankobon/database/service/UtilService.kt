@@ -19,5 +19,4 @@ class UtilService(val database: Database) {
             creationDate = row[UtilsModel.creationDate]
         )
     }
-
 }
