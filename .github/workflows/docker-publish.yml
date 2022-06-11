@@ -20,11 +20,12 @@ jobs:
         with:
           java-version: 11
           distribution: 'adopt'
-          cache: gradle
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Build with Gradle
-        run: ./gradlew build --scan --no-daemon
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
   push_to_registries:
     name: Push Docker image to multiple registries
     needs: build
