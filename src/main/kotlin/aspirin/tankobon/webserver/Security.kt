@@ -13,8 +13,7 @@ fun Application.configureSecurity(utilService: UtilService) {
     authentication {
         jwt("auth-jwt") {
             verifier(
-                JWT
-                    .require(Algorithm.HMAC256(utilService.getSecret()))
+                JWT.require(Algorithm.RSA256(utilService.getPublicKey(), null))
                     .withIssuer(globalIssuer)
                     .build()
             )

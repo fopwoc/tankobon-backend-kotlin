@@ -9,7 +9,7 @@ Backend for Tankōbon - a flutter manga reader app. WIP.
 Kotlin REST API server build on top of Kotr+Exposed+Hikari. It serves your local manga library via Http, also has users privilege system, manga library management system and some more. Designed for [Tankōbon flutter client](https://github.com/ASPIRINmoe/tankobon-flutter).
 
 ## Features
-- Authentication (JWT)
+- Authentication (JWT RS256)
 - Passwords bcrypt hashing
 - Users management and basic privilege system
 - Decompression of cbz/zip and cbr/rar (*no rar5 support*) formats
