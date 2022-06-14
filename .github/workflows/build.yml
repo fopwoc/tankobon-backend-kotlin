@@ -24,4 +24,4 @@ jobs:
         with:
           name: my-artifact
           path: |
-            /home/gradle/src/build/libs/
+            build/libs/
