@@ -4,11 +4,11 @@ val exposedVersion: String by project
 val h2Version: String by project
 val ktlint: Configuration by configurations.creating
 
-group = "com.tankobon"
+group = "moe.aspirin"
 version = "0.0.1"
 description = "Server for Tankōbon - a flutter manga reader app. WIP."
 application {
-    mainClass.set("com.tankobon.ApplicationKt")
+    mainClass.set("moe.aspirin.ApplicationKt")
 }
 
 plugins {
