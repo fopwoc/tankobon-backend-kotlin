@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: Build before
+    name: Build
     uses: ./.github/workflows/build.yml
   push_to_registries:
     name: Push Docker image to multiple registries
