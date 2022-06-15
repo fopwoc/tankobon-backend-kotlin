@@ -6,8 +6,8 @@ COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle shadowJar --no-daemon
 
-FROM openjdk:17-alpine AS final
+FROM eclipse-temurin:17-jre-alpine AS final
 RUN mkdir /opt/app
 WORKDIR /opt/app
-COPY --from=build /home/gradle/src/build/libs/tankobon-server-kotlin-*-all.jar /opt/app/tankobon-server.jar
-ENTRYPOINT ["java","-jar","./tankobon-server.jar"]
+COPY --from=build /home/gradle/src/build/libs/tankobon-*-all.jar /opt/app/tankobon.jar
+ENTRYPOINT ["java","-jar","./tankobon.jar"]
