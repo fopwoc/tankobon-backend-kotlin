@@ -11,6 +11,7 @@ object UserModel : UUIDTable() {
     var admin = bool("admin")
 }
 
+// TODO show expire time
 @Serializable
 data class User(
     val id: String,

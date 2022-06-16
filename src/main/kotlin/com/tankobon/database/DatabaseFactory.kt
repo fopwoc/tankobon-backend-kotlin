@@ -1,6 +1,7 @@
 package com.tankobon.database
 
 import com.tankobon.database.model.MangaModel
+import com.tankobon.database.model.RefreshTokenModel
 import com.tankobon.database.model.UserModel
 import com.tankobon.database.model.UtilsModel
 import com.zaxxer.hikari.HikariConfig
@@ -50,6 +51,10 @@ object DatabaseFactory {
 
             if (!MangaModel.exists()) {
                 create(MangaModel)
+            }
+
+            if (!RefreshTokenModel.exists()) {
+                create(RefreshTokenModel)
             }
         }
         return serviceDB
