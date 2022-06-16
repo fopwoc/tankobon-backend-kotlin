@@ -3,7 +3,7 @@ package com.tankobon.database.model
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.UUIDTable
 
-object UserModel : UUIDTable() {
+object UserModel : UUIDTable(name = "USERS") {
     val username = varchar("username", 255)
     val password = varchar("password", 64)
     var registerDate = long("registerDate")

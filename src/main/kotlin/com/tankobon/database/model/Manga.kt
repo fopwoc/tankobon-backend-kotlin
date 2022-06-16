@@ -3,7 +3,7 @@ package com.tankobon.database.model
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.UUIDTable
 
-object MangaModel : UUIDTable() {
+object MangaModel : UUIDTable(name = "MANGA") {
     val title = varchar("title", 255)
     val description = text("description")
     val cover = text("cover")

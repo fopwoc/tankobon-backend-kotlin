@@ -3,7 +3,7 @@ package com.tankobon.database.model
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
-object RefreshTokenModel : Table() {
+object RefreshTokenModel : Table(name = "TOKENS") {
     val uuid = varchar("id", 36)
     val refreshToken = varchar("refreshToken", 64)
     val expires = long("expires")
