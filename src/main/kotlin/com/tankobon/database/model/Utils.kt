@@ -3,7 +3,7 @@ package com.tankobon.database.model
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
-object UtilsModel : Table() {
+object UtilsModel : Table(name = "UTILS") {
     val public = varchar("public", 512)
     val private = varchar("private", 2048)
     var creationDate = long("creationDate")
