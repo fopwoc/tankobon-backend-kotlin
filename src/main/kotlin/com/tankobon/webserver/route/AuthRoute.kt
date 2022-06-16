@@ -1,30 +1,43 @@
 package com.tankobon.webserver.route
 
+import com.tankobon.database.model.RefreshToken
 import com.tankobon.database.model.UserAuth
+import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
 import com.tankobon.database.service.UtilService
-import com.tankobon.globalIssuer
+import com.tankobon.utils.isValidUUID
 import com.tankobon.webserver.AuthenticationException
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 
-fun Route.authRoute(userService: UserService, utilService: UtilService) {
+fun Route.authRoute(userService: UserService, utilService: UtilService, tokenService: TokenService) {
 
     post("/login") {
         val user = call.receive<UserAuth>()
         val uuid = userService.authUser(user.username, user.password)
 
         if (uuid.isNotEmpty()) {
-            val token = JWT.create()
-                .withIssuer(globalIssuer)
-                .withClaim("uuid", uuid)
-                .sign(Algorithm.RSA256(null, utilService.getPrivateKey()))
-            call.respond(hashMapOf("token" to token))
-        } else throw AuthenticationException()
+            val token = tokenService.getTokenPair(uuid, utilService.getPrivateKey())
+            call.respond(token)
+        } else {
+            throw AuthenticationException()
+        }
+    }
+
+    post("/refresh") {
+        val currentRefreshToken = call.receive<RefreshToken>().refreshToken
+        val currentTime = System.currentTimeMillis()
+        val tokenData = tokenService.getRefreshData(currentRefreshToken)
+
+        //TODO delete old token
+        if (tokenData.expires > currentTime && isValidUUID(tokenData.uuid)) {
+            val token = tokenService.getTokenPair(tokenData.uuid, utilService.getPrivateKey(), tokenData.refreshToken)
+            call.respond(token)
+        } else {
+            throw AuthenticationException()
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.tankobon
 
 import com.tankobon.database.DatabaseFactory
 import com.tankobon.database.service.MangaService
+import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
 import com.tankobon.database.service.UtilService
 import com.tankobon.manga.filesystem.MangaWatcher
@@ -43,6 +44,7 @@ fun main() {
     val userService = UserService(serviceDB)
     val mangaService = MangaService(serviceDB)
     val utilService = UtilService(serviceDB)
+    val tokenService = TokenService(serviceDB)
 
     MangaWatcher(mangaService).watchFolder()
     logger.info("Library is ready! webserver has started!")
@@ -67,7 +69,7 @@ fun main() {
         }
 
         install(Routing) {
-            authRoute(userService, utilService)
+            authRoute(userService, utilService, tokenService)
             userRoute(userService)
             mangaRoute(mangaService)
         }

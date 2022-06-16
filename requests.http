@@ -7,34 +7,50 @@ Content-Type: application/json
   "password": "password"
 }
 
-> {% client.global.set("auth_token", response.body.token); %}
+> {%
+client.global.set("access_token", response.body.accessToken);
+client.global.set("refresh_token", response.body.refreshToken);
+%}
 
 
 ### test token
 GET http://localhost:8080/me
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{access_token}}
 
+
+### refresh token
+POST http://localhost:8080/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+> {%
+client.global.set("access_token", response.body.accessToken);
+client.global.set("refresh_token", response.body.refreshToken);
+%}
 
 ### get list
 GET http://localhost:8080/list
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{access_token}}
 
 > {% client.global.set("title", response.body[0].id); %}
 
 
 ### get page
 GET http://localhost:8080/manga/{{title}}/0/0
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{access_token}}
 
 
 ### get thumb
 GET http://localhost:8080/thumb/{{title}}/0/0
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{access_token}}
 
 
 ### test newuser
 POST http://localhost:8080/newuser
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
