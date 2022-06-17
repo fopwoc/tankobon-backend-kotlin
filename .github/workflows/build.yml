@@ -24,4 +24,4 @@ jobs:
         with:
           name: my-artifact
           path: |
-            build/libs/
+            build/libs/*-all.jar
