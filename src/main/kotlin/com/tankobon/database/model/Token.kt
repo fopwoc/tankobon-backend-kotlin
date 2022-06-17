@@ -1,6 +1,7 @@
 package com.tankobon.database.model
 
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 
 object RefreshTokenModel : Table(name = "TOKENS") {
@@ -25,4 +26,10 @@ data class RefreshTokenData(
     val uuid: String,
     val refreshToken: String,
     val expires: Long,
+)
+
+fun ResultRow.toRefreshTokenData() = RefreshTokenData(
+    uuid = this[RefreshTokenModel.uuid],
+    refreshToken = this[RefreshTokenModel.refreshToken],
+    expires = this[RefreshTokenModel.expires],
 )

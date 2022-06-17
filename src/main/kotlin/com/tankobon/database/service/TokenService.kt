@@ -2,7 +2,10 @@ package com.tankobon.database.service
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.tankobon.database.model.*
+import com.tankobon.database.model.RefreshTokenData
+import com.tankobon.database.model.RefreshTokenModel
+import com.tankobon.database.model.TokenPair
+import com.tankobon.database.model.toRefreshTokenData
 import com.tankobon.globalIssuer
 import com.tankobon.utils.msOffsetDays
 import com.tankobon.utils.sha256
@@ -11,11 +14,16 @@ import com.tankobon.webserver.AuthenticationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import java.security.interfaces.RSAPrivateKey
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 class TokenService(val database: Database) {
 
@@ -26,7 +34,7 @@ class TokenService(val database: Database) {
             val refresh = sha256(UUID.randomUUID().toString()).toHex()
 
             withContext(Dispatchers.Default) {
-                if (oldToken?.isEmpty() != false) {
+                if (oldToken.isNullOrEmpty()) {
                     newSuspendedTransaction(db = database) {
                         RefreshTokenModel.insert {
                             it[uuid] = id
@@ -52,19 +60,18 @@ class TokenService(val database: Database) {
             val newRefreshToken = (
                 RefreshTokenModel
                     .select { RefreshTokenModel.refreshToken eq refreshToken }
-                    .mapNotNull { toRefreshToken(it) }.singleOrNull()
+                    .mapNotNull { it.toRefreshTokenData() }.singleOrNull()
                 )
 
             return@transaction newRefreshToken ?: throw AuthenticationException()
         }
     }
 
-    private fun toRefreshToken(row: ResultRow): RefreshTokenData {
-        return RefreshTokenData(
-            uuid = row[RefreshTokenModel.uuid],
-            refreshToken = row[RefreshTokenModel.refreshToken],
-            expires = row[RefreshTokenModel.expires],
-        )
+    suspend fun deleteRefreshData(refreshToken: String) {
+        return newSuspendedTransaction(db = database) {
+            RefreshTokenModel
+                .deleteWhere { RefreshTokenModel.refreshToken eq refreshToken }
+        }
     }
 
     private fun createAccessToken(uuid: String, privateKey: RSAPrivateKey): String {

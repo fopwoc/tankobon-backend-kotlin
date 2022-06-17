@@ -2,6 +2,7 @@ package com.tankobon.database.model
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.ResultRow
 
 object UserModel : UUIDTable(name = "USERS") {
     val username = varchar("username", 255)
@@ -21,6 +22,14 @@ data class User(
     val admin: Boolean,
 )
 
+fun ResultRow.toUser(): User = User(
+    id = this[UserModel.id].toString(),
+    username = this[UserModel.username],
+    registerDate = this[UserModel.registerDate],
+    active = this[UserModel.active],
+    admin = this[UserModel.admin],
+)
+
 @Serializable
 data class UserNew(
     val username: String,
@@ -38,4 +47,9 @@ data class UserAuth(
 data class UserHash(
     val id: String,
     val password: String,
+)
+
+fun ResultRow.toUserHash() = UserHash(
+    id = this[UserModel.id].toString(),
+    password = this[UserModel.password]
 )
