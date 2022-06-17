@@ -32,11 +32,11 @@ fun Route.authRoute(userService: UserService, utilService: UtilService, tokenSer
         val currentTime = System.currentTimeMillis()
         val tokenData = tokenService.getRefreshData(currentRefreshToken)
 
-        //TODO delete old token
         if (tokenData.expires > currentTime && isValidUUID(tokenData.uuid)) {
             val token = tokenService.getTokenPair(tokenData.uuid, utilService.getPrivateKey(), tokenData.refreshToken)
             call.respond(token)
         } else {
+            tokenService.deleteRefreshData(currentRefreshToken)
             throw AuthenticationException()
         }
     }

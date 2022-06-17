@@ -1,9 +1,9 @@
 package com.tankobon.webserver
 
-import com.tankobon.database.service.UtilService
-import com.tankobon.globalIssuer
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.tankobon.database.service.UtilService
+import com.tankobon.globalIssuer
 import io.ktor.server.application.Application
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal

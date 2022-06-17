@@ -1,7 +1,9 @@
 package com.tankobon.database.model
 
+import com.tankobon.utils.intListUtils
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.ResultRow
 
 object MangaModel : UUIDTable(name = "MANGA") {
     val title = varchar("title", 255)
@@ -17,6 +19,14 @@ data class Manga(
     val description: String,
     val cover: String,
     val volume: List<Int>,
+)
+
+fun ResultRow.toManga() = Manga(
+    id = this[MangaModel.id].toString(),
+    title = this[MangaModel.title],
+    description = this[MangaModel.description],
+    cover = this[MangaModel.cover],
+    volume = intListUtils(this[MangaModel.volume]),
 )
 
 @Serializable

@@ -3,12 +3,11 @@ package com.tankobon.database.service
 import com.tankobon.database.model.Manga
 import com.tankobon.database.model.MangaModel
 import com.tankobon.database.model.MangaUpdate
+import com.tankobon.database.model.toManga
 import com.tankobon.globalThumbPath
-import com.tankobon.utils.intListUtils
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -20,7 +19,7 @@ import java.util.UUID
 class MangaService(val database: Database) {
 
     suspend fun getMangaList(): List<Manga> = newSuspendedTransaction(db = database) {
-        return@newSuspendedTransaction MangaModel.selectAll().map { toManga(it) }
+        return@newSuspendedTransaction MangaModel.selectAll().map { it.toManga() }
     }
 
     private suspend fun addMangaList(mangaUpdate: MangaUpdate) = newSuspendedTransaction(db = database) {
@@ -34,7 +33,7 @@ class MangaService(val database: Database) {
     }
 
     suspend fun updateMangaList(listMangaUpdate: List<MangaUpdate>) = newSuspendedTransaction(db = database) {
-        val currentList = MangaModel.selectAll().map { toManga(it) }
+        val currentList = MangaModel.selectAll().map { it.toManga() }
 
         currentList.filter { e -> listMangaUpdate.none { it.id == e.id } }
             .forEach {
@@ -60,15 +59,5 @@ class MangaService(val database: Database) {
             it[cover] = mangaUpdate.cover
             it[volume] = Json.encodeToString(mangaUpdate.volume)
         }
-    }
-
-    private fun toManga(row: ResultRow): Manga {
-        return Manga(
-            id = row[MangaModel.id].toString(),
-            title = row[MangaModel.title],
-            description = row[MangaModel.description],
-            cover = row[MangaModel.cover],
-            volume = intListUtils(row[MangaModel.volume]),
-        )
     }
 }
