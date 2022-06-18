@@ -3,6 +3,9 @@ name: Build
 on:
   workflow_call:
 
+env:
+  ARTIFACT_NAME: ${{ github.run_id }}-${{ github.run_number }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,10 +24,11 @@ jobs:
           arguments: build
       - run: |
           mkdir -p ~/new/artifact
-          mv build/libs/*-all.jar ~/new/artifact/${{ github.event.repository.name }}-${{ github.sha }}.jar
+          ls -la build/libs/
+          mv build/libs/*-all.jar ~/new/artifact/${{ env.ARTIFACT_NAME }}.jar
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: my-artifact
+          name: artifacts-${{ env.ARTIFACT_NAME }}
           path: |
             ~/new/artifact/
