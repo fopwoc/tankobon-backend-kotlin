@@ -8,7 +8,7 @@ on:
       - '*'
 
 env:
-  DOCKER_HUB: acetylsalicylicacid/tankobon-server-kotlin
+  DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
 
 jobs:
   build:
