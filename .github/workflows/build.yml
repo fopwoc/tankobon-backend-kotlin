@@ -3,32 +3,28 @@ name: Build
 on:
   workflow_call:
 
-env:
-  ARTIFACT_NAME: ${{ github.run_id }}-${{ github.run_number }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: 17
           distribution: 'temurin'
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: shadowJar --no-daemon
       - run: |
           mkdir -p ~/new/artifact
-          ls -la build/libs/
-          mv build/libs/*-all.jar ~/new/artifact/${{ env.ARTIFACT_NAME }}.jar
+          mv build/libs/*-all.jar ~/new/artifact/${{ github.event.repository.name }}-${{ github.sha }}.jar
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: artifacts-${{ env.ARTIFACT_NAME }}
+          name: my-artifact
           path: |
             ~/new/artifact/
