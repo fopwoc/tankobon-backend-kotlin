@@ -8,7 +8,7 @@ on:
       - '*'
 
 env:
-  DOCKER_HUB: aspirinmoe/tankobon-server-kotlin
+  DOCKER_HUB: acetylsalicylicacid/tankobon-server-kotlin
 
 jobs:
   build:
