@@ -1,4 +1,4 @@
-Tankobon-server-kotlin
+Tankobon-backend-kotlin
 ======================
 [![Build](https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml)
 [![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
