@@ -12,6 +12,7 @@ object RefreshTokenModel : Table(name = "TOKENS") {
 
 @Serializable
 data class TokenPair(
+    val instanceId: String,
     val accessToken: String,
     val refreshToken: String,
 )

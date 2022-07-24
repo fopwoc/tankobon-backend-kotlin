@@ -43,6 +43,7 @@ object DatabaseFactory {
                 val kp: KeyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
 
                 UtilsModel.insert {
+                    it[instanceId] = UUID.randomUUID().toString()
                     it[public] = encoder.encodeToString(kp.public.encoded)
                     it[private] = encoder.encodeToString(kp.private.encoded)
                     it[creationDate] = System.currentTimeMillis()

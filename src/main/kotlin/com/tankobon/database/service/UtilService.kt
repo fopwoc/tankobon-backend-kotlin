@@ -35,4 +35,8 @@ class UtilService(val database: Database) {
             )
         ) as RSAPrivateKey
     }
+
+    fun getInstanceId(): String = transaction(db = database) {
+        UtilsModel.selectAll().map { it.toUtils() }.first().instanceId
+    }
 }
