@@ -51,7 +51,7 @@ class TokenService(val database: Database) {
                     }
                 }
             }
-            return@runBlocking TokenPair(access, refresh)
+            return@runBlocking TokenPair(UtilService(database).getInstanceId(), access, refresh)
         }
     }
 
