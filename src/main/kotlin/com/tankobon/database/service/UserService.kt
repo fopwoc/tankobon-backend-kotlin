@@ -44,7 +44,7 @@ class UserService() {
     suspend fun authUser(username: String, password: String): String {
         return newSuspendedTransaction(db = database) {
             val userHash: UserHash = UserModel.select { UserModel.username eq username }
-                .map { it.toUserHash() }.first()
+                .map { it.toUserHash() }.firstOrNull() ?: throw AuthenticationException()
 
             if (BCrypt.checkpw(password, userHash.password)) {
                 return@newSuspendedTransaction userHash.id
