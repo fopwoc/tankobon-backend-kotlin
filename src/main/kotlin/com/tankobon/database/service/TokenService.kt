@@ -2,6 +2,8 @@ package com.tankobon.database.service
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.tankobon.database.DatabaseFactory
+import com.tankobon.database.DatabaseInstance
 import com.tankobon.database.model.RefreshTokenData
 import com.tankobon.database.model.RefreshTokenModel
 import com.tankobon.database.model.TokenPair
@@ -14,7 +16,6 @@ import com.tankobon.webserver.AuthenticationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -25,7 +26,8 @@ import java.security.interfaces.RSAPrivateKey
 import java.util.Date
 import java.util.UUID
 
-class TokenService(val database: Database) {
+class TokenService() {
+    val database = DatabaseInstance.instance;
 
     fun getTokenPair(id: String, privateKey: RSAPrivateKey, oldToken: String? = null): TokenPair {
         return runBlocking {
@@ -51,7 +53,7 @@ class TokenService(val database: Database) {
                     }
                 }
             }
-            return@runBlocking TokenPair(UtilService(database).getInstanceId(), access, refresh)
+            return@runBlocking TokenPair(UtilService().getInstanceId(), access, refresh)
         }
     }
 

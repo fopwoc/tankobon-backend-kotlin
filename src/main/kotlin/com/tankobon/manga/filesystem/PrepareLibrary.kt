@@ -53,5 +53,6 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
     }
 
     logger.info("Library preparation successfully completed. Time elapsed: ${elapsed / 1000} seconds")
+    logger.info("List: ${updateList.toString()}")
     return updateList
 }

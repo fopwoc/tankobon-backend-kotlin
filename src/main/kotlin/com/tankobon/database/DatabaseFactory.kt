@@ -16,6 +16,12 @@ import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.util.*
 
+class DatabaseInstance {
+    companion object {
+        val instance = DatabaseFactory.init()
+    }
+}
+
 object DatabaseFactory {
 
     fun init(): Database {
@@ -71,4 +77,6 @@ object DatabaseFactory {
         config.validate()
         return HikariDataSource(config)
     }
+
+
 }

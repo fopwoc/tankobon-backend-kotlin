@@ -1,16 +1,11 @@
 package com.tankobon.manga.filesystem
 
+import ch.qos.logback.core.joran.action.ActionUtil.Scope
 import com.tankobon.database.service.MangaService
 import com.tankobon.globalMangaPath
 import com.tankobon.globalThumbPath
 import com.tankobon.logger
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds
@@ -58,6 +53,21 @@ class MangaWatcher(private val mangaService: MangaService) {
                     logger.error(e.stackTraceToString())
                 }
             }
+        }
+    }
+}
+
+fun <T> debounce(
+    waitMs: Long = 300L,
+    scope: CoroutineScope,
+    destinationFunction: (T) -> Unit
+): (T) -> Unit {
+    var debounceJob: Job? = null
+    return { param: T ->
+        debounceJob?.cancel()
+        debounceJob = scope.launch {
+            delay(waitMs)
+            destinationFunction(param)
         }
     }
 }
