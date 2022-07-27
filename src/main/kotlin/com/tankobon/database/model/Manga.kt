@@ -18,7 +18,7 @@ data class Manga(
     val title: String,
     val description: String,
     val cover: String,
-    val volume: List<Int>,
+    val volume: List<Int>
 )
 
 fun ResultRow.toManga() = Manga(
@@ -26,12 +26,12 @@ fun ResultRow.toManga() = Manga(
     title = this[MangaModel.title],
     description = this[MangaModel.description],
     cover = this[MangaModel.cover],
-    volume = intListUtils(this[MangaModel.volume]),
+    volume = intListUtils(this[MangaModel.volume])
 )
 
 @Serializable
 data class MangaUpdate(
     val id: String,
     val title: String?,
-    val volume: List<Int>,
+    val volume: List<Int>
 )

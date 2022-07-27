@@ -14,23 +14,23 @@ object RefreshTokenModel : Table(name = "TOKENS") {
 data class TokenPair(
     val instanceId: String,
     val accessToken: String,
-    val refreshToken: String,
+    val refreshToken: String
 )
 
 @Serializable
 data class RefreshToken(
-    val refreshToken: String,
+    val refreshToken: String
 )
 
 @Serializable
 data class RefreshTokenData(
     val uuid: String,
     val refreshToken: String,
-    val expires: Long,
+    val expires: Long
 )
 
 fun ResultRow.toRefreshTokenData() = RefreshTokenData(
     uuid = this[RefreshTokenModel.uuid],
     refreshToken = this[RefreshTokenModel.refreshToken],
-    expires = this[RefreshTokenModel.expires],
+    expires = this[RefreshTokenModel.expires]
 )

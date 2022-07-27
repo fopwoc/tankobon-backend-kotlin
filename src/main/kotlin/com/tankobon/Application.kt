@@ -5,8 +5,8 @@ import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
 import com.tankobon.database.service.UtilService
 import com.tankobon.manga.filesystem.MangaWatcher
-import com.tankobon.webserver.configureErrorStatusPages
-import com.tankobon.webserver.configureSecurity
+import com.tankobon.webserver.statusPages
+import com.tankobon.webserver.security
 import com.tankobon.webserver.route.authRoute
 import com.tankobon.webserver.route.mangaRoute
 import com.tankobon.webserver.route.userRoute
@@ -49,9 +49,9 @@ fun main() {
     embeddedServer(
         Netty,
         host = globalAddress,
-        port = globalPort,
+        port = globalPort
     ) {
-        configureSecurity(utilService)
+        security(utilService)
 
         install(CallLogging) {
             level = Level.INFO
@@ -62,7 +62,7 @@ fun main() {
         }
 
         install(StatusPages) {
-            configureErrorStatusPages()
+            statusPages()
         }
 
         install(Routing) {

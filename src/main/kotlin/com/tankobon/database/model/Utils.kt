@@ -16,7 +16,7 @@ data class Utils(
     val instanceId: String,
     val public: String,
     val private: String,
-    val creationDate: Long,
+    val creationDate: Long
 )
 
 fun ResultRow.toUtils() = Utils(

@@ -2,7 +2,6 @@ package com.tankobon.database.service
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import com.tankobon.database.DatabaseFactory
 import com.tankobon.database.DatabaseInstance
 import com.tankobon.database.model.RefreshTokenData
 import com.tankobon.database.model.RefreshTokenModel
@@ -26,9 +25,8 @@ import java.security.interfaces.RSAPrivateKey
 import java.util.Date
 import java.util.UUID
 
-class TokenService() {
-    val database = DatabaseInstance.instance;
-
+class TokenService {
+    val database = DatabaseInstance.instance
     fun getTokenPair(id: String, privateKey: RSAPrivateKey, oldToken: String? = null): TokenPair {
         return runBlocking {
             val currentTime = System.currentTimeMillis()
