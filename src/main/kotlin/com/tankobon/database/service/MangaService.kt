@@ -1,5 +1,7 @@
 package com.tankobon.database.service
 
+import com.tankobon.database.DatabaseFactory
+import com.tankobon.database.DatabaseInstance
 import com.tankobon.database.model.Manga
 import com.tankobon.database.model.MangaModel
 import com.tankobon.database.model.MangaUpdate
@@ -16,7 +18,8 @@ import org.jetbrains.exposed.sql.update
 import java.io.File
 import java.util.UUID
 
-class MangaService(val database: Database) {
+class MangaService() {
+    val database = DatabaseInstance.instance;
 
     suspend fun getMangaList(): List<Manga> = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction MangaModel.selectAll().map { it.toManga() }

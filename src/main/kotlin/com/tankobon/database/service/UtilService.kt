@@ -1,5 +1,7 @@
 package com.tankobon.database.service
 
+import com.tankobon.database.DatabaseFactory
+import com.tankobon.database.DatabaseInstance
 import com.tankobon.database.model.UtilsModel
 import com.tankobon.database.model.toUtils
 import org.jetbrains.exposed.sql.Database
@@ -12,7 +14,8 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
-class UtilService(val database: Database) {
+class UtilService() {
+    val database = DatabaseInstance.instance;
     private val decoder: Base64.Decoder = Base64.getDecoder()
     private val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
 

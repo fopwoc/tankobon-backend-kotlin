@@ -1,5 +1,6 @@
 package com.tankobon.database.service
 
+import com.tankobon.database.DatabaseInstance
 import com.tankobon.database.model.User
 import com.tankobon.database.model.UserHash
 import com.tankobon.database.model.UserModel
@@ -8,7 +9,6 @@ import com.tankobon.database.model.toUserHash
 import com.tankobon.webserver.AuthenticationException
 import com.tankobon.webserver.InternalServerError
 import com.tankobon.webserver.UserExistException
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -18,7 +18,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.util.UUID
 
-class UserService(val database: Database) {
+class UserService() {
+    val database = DatabaseInstance.instance;
 
     suspend fun getUser(uuid: String): User = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction UserModel

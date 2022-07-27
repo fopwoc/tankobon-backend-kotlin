@@ -1,6 +1,5 @@
 package com.tankobon
 
-import com.tankobon.database.DatabaseFactory
 import com.tankobon.database.service.MangaService
 import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
@@ -39,12 +38,10 @@ val logger: Logger = LoggerFactory.getLogger("tankobon")
 fun main() {
     logger.info("Tankōbon-server is starting!")
 
-    val serviceDB = DatabaseFactory.init()
-
-    val userService = UserService(serviceDB)
-    val mangaService = MangaService(serviceDB)
-    val utilService = UtilService(serviceDB)
-    val tokenService = TokenService(serviceDB)
+    val userService = UserService()
+    val mangaService = MangaService()
+    val utilService = UtilService()
+    val tokenService = TokenService()
 
     MangaWatcher(mangaService).watchFolder()
     logger.info("Library is ready! webserver has started!")
