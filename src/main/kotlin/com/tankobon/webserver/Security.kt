@@ -9,7 +9,7 @@ import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 
-fun Application.configureSecurity(utilService: UtilService) {
+fun Application.security(utilService: UtilService) {
     authentication {
         jwt("auth-jwt") {
             verifier(

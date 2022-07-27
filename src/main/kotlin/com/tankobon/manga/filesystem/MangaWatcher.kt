@@ -1,11 +1,18 @@
 package com.tankobon.manga.filesystem
 
-import ch.qos.logback.core.joran.action.ActionUtil.Scope
 import com.tankobon.database.service.MangaService
 import com.tankobon.globalMangaPath
 import com.tankobon.globalThumbPath
 import com.tankobon.logger
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import java.nio.file.FileSystems
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds
@@ -31,7 +38,7 @@ class MangaWatcher(private val mangaService: MangaService) {
                                 FileSystems.getDefault().newWatchService(),
                                 StandardWatchEventKinds.ENTRY_CREATE,
                                 StandardWatchEventKinds.ENTRY_MODIFY,
-                                StandardWatchEventKinds.ENTRY_DELETE,
+                                StandardWatchEventKinds.ENTRY_DELETE
                             )
                     }
 

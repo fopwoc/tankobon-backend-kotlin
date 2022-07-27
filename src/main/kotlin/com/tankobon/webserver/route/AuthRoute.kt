@@ -14,7 +14,6 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 
 fun Route.authRoute(userService: UserService, utilService: UtilService, tokenService: TokenService) {
-
     post("/login") {
         val user = call.receive<UserAuth>()
         val uuid = userService.authUser(user.username, user.password)

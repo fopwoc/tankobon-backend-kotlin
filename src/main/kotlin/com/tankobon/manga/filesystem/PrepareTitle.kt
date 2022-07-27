@@ -29,7 +29,7 @@ fun prepareTitle(titleDir: File): List<Int> {
                         val path = File("${e.parentFile.path}/$i")
                         e.renameTo(path)
                         path
-                    } else e,
+                    } else e
                 )
             }
     }

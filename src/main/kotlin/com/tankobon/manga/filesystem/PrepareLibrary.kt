@@ -44,7 +44,7 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
                             MangaUpdate(
                                 uuid.toString(),
                                 e.name,
-                                prepareTitle(path),
+                                prepareTitle(path)
                             )
                         )
                     }
@@ -53,6 +53,6 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
     }
 
     logger.info("Library preparation successfully completed. Time elapsed: ${elapsed / 1000} seconds")
-    logger.info("List: ${updateList.toString()}")
+    logger.info("List: $updateList")
     return updateList
 }

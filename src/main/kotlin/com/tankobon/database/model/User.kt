@@ -19,7 +19,7 @@ data class User(
     val username: String,
     val registerDate: Long,
     val active: Boolean,
-    val admin: Boolean,
+    val admin: Boolean
 )
 
 fun ResultRow.toUser(): User = User(
@@ -27,26 +27,26 @@ fun ResultRow.toUser(): User = User(
     username = this[UserModel.username],
     registerDate = this[UserModel.registerDate],
     active = this[UserModel.active],
-    admin = this[UserModel.admin],
+    admin = this[UserModel.admin]
 )
 
 @Serializable
 data class UserNew(
     val username: String,
     val password: String,
-    val admin: Boolean,
+    val admin: Boolean
 )
 
 @Serializable
 data class UserAuth(
     val username: String,
-    val password: String,
+    val password: String
 )
 
 @Serializable
 data class UserHash(
     val id: String,
-    val password: String,
+    val password: String
 )
 
 fun ResultRow.toUserHash() = UserHash(

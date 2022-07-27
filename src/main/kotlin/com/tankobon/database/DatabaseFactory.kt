@@ -27,7 +27,6 @@ object DatabaseFactory {
     fun init(): Database {
         val serviceDB = Database.connect(hikariPersist())
         transaction(serviceDB) {
-
             // TODO refactor to use UserService.addUser
             if (!UserModel.exists()) {
                 create(UserModel)
@@ -35,7 +34,7 @@ object DatabaseFactory {
                     it[username] = System.getenv("tkbn_username") ?: "user"
                     it[password] = BCrypt.hashpw(
                         System.getenv("tkbn_password") ?: "password",
-                        BCrypt.gensalt(12),
+                        BCrypt.gensalt(12)
                     )
                     it[registerDate] = System.currentTimeMillis()
                     it[active] = true
@@ -77,6 +76,4 @@ object DatabaseFactory {
         config.validate()
         return HikariDataSource(config)
     }
-
-
 }

@@ -4,8 +4,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.server.response.respond
 
-fun StatusPagesConfig.configureErrorStatusPages() {
-
+fun StatusPagesConfig.statusPages() {
     exception<InternalServerError> { call, _ ->
         call.respond(HttpStatusCode.InternalServerError)
     }

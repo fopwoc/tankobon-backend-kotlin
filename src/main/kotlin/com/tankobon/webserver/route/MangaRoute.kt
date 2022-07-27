@@ -13,7 +13,6 @@ import io.ktor.server.routing.get
 
 fun Route.mangaRoute(mangaService: MangaService) {
     authenticate("auth-jwt") {
-
         get("/list") {
             call.respond(mangaService.getMangaList())
         }

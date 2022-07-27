@@ -18,8 +18,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.util.UUID
 
-class UserService() {
-    val database = DatabaseInstance.instance;
+class UserService {
+    val database = DatabaseInstance.instance
 
     suspend fun getUser(uuid: String): User = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction UserModel
