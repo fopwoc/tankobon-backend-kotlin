@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.io.File
 
-val globalAddress = System.getenv("tkbn_address") ?: "0.0.0.0"
+val globalAddress = System.getenv("tkbn_address") ?: "localhost"
 val globalPort = Integer.parseInt(System.getenv("tkbn_port") ?: "8080")
 
 val globalIssuer = "http://$globalAddress:$globalPort/"
