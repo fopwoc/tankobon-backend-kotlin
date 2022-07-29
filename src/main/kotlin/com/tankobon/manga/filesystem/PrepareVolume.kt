@@ -43,14 +43,11 @@ fun prepareVolume(volumePath: File) {
                 volumePath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                     ?.sortedBy { it.name.toString() }
                     ?.forEachIndexed { i, e ->
-                        val newFile = if (!Regex("^\\d*\$").matches(e.nameWithoutExtension)) {
-                            val path = File("${e.parentFile.path}/$i.${e.extension}")
-                            e.renameTo(path)
-                            path
-                        } else e
+                        val path = File("${e.parentFile.path}/$i.${e.extension}")
+                        e.renameTo(path)
                         withContext(Dispatchers.Default) {
                             print("prepareVolume thumbnailGenerator ${Thread.currentThread().name}")
-                            thumbnailGenerator(newFile, newThumb)
+                            thumbnailGenerator(path, newThumb)
                         }
                     }
             }
