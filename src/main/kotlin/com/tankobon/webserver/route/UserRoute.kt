@@ -1,6 +1,6 @@
 package com.tankobon.webserver.route
 
-import com.tankobon.database.model.UserNew
+import com.tankobon.database.model.CreateUserPayload
 import com.tankobon.database.service.UserService
 import com.tankobon.webserver.AdminAuthenticationException
 import io.ktor.http.HttpStatusCode
@@ -22,7 +22,7 @@ fun Route.userRoute(userService: UserService) {
         }
 
         post("/newuser") {
-            val newUser = call.receive<UserNew>()
+            val newUser = call.receive<CreateUserPayload>()
             val requestUser = userService.getUser(
                 call.principal<JWTPrincipal>()!!.payload.getClaim("uuid").toString()
             )

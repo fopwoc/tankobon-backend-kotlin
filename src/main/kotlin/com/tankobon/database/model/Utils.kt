@@ -11,7 +11,6 @@ object UtilsModel : Table(name = "UTILS") {
     var creationDate = long("creationDate")
 }
 
-@Serializable
 data class Utils(
     val instanceId: String,
     val public: String,
