@@ -24,4 +24,8 @@ fun StatusPagesConfig.statusPages() {
     exception<UserExistException> { call, _ ->
         call.respond(HttpStatusCode.Conflict, "this username already exist")
     }
+
+    exception<ContentNotFoundException> { call, _ ->
+        call.respond(HttpStatusCode.NoContent)
+    }
 }

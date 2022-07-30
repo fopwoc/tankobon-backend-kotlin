@@ -3,7 +3,7 @@ POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-  "username": "user",
+  "username": "user2",
   "password": "password"
 }
 
@@ -32,10 +32,43 @@ client.global.set("refresh_token", response.body.refreshToken);
 %}
 
 ### get list
-GET http://localhost:8080/list
+GET http://localhost:8080/manga
 Authorization: Bearer {{access_token}}
 
 > {% client.global.set("title", response.body[0].id); %}
+
+### get list POST
+POST http://localhost:8080/manga
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "offset": 0,
+  "limit": 2,
+  "search": null
+}
+
+> {% client.global.set("title", response.body[0].id); %}
+
+### get current manga
+POST http://localhost:8080/manga/id
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "id": "{{title}}"
+}
+
+### update manga
+POST http://localhost:8080/manga/{{title}}/update
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "title": "test2",
+  "description": "test123",
+  "cover": ""
+}
 
 
 ### get page
