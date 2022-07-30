@@ -6,6 +6,7 @@ import com.tankobon.database.model.UserHash
 import com.tankobon.database.model.UserModel
 import com.tankobon.database.model.toUser
 import com.tankobon.database.model.toUserHash
+import com.tankobon.utils.uuidFromString
 import com.tankobon.webserver.AuthenticationException
 import com.tankobon.webserver.InternalServerError
 import com.tankobon.webserver.UserExistException
@@ -16,14 +17,13 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
-import java.util.UUID
 
 class UserService {
     val database = DatabaseInstance.instance
 
     suspend fun getUser(uuid: String): User = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction UserModel
-            .select { UserModel.id eq UUID.fromString(uuid.replace("\"", "")) }
+            .select { UserModel.id eq uuidFromString(uuid.replace("\"", "")) }
             .mapNotNull { it.toUser() }.singleOrNull() ?: throw InternalServerError()
     }
 
