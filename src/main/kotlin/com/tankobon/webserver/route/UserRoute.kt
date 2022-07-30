@@ -16,12 +16,12 @@ import io.ktor.server.routing.post
 
 fun Route.userRoute(userService: UserService) {
     authenticate("auth-jwt") {
-        get("/me") {
-            val principal = call.principal<JWTPrincipal>()
+        get("/users/me") {
+            val principal = call.principal<JWTPrincipal>() //TODO \"\" fix
             call.respond(userService.getUser(principal!!.payload.getClaim("uuid").toString()))
         }
 
-        post("/newuser") {
+        post("/users/create") {
             val newUser = call.receive<CreateUserPayload>()
             val requestUser = userService.getUser(
                 call.principal<JWTPrincipal>()!!.payload.getClaim("uuid").toString()
