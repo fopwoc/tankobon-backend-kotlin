@@ -18,11 +18,10 @@ data class TokenPair(
 )
 
 @Serializable
-data class RefreshToken(
+data class RefreshTokenPayload(
     val refreshToken: String
 )
 
-@Serializable
 data class RefreshTokenData(
     val uuid: String,
     val refreshToken: String,

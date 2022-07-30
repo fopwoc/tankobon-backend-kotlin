@@ -31,19 +31,18 @@ fun ResultRow.toUser(): User = User(
 )
 
 @Serializable
-data class UserNew(
+data class CreateUserPayload(
     val username: String,
     val password: String,
     val admin: Boolean
 )
 
 @Serializable
-data class UserAuth(
+data class UserPayload(
     val username: String,
     val password: String
 )
 
-@Serializable
 data class UserHash(
     val id: String,
     val password: String

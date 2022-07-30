@@ -1,7 +1,7 @@
 package com.tankobon.webserver.route
 
-import com.tankobon.database.model.RefreshToken
-import com.tankobon.database.model.UserAuth
+import com.tankobon.database.model.RefreshTokenPayload
+import com.tankobon.database.model.UserPayload
 import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
 import com.tankobon.database.service.UtilService
@@ -15,7 +15,7 @@ import io.ktor.server.routing.post
 
 fun Route.authRoute(userService: UserService, utilService: UtilService, tokenService: TokenService) {
     post("/login") {
-        val user = call.receive<UserAuth>()
+        val user = call.receive<UserPayload>()
         val uuid = userService.authUser(user.username, user.password)
 
         if (uuid.isNotEmpty()) {
@@ -27,7 +27,7 @@ fun Route.authRoute(userService: UserService, utilService: UtilService, tokenSer
     }
 
     post("/refresh") {
-        val currentRefreshToken = call.receive<RefreshToken>().refreshToken
+        val currentRefreshToken = call.receive<RefreshTokenPayload>().refreshToken
         val currentTime = System.currentTimeMillis()
         val tokenData = tokenService.getRefreshData(currentRefreshToken)
 
