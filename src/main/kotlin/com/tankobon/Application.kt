@@ -5,11 +5,11 @@ import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
 import com.tankobon.database.service.UtilService
 import com.tankobon.manga.filesystem.MangaWatcher
-import com.tankobon.webserver.statusPages
-import com.tankobon.webserver.security
 import com.tankobon.webserver.route.authRoute
 import com.tankobon.webserver.route.mangaRoute
 import com.tankobon.webserver.route.userRoute
+import com.tankobon.webserver.security
+import com.tankobon.webserver.statusPages
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -68,7 +68,7 @@ fun main() {
         install(Routing) {
             authRoute(userService, utilService, tokenService)
             userRoute(userService)
-            mangaRoute(mangaService)
+            mangaRoute(mangaService, userService)
         }
     }.start(wait = true)
 }

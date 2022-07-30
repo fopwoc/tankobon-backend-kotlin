@@ -1,5 +1,6 @@
 package com.tankobon.utils
 
+import java.util.UUID
 import java.util.regex.Pattern
 
 private val UUID_REGEX_PATTERN: Pattern =
@@ -9,4 +10,16 @@ fun isValidUUID(str: String?): Boolean {
     return if (str == null) {
         false
     } else UUID_REGEX_PATTERN.matcher(str).matches()
+}
+
+fun getUUID(str: String?): UUID? {
+    return if (str == null) {
+        null
+    } else {
+        if (UUID_REGEX_PATTERN.matcher(str).matches()) {
+            UUID.fromString(str)
+        } else {
+            null
+        }
+    }
 }
