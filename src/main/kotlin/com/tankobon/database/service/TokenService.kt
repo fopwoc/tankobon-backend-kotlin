@@ -12,7 +12,7 @@ import com.tankobon.utils.msOffsetDays
 import com.tankobon.utils.sha256
 import com.tankobon.utils.toHex
 import com.tankobon.webserver.AuthenticationException
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.deleteWhere
@@ -22,8 +22,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.security.interfaces.RSAPrivateKey
-import java.util.Date
-import java.util.UUID
+import java.util.*
 
 class TokenService {
     val database = DatabaseInstance.instance
@@ -33,7 +32,7 @@ class TokenService {
             val access = createAccessToken(id, privateKey)
             val refresh = sha256(UUID.randomUUID().toString()).toHex()
 
-            withContext(Dispatchers.Default) {
+            withContext(Default) {
                 if (oldToken.isNullOrEmpty()) {
                     newSuspendedTransaction(db = database) {
                         RefreshTokenModel.insert {

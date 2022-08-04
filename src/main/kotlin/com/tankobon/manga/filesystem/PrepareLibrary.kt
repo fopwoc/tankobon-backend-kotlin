@@ -4,17 +4,20 @@ import com.tankobon.database.model.MangaUpdate
 import com.tankobon.globalMangaPath
 import com.tankobon.logger
 import com.tankobon.utils.isValidUUID
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.nio.file.Path
-import java.util.Collections
-import java.util.UUID
+import java.util.*
 import kotlin.system.measureTimeMillis
 
 fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
-    if (trigger?.isNotEmpty() == true) logger.info("Library prepare") else logger.info("Library prepare. Trigger: $trigger")
+    if (trigger?.isNotEmpty() == true) {
+        logger.info("Library prepare")
+    } else {
+        logger.info("Library prepare. Trigger: $trigger")
+    }
 
     val updateList: MutableList<MangaUpdate> = Collections.synchronizedList(mutableListOf<MangaUpdate>())
 
@@ -24,7 +27,7 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
                 globalMangaPath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                     ?.forEach {
                         println("prepareLibrary archiveNavigator ${Thread.currentThread().name}")
-                        withContext(Dispatchers.Default) { fileNavigator(it) }
+                        withContext(Default) { fileNavigator(it) }
                     }
             }
 

@@ -18,13 +18,13 @@ fun Route.userRoute(userService: UserService) {
     authenticate("auth-jwt") {
         get("/users/me") {
             val principal = call.principal<JWTPrincipal>() //TODO \"\" fix
-            call.respond(userService.getUser(principal!!.payload.getClaim("uuid").toString()))
+            call.respond(userService.getUser(principal?.payload?.getClaim("uuid").toString()))
         }
 
         post("/users/create") {
             val newUser = call.receive<CreateUserPayload>()
             val requestUser = userService.getUser(
-                call.principal<JWTPrincipal>()!!.payload.getClaim("uuid").toString()
+                call.principal<JWTPrincipal>()?.payload?.getClaim("uuid").toString()
             )
             if (requestUser.admin) {
                 userService.addUser(newUser.username, newUser.password, newUser.admin)

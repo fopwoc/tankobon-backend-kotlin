@@ -3,7 +3,7 @@ package com.tankobon.manga.filesystem
 import com.tankobon.globalThumbPath
 import com.tankobon.logger
 import com.tankobon.utils.thumbnailGenerator
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -17,7 +17,7 @@ fun prepareVolume(volumePath: File) {
             volumePath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                 ?.forEach {
                     print("prepareVolume archiveNavigator ${Thread.currentThread().name}")
-                    withContext(Dispatchers.Default) { fileNavigator(it) }
+                    withContext(Default) { fileNavigator(it) }
                 }
         }
 
@@ -31,7 +31,7 @@ fun prepareVolume(volumePath: File) {
             volumePath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                 ?.forEach {
                     print("prepareVolume imageNavigator ${it.name} ${Thread.currentThread().name}")
-                    withContext(Dispatchers.Default) { fileNavigator(it) }
+                    withContext(Default) { fileNavigator(it) }
                 }
         }
 
@@ -45,7 +45,7 @@ fun prepareVolume(volumePath: File) {
                     ?.forEachIndexed { i, e ->
                         val path = File("${e.parentFile.path}/$i.${e.extension}")
                         e.renameTo(path)
-                        withContext(Dispatchers.Default) {
+                        withContext(Default) {
                             print("prepareVolume thumbnailGenerator ${Thread.currentThread().name}")
                             thumbnailGenerator(path, newThumb)
                         }

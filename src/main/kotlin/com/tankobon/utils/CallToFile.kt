@@ -9,9 +9,13 @@ fun callToFile(call: ApplicationCall, initialPath: File): File {
     val volume = call.parameters["volume"]
     val page = call.parameters["page"]
 
-    if (isValidUUID(uuid) && Regex("^(\\d*)\$").matches(volume ?: "") && Regex("^(\\d*)\$").matches(page ?: "")) {
+    if (isValidUUID(uuid) && isNumber(volume.orEmpty()) && isNumber(page.orEmpty())) {
         return File("${initialPath.path}/$uuid/$volume/$page.jpg")
     } else {
         throw BadRequestError()
     }
+}
+
+private fun isNumber(string: String): Boolean {
+    return Regex("^(\\d*)\$").matches(string)
 }

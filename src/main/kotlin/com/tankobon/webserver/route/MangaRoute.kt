@@ -42,7 +42,7 @@ fun Route.mangaRoute(mangaService: MangaService, userService: UserService) {
 
         post ("/manga/{uuid}/update") {
             val requestUser = userService.getUser(
-                call.principal<JWTPrincipal>()!!.payload.getClaim("uuid").toString()
+                call.principal<JWTPrincipal>()?.payload?.getClaim("uuid").toString()
             )
             if (requestUser.admin) {
                 val payload = call.receive<MangaUpdatePayload>()
