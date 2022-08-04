@@ -27,7 +27,7 @@ class MangaService {
     suspend fun getMangaList(payload: MangaPayload?): List<Manga> = newSuspendedTransaction(db = database) {
 
         val query = if (!payload?.search.isNullOrBlank()) {
-            MangaModel.select { MangaModel.title like payload!!.search!! }
+            MangaModel.select { MangaModel.title match payload?.search.toString() }
         } else {
             MangaModel.selectAll()
         }
@@ -38,14 +38,16 @@ class MangaService {
 
     suspend fun getManga(id: String): Manga = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction MangaModel
-            .select{MangaModel.id eq (uuidFromString(id) ?: throw ContentNotFoundException())}.firstOrNull()?.toManga()
+            .select {
+                MangaModel.id eq (uuidFromString(id) ?: throw ContentNotFoundException())
+            }.firstOrNull()?.toManga()
             ?: throw ContentNotFoundException()
     }
 
     private suspend fun addMangaList(mangaUpdate: MangaUpdate) = newSuspendedTransaction(db = database) {
         MangaModel.insert {
             it[id] = uuidFromString(mangaUpdate.id) ?: throw InternalServerError()
-            it[title] = mangaUpdate.title ?: ""
+            it[title] = mangaUpdate.title.orEmpty()
             it[description] = ""
             it[cover] = ""
             it[volume] = Json.encodeToString(mangaUpdate.volume)
@@ -62,7 +64,7 @@ class MangaService {
             }
 
         listMangaUpdate.forEach { e ->
-            if (MangaModel.select { MangaModel.id eq uuidFromString(e.id) }.firstOrNull() == null) {
+            if (MangaModel.select { MangaModel.id eq uuidFromString(e.id) }.none()) {
                 addMangaList(e)
             } else {
                 MangaModel.update({ MangaModel.id eq uuidFromString(e.id) }) {

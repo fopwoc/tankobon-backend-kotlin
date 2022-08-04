@@ -1,7 +1,7 @@
 package com.tankobon.manga.filesystem
 
 import com.tankobon.logger
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -15,7 +15,7 @@ fun prepareTitle(titleDir: File): List<Int> {
             titleDir.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                 ?.forEach {
                     print("prepareTitle archiveNavigator ${Thread.currentThread().name}")
-                    withContext(Dispatchers.Default) {
+                    withContext(Default) {
                         fileNavigator(it)
                     }
                 }
@@ -41,5 +41,5 @@ fun prepareTitle(titleDir: File): List<Int> {
             e.listFiles()
                 ?.count { i -> i.isFile && !e.name.contains(".DS_Store") }
                 ?.minus(1) ?: -1
-        }?.toList() ?: listOf()
+        }?.toList().orEmpty()
 }
