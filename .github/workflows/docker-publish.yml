@@ -16,9 +16,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-      - name: DEBUG
-        run: |
-          echo ${{ secrets.DOCKER_USERNAME }}
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
