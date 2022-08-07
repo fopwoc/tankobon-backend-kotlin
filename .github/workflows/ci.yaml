@@ -9,11 +9,12 @@ on:
     paths-ignore:
       - '*.md'
 
-
 jobs:
   build:
     uses: ./.github/workflows/build.yml
   publish:
     needs: build
     uses: ./.github/workflows/docker-publish.yml
-    secrets: inherit
+    secrets:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}

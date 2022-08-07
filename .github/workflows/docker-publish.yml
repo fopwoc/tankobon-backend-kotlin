@@ -2,6 +2,11 @@ name: Docker publish
 
 on:
   workflow_call:
+    secrets:
+      username:
+        required: true
+      password:
+        required: true
 
 env:
   DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
@@ -19,8 +24,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
@@ -49,7 +54,7 @@ jobs:
       - name: Docker Hub description update
         uses: peter-evans/dockerhub-description@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
           repository: ${{ env.DOCKER_HUB }}
           short-description: ${{ github.event.repository.description }}
