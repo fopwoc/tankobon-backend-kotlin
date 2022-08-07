@@ -7,7 +7,7 @@ env:
   DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
 
 jobs:
-  push_to_registries:
+  publish:
     name: Push Docker images
     runs-on: ubuntu-latest
     permissions:
