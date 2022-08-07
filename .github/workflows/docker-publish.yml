@@ -3,9 +3,6 @@ name: Docker publish
 on:
   workflow_call:
 
-env:
-  DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
-
 jobs:
   publish:
     name: Push Docker images
