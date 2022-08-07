@@ -3,11 +3,12 @@ package com.tankobon
 import com.tankobon.database.service.MangaService
 import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
-import com.tankobon.database.service.UtilService
+import com.tankobon.database.service.UtilsService
 import com.tankobon.manga.filesystem.MangaWatcher
 import com.tankobon.webserver.route.authRoute
 import com.tankobon.webserver.route.mangaRoute
 import com.tankobon.webserver.route.userRoute
+import com.tankobon.webserver.route.utilsRoute
 import com.tankobon.webserver.security
 import com.tankobon.webserver.statusPages
 import io.ktor.serialization.kotlinx.json.json
@@ -27,11 +28,13 @@ import java.io.File
 val globalAddress = System.getenv("tkbn_address") ?: "localhost"
 val globalPort = Integer.parseInt(System.getenv("tkbn_port") ?: "8080")
 
+val globalMangaPath = File(System.getenv("tkbn_manga_path") ?: "manga")
+val globalThumbPath = File(System.getenv("tkbn_thumb_path") ?: "data/thumb")
+
+val globalInstanceName = System.getenv("tkbn_instance_name") ?: "Tankobon"
+val globalInstanceDescription = System.getenv("tkbn_instance_description") ?: "Tankobon instance with some cool manga"
+
 val globalIssuer = "http://$globalAddress:$globalPort/"
-
-val globalMangaPath = File("manga")
-val globalThumbPath = File("data/thumb")
-
 val logger: Logger = LoggerFactory.getLogger("tankobon")
 
 @DelicateCoroutinesApi
@@ -40,7 +43,7 @@ fun main() {
 
     val userService = UserService()
     val mangaService = MangaService()
-    val utilService = UtilService()
+    val utilsService = UtilsService()
     val tokenService = TokenService()
 
     MangaWatcher(mangaService).watchFolder()
@@ -51,7 +54,7 @@ fun main() {
         host = globalAddress,
         port = globalPort
     ) {
-        security(utilService)
+        security(utilsService)
 
         install(CallLogging) {
             level = Level.INFO
@@ -66,9 +69,10 @@ fun main() {
         }
 
         install(Routing) {
-            authRoute(userService, utilService, tokenService)
+            authRoute(userService, utilsService, tokenService)
             userRoute(userService)
             mangaRoute(mangaService, userService)
+            utilsRoute(utilsService, userService)
         }
     }.start(wait = true)
 }

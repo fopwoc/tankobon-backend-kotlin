@@ -9,6 +9,8 @@ object UtilsModel : Table(name = "UTILS") {
     val public = varchar("public", 512)
     val private = varchar("private", 2048)
     var creationDate = long("creationDate")
+    var instanceName = text("instanceName")
+    var instanceDescription = text("instanceDescription")
 }
 
 data class Utils(
@@ -18,9 +20,28 @@ data class Utils(
     val creationDate: Long
 )
 
+@Serializable
+data class UtilsAbout(
+    val instanceName: String,
+    val instanceDescription: String,
+    val creationDate: Long
+)
+
+@Serializable
+data class UtilsAboutUpdatePayload(
+    val instanceName: String,
+    val instanceDescription: String,
+)
+
 fun ResultRow.toUtils() = Utils(
     instanceId = this[UtilsModel.instanceId],
     public = this[UtilsModel.public],
     private = this[UtilsModel.private],
+    creationDate = this[UtilsModel.creationDate]
+)
+
+fun ResultRow.toAbout() = UtilsAbout(
+    instanceName = this[UtilsModel.instanceName],
+    instanceDescription = this[UtilsModel.instanceDescription],
     creationDate = this[UtilsModel.creationDate]
 )

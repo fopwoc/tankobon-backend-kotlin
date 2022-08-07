@@ -50,7 +50,7 @@ class TokenService {
                     }
                 }
             }
-            return@runBlocking TokenPair(UtilService().getInstanceId(), access, refresh)
+            return@runBlocking TokenPair(UtilsService().getInstanceId(), access, refresh)
         }
     }
 
