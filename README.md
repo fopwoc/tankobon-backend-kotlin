@@ -1,8 +1,18 @@
-Tankobon-backend-kotlin
-======================
-[![Build](https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AcetylsalicylicAcid/tankobon-backend-kotlin/master/.github/assets/logo.svg" height="128">
+  <h1 align="center">Tankōbon-backend-kotlin</h1>
+</p>
 
-Backend for Tankōbon - a Flutter manga reader app. WIP.
+<p align="center">
+  <a href="https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml">
+    <img src="https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml/badge.svg">
+  </a>
+  <a href="https://detekt.dev">
+    <img src="https://img.shields.io/badge/Analyzer-detekt-ae4c98">
+  </a>
+</p>
+
+Backend for Tankōbon - a Flutter manga reader app. __Early prototype, WIP__.
 
 Kotlin REST backend build on top of Ktor+Exposed+Hikari. It serves your local manga library via HTTP, also has users privilege system, manga library management system and some more. Designed for [Tankōbon flutter client](https://github.com/AcetylsalicylicAcid/tankobon-flutter) with some <3;
 
