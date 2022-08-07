@@ -4,6 +4,8 @@ import com.tankobon.database.model.MangaModel
 import com.tankobon.database.model.RefreshTokenModel
 import com.tankobon.database.model.UserModel
 import com.tankobon.database.model.UtilsModel
+import com.tankobon.globalInstanceDescription
+import com.tankobon.globalInstanceName
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
@@ -52,6 +54,8 @@ object DatabaseFactory {
                     it[public] = encoder.encodeToString(kp.public.encoded)
                     it[private] = encoder.encodeToString(kp.private.encoded)
                     it[creationDate] = System.currentTimeMillis()
+                    it[instanceName] = globalInstanceName
+                    it[instanceDescription] = globalInstanceDescription
                 }
             }
 
