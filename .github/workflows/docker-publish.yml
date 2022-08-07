@@ -2,11 +2,6 @@ name: Docker publish
 
 on:
   workflow_call:
-    secrets:
-      DOCKER_USERNAME:
-        required: true
-      DOCKER_PASSWORD:
-        required: true
 
 env:
   DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
