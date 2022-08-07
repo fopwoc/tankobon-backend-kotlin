@@ -4,8 +4,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml">
-    <img src="https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/docker-publish.yml/badge.svg">
+  <a href="https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/ci.yaml">
+    <img src="https://github.com/AcetylsalicylicAcid/tankobon-backend-kotlin/actions/workflows/ci.yaml/badge.svg">
   </a>
   <a href="https://detekt.dev">
     <img src="https://img.shields.io/badge/Analyzer-detekt-ae4c98">
@@ -46,6 +46,10 @@ Or you can use docker-compose:
         - tkbn_password='password' //optional
         - tkbn_address='0.0.0.0' //optional
         - tkbn_port='8080' //optional
+        - tkbn_manga_path='manga' //optional
+        - tkbn_thumb_path='data/thumb' //optional
+        - tkbn_instance_name='Tankobon' //optional
+        - tkbn_instance_description='Tankobon instance with some cool manga' //optional
       ports:
         - "8080:8080"
 ```
