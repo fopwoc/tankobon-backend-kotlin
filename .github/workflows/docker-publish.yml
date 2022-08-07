@@ -3,6 +3,9 @@ name: Docker publish
 on:
   workflow_call:
 
+env:
+  DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
+
 jobs:
   publish:
     name: Push Docker images
@@ -13,6 +16,9 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+      - name: DEBUG
+        run: |
+          echo ${{ secrets.DOCKER_USERNAME }}
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
