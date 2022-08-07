@@ -9,6 +9,9 @@ on:
     paths-ignore:
       - '*.md'
 
+env:
+  DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
+
 jobs:
   build:
     uses: ./.github/workflows/build.yml
