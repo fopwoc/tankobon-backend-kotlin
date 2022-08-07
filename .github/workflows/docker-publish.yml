@@ -1,22 +1,14 @@
-name: Build
+name: Docker publish
 
 on:
-  push:
-    branches:
-      - 'master'
-    tags:
-      - '*'
+  workflow_call:
 
 env:
   DOCKER_HUB: acetylsalicylicacid/${{ github.event.repository.name }}
 
 jobs:
-  build:
-    name: Build
-    uses: ./.github/workflows/build.yml
   push_to_registries:
     name: Push Docker images
-    needs: build
     runs-on: ubuntu-latest
     permissions:
       packages: write

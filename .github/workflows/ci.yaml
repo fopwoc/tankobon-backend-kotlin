@@ -1,0 +1,17 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - '*'
+    paths-ignore:
+      - '*.md'
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+  push_to_registries:
+    needs: build
+    uses: ./.github/workflows/docker-publish.yml
