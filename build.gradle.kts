@@ -1,3 +1,8 @@
+tasks.wrapper {
+    gradleVersion = "7.5.1"
+    distributionType = Wrapper.DistributionType.ALL
+}
+
 group = "com.tankobon"
 version = "0.0.1"
 description = "Server for Tankōbon - a flutter manga reader app. WIP."
