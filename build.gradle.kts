@@ -31,7 +31,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.1.0")
     implementation("io.ktor:ktor-server-status-pages:2.1.0")
     implementation("io.ktor:ktor-server-call-logging:2.1.0")
-    implementation("io.ktor:ktor-server-content-negotiation:2.0.3")
+    implementation("io.ktor:ktor-server-content-negotiation:2.1.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.1.0")
     implementation("org.mindrot:jbcrypt:0.4")
 
