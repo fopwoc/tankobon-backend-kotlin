@@ -47,7 +47,7 @@ dependencies {
     implementation("com.github.junrar:junrar:7.5.3")
     implementation("net.lingala.zip4j:zip4j:2.11.1")
 
-    implementation("com.sksamuel.scrimage:scrimage-core:4.0.31")
+    implementation("com.sksamuel.scrimage:scrimage-core:4.0.32")
 
     implementation("ch.qos.logback:logback-classic:1.4.0")
 
