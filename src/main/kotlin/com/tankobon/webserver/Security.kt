@@ -24,6 +24,9 @@ fun Application.security(utilsService: UtilsService) {
                     null
                 }
             }
+            challenge { _, _ ->
+                throw TokenInvalidException()
+            }
         }
     }
 }

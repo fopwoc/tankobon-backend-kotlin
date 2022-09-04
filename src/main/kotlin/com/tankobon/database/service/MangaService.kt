@@ -9,8 +9,8 @@ import com.tankobon.database.model.MangaUpdatePayload
 import com.tankobon.database.model.toManga
 import com.tankobon.globalThumbPath
 import com.tankobon.utils.uuidFromString
-import com.tankobon.webserver.ContentNotFoundException
 import com.tankobon.webserver.InternalServerError
+import io.ktor.server.plugins.NotFoundException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.deleteWhere
@@ -39,9 +39,9 @@ class MangaService {
     suspend fun getManga(id: String): Manga = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction MangaModel
             .select {
-                MangaModel.id eq (uuidFromString(id) ?: throw ContentNotFoundException())
+                MangaModel.id eq (uuidFromString(id) ?: throw NotFoundException())
             }.firstOrNull()?.toManga()
-            ?: throw ContentNotFoundException()
+            ?: throw NotFoundException()
     }
 
     private suspend fun addMangaList(mangaUpdate: MangaUpdate) = newSuspendedTransaction(db = database) {
