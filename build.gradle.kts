@@ -1,6 +1,6 @@
 tasks.wrapper {
     gradleVersion = "7.5.1"
-    distributionType = Wrapper.DistributionType.ALL
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 group = "com.tankobon"
