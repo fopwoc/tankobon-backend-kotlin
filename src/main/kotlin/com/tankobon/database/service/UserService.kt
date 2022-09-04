@@ -7,7 +7,7 @@ import com.tankobon.database.model.UserModel
 import com.tankobon.database.model.toUser
 import com.tankobon.database.model.toUserHash
 import com.tankobon.utils.uuidFromString
-import com.tankobon.webserver.AuthenticationException
+import com.tankobon.webserver.CredentialsException
 import com.tankobon.webserver.InternalServerError
 import com.tankobon.webserver.UserExistException
 import org.jetbrains.exposed.sql.andWhere
@@ -44,12 +44,12 @@ class UserService {
     suspend fun authUser(username: String, password: String): String {
         return newSuspendedTransaction(db = database) {
             val userHash: UserHash = UserModel.select { UserModel.username eq username }
-                .map { it.toUserHash() }.firstOrNull() ?: throw AuthenticationException()
+                .map { it.toUserHash() }.firstOrNull() ?: throw CredentialsException()
 
             if (BCrypt.checkpw(password, userHash.password)) {
                 return@newSuspendedTransaction userHash.id
             }
-            throw AuthenticationException()
+            throw CredentialsException()
         }
     }
 }

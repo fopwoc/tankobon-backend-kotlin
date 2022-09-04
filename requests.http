@@ -18,7 +18,7 @@ client.global.set("refresh_token", response.body.refreshToken);
 
 
 ### test token
-GET http://localhost:8080/me
+GET http://localhost:8080/users/me
 Authorization: Bearer {{access_token}}
 
 
