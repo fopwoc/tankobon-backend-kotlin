@@ -7,25 +7,23 @@ import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.server.response.respond
 
 fun StatusPagesConfig.statusPages() {
-    exception<InternalServerError> { call, trace ->
-            call.respond(
-            HttpStatusCode.InternalServerError,
-            ExceptionResponse(
-                type = "unknown",
-                message = "${trace.message}",
-            ),
-        )
-    }
-
     exception<BadRequestError> { call, _ ->
         call.respond(HttpStatusCode.BadRequest)
     }
 
     exception<AuthenticationException> { call, _ ->
+        call.respond(HttpStatusCode.Unauthorized)
+    }
+
+    exception<NotFoundException> { call, _ ->
+        call.respond(HttpStatusCode.NotFound)
+    }
+
+    exception<CredentialsException> { call, _ ->
         call.respond(
-            HttpStatusCode.Unauthorized,
+            HttpStatusCode.Forbidden,
             ExceptionResponse(
-                type = "unauthorized",
+                type = "wrong_credentials",
                 message = null,
             ),
         )
@@ -33,33 +31,10 @@ fun StatusPagesConfig.statusPages() {
 
     exception<AdminAuthenticationException> { call, _ ->
         call.respond(
-            HttpStatusCode.Unauthorized,
+            HttpStatusCode.Forbidden,
             ExceptionResponse(
                 type = "not_admin",
                 message = null,
-                //message = "no admin privileges",
-            ),
-        )
-    }
-
-    exception<CredentialsException> { call, _ ->
-        call.respond(
-            HttpStatusCode.Unauthorized,
-            ExceptionResponse(
-                type = "wrong_credentials",
-                message = null,
-                //message = "no admin privileges",
-            ),
-        )
-    }
-
-    exception<TokenInvalidException> { call, _ ->
-        call.respond(
-            HttpStatusCode.Unauthorized,
-            ExceptionResponse(
-                type = "token_invalid",
-                message = null,
-                //message = "no admin privileges",
             ),
         )
     }
@@ -70,13 +45,17 @@ fun StatusPagesConfig.statusPages() {
             ExceptionResponse(
                 type = "user_exist",
                 message = null,
-                //message = "this username already exist",
             ),
         )
     }
 
-    exception<NotFoundException> { call, _ ->
-        call.respond(HttpStatusCode.NotFound)
+    exception<InternalServerError> { call, trace ->
+        call.respond(
+            HttpStatusCode.InternalServerError,
+            ExceptionResponse(
+                type = "unknown",
+                message = "${trace.message}",
+            ),
+        )
     }
-
 }
