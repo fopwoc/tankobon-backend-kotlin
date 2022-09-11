@@ -6,7 +6,7 @@ import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
 import com.tankobon.database.service.UtilsService
 import com.tankobon.utils.isValidUUID
-import com.tankobon.webserver.AuthenticationException
+import com.tankobon.webserver.CredentialsException
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
@@ -22,7 +22,7 @@ fun Route.authRoute(userService: UserService, utilsService: UtilsService, tokenS
             val token = tokenService.getTokenPair(uuid, utilsService.getPrivateKey())
             call.respond(token)
         } else {
-            throw AuthenticationException()
+            throw CredentialsException()
         }
     }
 
@@ -36,7 +36,7 @@ fun Route.authRoute(userService: UserService, utilsService: UtilsService, tokenS
             call.respond(token)
         } else {
             tokenService.deleteRefreshData(currentRefreshToken)
-            throw AuthenticationException()
+            throw CredentialsException()
         }
     }
 }

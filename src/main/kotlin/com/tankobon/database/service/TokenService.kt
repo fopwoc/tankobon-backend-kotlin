@@ -11,7 +11,7 @@ import com.tankobon.globalIssuer
 import com.tankobon.utils.msOffsetDays
 import com.tankobon.utils.sha256
 import com.tankobon.utils.toHex
-import com.tankobon.webserver.AuthenticationException
+import com.tankobon.webserver.CredentialsException
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -62,7 +62,7 @@ class TokenService {
                     .mapNotNull { it.toRefreshTokenData() }.singleOrNull()
                 )
 
-            return@transaction newRefreshToken ?: throw AuthenticationException()
+            return@transaction newRefreshToken ?: throw CredentialsException()
         }
     }
 

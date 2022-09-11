@@ -25,7 +25,7 @@ fun Application.security(utilsService: UtilsService) {
                 }
             }
             challenge { _, _ ->
-                throw TokenInvalidException()
+                throw AuthenticationException()
             }
         }
     }
