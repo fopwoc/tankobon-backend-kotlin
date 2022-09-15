@@ -49,7 +49,7 @@ dependencies {
 
     implementation("com.sksamuel.scrimage:scrimage-core:4.0.32")
 
-    implementation("ch.qos.logback:logback-classic:1.4.0")
+    implementation("ch.qos.logback:logback-classic:1.4.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.10")
 }
