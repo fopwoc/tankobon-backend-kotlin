@@ -15,6 +15,7 @@ import com.tankobon.webserver.CredentialsException
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
