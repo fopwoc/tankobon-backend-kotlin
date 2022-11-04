@@ -13,6 +13,7 @@ import com.tankobon.webserver.InternalServerError
 import io.ktor.server.plugins.NotFoundException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -58,9 +59,9 @@ class MangaService {
         val currentList = MangaModel.selectAll().map { it.toManga() }
 
         currentList.filter { e -> listMangaUpdate.none { it.id == e.id } }
-            .forEach {
-                MangaModel.deleteWhere { MangaModel.id eq uuidFromString(it.id) }
-                File("${globalThumbPath.path}/${it.id}").deleteRecursively()
+            .forEach { v ->
+                MangaModel.deleteWhere { MangaModel.id eq uuidFromString(v.id) }
+                File("${globalThumbPath.path}/${v.id}").deleteRecursively()
             }
 
         listMangaUpdate.forEach { e ->
