@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  tankobon-server:
+    build:
+      context: ./
+    volumes:
+      - ./test/manga:/opt/app/manga
+      - ./test/data:/opt/app/data
+    environment:
+      - tkbn_username=username
+      - tkbn_password=password
+      - tkbn_address=0.0.0.0 #optional
+      - tkbn_port=8080 #optional
+      - tkbn_manga_path=manga #optional
+      - tkbn_thumb_path=data/thumb #optional
+      - tkbn_instance_name="Tankobon test" #optional
+      - tkbn_instance_description="Tankobon instance with some cool manga"
+    ports:
+      - "8080:8080"
