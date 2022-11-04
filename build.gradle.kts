@@ -51,7 +51,7 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:1.4.4")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.10")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.20")
 }
 
 val outputDir = "${project.buildDir}/reports/ktlint/"
