@@ -44,8 +44,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
-    implementation("com.github.junrar:junrar:7.5.3")
-    implementation("net.lingala.zip4j:zip4j:2.11.2")
+    implementation("com.lordcodes.turtle:turtle:0.8.0")
 
     implementation("com.sksamuel.scrimage:scrimage-core:4.0.32")
 
