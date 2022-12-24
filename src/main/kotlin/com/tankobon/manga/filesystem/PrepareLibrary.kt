@@ -2,21 +2,18 @@ package com.tankobon.manga.filesystem
 
 import com.tankobon.database.model.MangaUpdate
 import com.tankobon.globalMangaPath
-import com.tankobon.logger
 import com.tankobon.utils.isValidUUID
-import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.nio.file.Path
 import java.util.*
 import kotlin.system.measureTimeMillis
 
 fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
     if (trigger?.isNotEmpty() == true) {
-        logger.info("Library prepare")
+        //logger.info("Library prepare")
     } else {
-        logger.info("Library prepare. Trigger: $trigger")
+        //logger.info("Library prepare. Trigger: $trigger")
     }
 
     val updateList: MutableList<MangaUpdate> = Collections.synchronizedList(mutableListOf<MangaUpdate>())
@@ -27,7 +24,7 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
                 globalMangaPath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                     ?.forEach {
                         println("prepareLibrary archiveNavigator ${Thread.currentThread().name}")
-                        withContext(Default) { fileNavigator(it) }
+                        //withContext(Default) { fileNavigator(it) }
                     }
             }
 
@@ -55,7 +52,7 @@ fun prepareLibrary(trigger: String? = null): List<MangaUpdate> {
         }
     }
 
-    logger.info("Library preparation successfully completed. Time elapsed: ${elapsed / 1000} seconds")
-    logger.info("List: $updateList")
+    //logger.info("Library preparation successfully completed. Time elapsed: ${elapsed / 1000} seconds")
+    //logger.info("List: $updateList")
     return updateList
 }

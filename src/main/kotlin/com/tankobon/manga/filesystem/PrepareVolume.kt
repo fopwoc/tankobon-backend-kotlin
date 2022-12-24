@@ -1,7 +1,7 @@
 package com.tankobon.manga.filesystem
 
 import com.tankobon.globalThumbPath
-import com.tankobon.logger
+//import com.tankobon.logger
 import com.tankobon.utils.thumbnailGenerator
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.coroutineScope
@@ -10,14 +10,14 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 fun prepareVolume(volumePath: File) {
-    logger.info("Volume preparation: ${volumePath.path}")
+    //logger.info("Volume preparation: ${volumePath.path}")
 
     runBlocking {
         coroutineScope {
             volumePath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                 ?.forEach {
                     print("prepareVolume archiveNavigator ${Thread.currentThread().name}")
-                    withContext(Default) { fileNavigator(it) }
+                    //withContext(Default) { fileNavigator(it) }
                 }
         }
 
@@ -31,7 +31,7 @@ fun prepareVolume(volumePath: File) {
             volumePath.listFiles()?.filter { it.isFile && !it.name.contains(".DS_Store") }
                 ?.forEach {
                     print("prepareVolume imageNavigator ${it.name} ${Thread.currentThread().name}")
-                    withContext(Default) { fileNavigator(it) }
+                    //withContext(Default) { fileNavigator(it) }
                 }
         }
 

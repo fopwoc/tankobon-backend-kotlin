@@ -3,7 +3,6 @@ package com.tankobon.manga.filesystem
 import com.tankobon.database.service.MangaService
 import com.tankobon.globalMangaPath
 import com.tankobon.globalThumbPath
-import com.tankobon.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers.IO
@@ -24,14 +23,14 @@ class MangaWatcher(private val mangaService: MangaService) {
         globalThumbPath.mkdirs()
 
         runBlocking {
-            logger.info("Library preparation")
+            //logger.info("Library preparation")
             mangaService.updateMangaList(
                 prepareLibrary()
             )
 
             GlobalScope.launch {
                 try {
-                    logger.info("Watching directory for changes")
+                    //logger.info("Watching directory for changes")
                     val watchKey = withContext(IO) {
                         Path.of(globalMangaPath.path)
                             .register(
@@ -57,7 +56,7 @@ class MangaWatcher(private val mangaService: MangaService) {
                         }
                     }
                 } catch (e: Exception) {
-                    logger.error(e.stackTraceToString())
+                    //logger.error(e.stackTraceToString())
                 }
             }
         }
