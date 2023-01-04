@@ -27,7 +27,7 @@ dependencies {
     implementation("io.ktor:ktor-server-host-common-jvm:2.1.3")
     implementation("io.ktor:ktor-server-netty-jvm:2.1.3")
     implementation("io.ktor:ktor-server-auth-jvm:2.1.3")
-    implementation("io.ktor:ktor-server-auth-jwt-jvm:2.1.3")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm:2.2.2")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:2.1.3")
     implementation("io.ktor:ktor-server-status-pages:2.1.3")
     implementation("io.ktor:ktor-server-call-logging:2.1.3")
