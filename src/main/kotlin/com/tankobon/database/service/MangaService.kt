@@ -55,6 +55,7 @@ class MangaService {
         }
     }
 
+    @Deprecated("TODO - rework from list to single")
     suspend fun updateMangaList(listMangaUpdate: List<MangaUpdate>) = newSuspendedTransaction(db = database) {
         val currentList = MangaModel.selectAll().map { it.toManga() }
 

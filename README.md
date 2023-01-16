@@ -82,3 +82,5 @@ Default username and password is `username` `password`, but can be changed with 
 ## Reason why does this project exist
 
 Since I'm kinda wierd combo of FOSS enthusiast and maniac Apple ecosystem user, I want to read manga using my phone, and I don't have any kind of cool open source manga readers like [Tachiyomi](https://github.com/tachiyomiorg/tachiyomi), so... one beautiful day I decided to build for myself some sort of Plex-like thing but for manga. This project is a challenge to myself to create good-looking from code and ui perspective, well working and maintainable client-server open source application and will provide me able to read manga like I want. Feel free to fork and do whatever you want with this code. As I said before in usage section - have fun!
+
+```brew install rar p7zip```
