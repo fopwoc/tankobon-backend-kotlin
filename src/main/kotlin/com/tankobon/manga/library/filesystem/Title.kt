@@ -1,34 +1,72 @@
 package com.tankobon.manga.library.filesystem
 
-import com.tankobon.manga.library.ProcessingType
+import com.tankobon.manga.library.FileProcessingType
+import com.tankobon.manga.library.Task
 import com.tankobon.manga.library.fileProcessing
+import com.tankobon.utils.isValidUUID
 import com.tankobon.utils.logger
 import java.io.File
+import java.nio.file.Path
 
-fun title(file: File) {
+fun title(task: Task): List<List<String>> {
     val log = logger("fs-title")
 
-    var newFile = file
+    var file = task.file
+    log.trace("current work is ${file.name} ${file.path}")
 
-    if (newFile.isFile) {
-        log.debug("${newFile.name} is file")
-        val archiveFile = fileProcessing(newFile, type = ProcessingType.ARCHIVE, increaseHierarchy = true)
-        if (archiveFile != null) newFile = archiveFile
+    if (file.isFile && !file.name.contains(".DS_Store")) {
+        log.debug("${file.name} is file")
+
+        val archiveFile = fileProcessing(file, type = FileProcessingType.ARCHIVE, increaseHierarchy = true)
+        log.trace("archive folder is ${archiveFile?.name}")
+        if (archiveFile != null) file = archiveFile.parentFile
     }
 
-    if (newFile.isDirectory) {
-        log.debug("${newFile.name} is dir")
-        log.trace("${newFile.listFiles()?.map {it.name}}")
+    if (file.isDirectory) {
+        log.debug("${file.name} ${file.path}  is dir")
+        log.trace("${file.listFiles()?.map {it.name}}")
 
-        newFile.listFiles()?.map {
-            if (it.isDirectory) volume(it)
+        if (!isValidUUID(file.name)) {
+            val path = Path.of("${file.parentFile}/${task.uuid}").toFile()
+            file.renameTo(path)
+            file = path
+        }
+
+        file.listFiles()?.forEach { e ->
+            if (e.isFile && !e.name.contains(".DS_Store")) {
+                log.debug("${e.name} is file")
+
+                val newDir = fileProcessing(e, type = FileProcessingType.ARCHIVE)
+                if (newDir != null) {
+                    newDir.listFiles()?.filter { it.isDirectory }?.forEach {
+                        fileLevelRecursion(it, newDir.absolutePath)
+                    }
+                }
+            }
+
+            if (e.isDirectory) {
+                log.debug("${e.name} is directory")
+
+                e.listFiles()?.forEach {
+                    fileLevelRecursion(it, e.absolutePath)
+                }
+            }
         }
     }
 
-
-
     log.debug("work for $file ends")
+    return file.listFiles()
+        ?.filter { it.isDirectory }
+        ?.sorted()
+        ?.mapIndexed { i, e ->
+            volume(
+                if (!Regex("^\\d*\$").matches(e.name)) {
+                    val path = File("${e.parentFile.path}/${"%04d".format(i)}")
+                    e.renameTo(path)
+                    path
+                } else {
+                    e
+                }
+            )
+        } ?: listOf()
 }
-
-
-export FILTER_BRANCH_SQUELCH_WARNING=1 && git config alias.change-commits '!'"f() { VAR=\$1; OLD=\$2; NEW=\$3; shift 3; git filter-branch --env-filter \"if [[ \\\"\$\`echo \$VAR\`\\\" = '\$OLD' ]]; then export \$VAR='\$NEW'; fi\" \$@; }; f " && git change-commits GIT_COMMITTER_EMAIL aspirin@govno.tech ilya.dobryakov@icloud.com -f && git change-commits GIT_AUTHOR_EMAIL aspirin@govno.tech ilya.dobryakov@icloud.com -f

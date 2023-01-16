@@ -21,6 +21,19 @@ import java.nio.file.WatchKey
 import java.nio.file.WatchService
 import java.nio.file.attribute.BasicFileAttributes
 
+data class KWatchEvent(
+    val file: File,
+    val kind: Kind,
+    val tag: Any?
+) {
+    enum class Kind(val kind: String) {
+        Initialized("initialized"),
+        Created("created"),
+        Modified("modified"),
+        Deleted("deleted")
+    }
+}
+
 fun File.asWatchChannel(
     mode: KWatchChannel.Mode? = null,
     tag: Any? = null,
@@ -138,17 +151,5 @@ class KWatchChannel(
         SingleFile,
         SingleDirectory,
         Recursive
-    }
-}
-data class KWatchEvent(
-    val file: File,
-    val kind: Kind,
-    val tag: Any?
-) {
-    enum class Kind(val kind: String) {
-        Initialized("initialized"),
-        Created("created"),
-        Modified("modified"),
-        Deleted("deleted")
     }
 }

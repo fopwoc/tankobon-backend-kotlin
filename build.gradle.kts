@@ -1,5 +1,5 @@
 tasks.wrapper {
-    gradleVersion = "7.5.1"
+    gradleVersion = "7.6"
     distributionType = Wrapper.DistributionType.BIN
 }
 
@@ -12,10 +12,10 @@ application {
 
 plugins {
     application
-    kotlin("jvm") version "1.7.21"
-    kotlin("plugin.serialization") version "1.7.21"
+    kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.gitlab.arturbosch.detekt") version "1.21.0"
+    id("io.gitlab.arturbosch.detekt") version "1.22.0"
 }
 
 repositories {
@@ -55,6 +55,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.20")
+
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.22.0")
 }
 
 val outputDir = "${project.buildDir}/reports/ktlint/"

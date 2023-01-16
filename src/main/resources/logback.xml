@@ -4,7 +4,7 @@
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger -%kvp- %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="trace">
+    <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
 <!--    <appender name="FILE" class="ch.qos.logback.core.FileAppender">-->

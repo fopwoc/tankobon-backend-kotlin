@@ -2,9 +2,9 @@ package com.tankobon
 
 import com.tankobon.manga.library.Library
 import com.tankobon.utils.logger
+import java.io.File
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import java.io.File
 
 val globalAddress = System.getenv("tkbn_address") ?: "localhost"
 val globalPort = Integer.parseInt(System.getenv("tkbn_port") ?: "8080")
@@ -17,7 +17,6 @@ val globalInstanceDescription = System.getenv("tkbn_instance_description") ?: "T
 
 val globalIssuer = "http://$globalAddress:$globalPort/"
 
-
 @DelicateCoroutinesApi
 fun main() {
     val log = logger("main")
@@ -25,24 +24,7 @@ fun main() {
 
     runBlocking { Library().watchLibrary() }
 
-//    Thread.sleep(5_000)
-//
-//    println("unrar")
-//    val rarTime = measureTimeMillis {
-//        File("./manga/testrar").mkdir()
-//        shellRun("unrar", listOf("-inul", "-o+", "x", "./manga/test.rar", "./manga/testrar"))
-//    }
-//    println("rar time: ${rarTime/1000}")
-//
-//
-//    println("unzip")
-//    val zipTime = measureTimeMillis {
-//        File("./manga/testcbz").mkdir()
-//        shellRun("7z", listOf("-aoa", "x", "./manga/test.cbz", "-o${"./manga/testcbz"}"))
-//    }
-//    println("zip time: ${zipTime/1000}")
-
-    Thread.sleep(1000_000)
+    Thread.sleep(1_000_000_000)
 
 //    val userService = UserService()
 //    val mangaService = MangaService()

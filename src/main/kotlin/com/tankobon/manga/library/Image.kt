@@ -20,6 +20,9 @@ fun imageConverter(file: File) {
 }
 
 fun thumbnailGenerator(originalPath: File, thumbnailPath: File) {
+    val log = logger("fs-thumbnail")
+    log.trace("${originalPath.path} ${thumbnailPath.path}")
+
     ImmutableImage.loader()
         .fromFile(originalPath)
         .scaleToHeight(340)

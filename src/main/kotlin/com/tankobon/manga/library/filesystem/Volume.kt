@@ -1,35 +1,54 @@
 package com.tankobon.manga.library.filesystem
 
-import com.tankobon.manga.filesystem.fileLevelRecursion
-import com.tankobon.manga.library.ProcessingType
+import com.tankobon.globalThumbPath
+import com.tankobon.manga.library.FileProcessingType
 import com.tankobon.manga.library.fileProcessing
 import com.tankobon.utils.logger
+import com.tankobon.utils.md5
+import com.tankobon.utils.thumbnailGenerator
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-fun volume(file: File) {
+fun volume(file: File): List<String> {
     val log = logger("fs-volume")
+    log.trace("current work is ${file.name} ${file.path}")
 
-    if (file.isFile) {
-        log.debug("${file.name} is file")
-        val newDir = fileProcessing(file, type = ProcessingType.ARCHIVE)
-        if (newDir != null) fileLevelRecursion(newDir, newDir.parentFile.absolutePath)
-    } else {
-        fileLevelRecursion(file, file.parentFile.absolutePath)
+    runBlocking {
+        file.listFiles()
+            ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+            ?.forEach { e ->
+                launch(Dispatchers.Default) {
+                    fileProcessing(e, type = FileProcessingType.IMAGES)
+                }
+            }
     }
 
-//    val newThumb = File("${globalThumbPath.path}/${file.name}")
-//    newThumb.mkdirs()
-//
-//    if (newThumb.listFiles().isNullOrEmpty()) {
-//
-//    }
+    file.listFiles()
+        ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+        ?.sorted()
+        ?.forEachIndexed { i, e ->
+            val path = File("${e.parentFile.path}/${"%05d".format(i)}.${e.extension}")
+            log.trace("rename ${e.name} to ${path.path}")
+            e.renameTo(path)
+        }
 
-    file.listFiles()?.map { log.trace("NAMES ${it.name}") }
+    val newThumb = File("${globalThumbPath.path}/${file.parentFile.name}/${file.name}")
+    newThumb.mkdirs()
 
-//    file.listFiles()?.filter { it.isFile && !it.name.equals(".DS_Store") }?.sortedBy { it.name.toString() }?.forEachIndexed { i, e ->
-//        val path = File("${e.parentFile.path}/$i.${e.extension}")
-//        log.debug("file rename path is ${path.absolutePath}")
-//        e.renameTo(path)
-//        //thumbnailGenerator(path, newThumb)
-//    }
+    runBlocking {
+        file.listFiles()
+            ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+            ?.forEach {
+                launch(Dispatchers.Default) {
+                    thumbnailGenerator(it, newThumb)
+                }
+            }
+    }
+
+    return file.listFiles()
+        ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+        ?.sorted()
+        ?.map { md5(it) } ?: listOf()
 }

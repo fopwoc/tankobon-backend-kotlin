@@ -1,11 +1,19 @@
-package com.tankobon.manga.filesystem
+package com.tankobon.manga.library.filesystem
 
+import com.tankobon.utils.logger
 import java.io.File
 
-fun fileLevelRecursion(file: File, origin: String) {
+fun fileLevelRecursion(file: File, origin: String, isEnterLevel: Boolean = true) {
+    val log = logger("fs-file-recursion")
+
+    if (isEnterLevel) {
+        log.trace("file is ${file.name} ${file.path}")
+        log.trace("origin is $origin")
+    }
+
     file.listFiles()?.forEach { e ->
         if (e.isDirectory) {
-            fileLevelRecursion(e, origin)
+            fileLevelRecursion(e, origin, false)
             e.delete()
         }
         if (e.isFile && !e.name.contains(".DS_Store")) {
@@ -13,4 +21,5 @@ fun fileLevelRecursion(file: File, origin: String) {
             e.delete()
         }
     }
+    if (file.isDirectory) file.delete()
 }
