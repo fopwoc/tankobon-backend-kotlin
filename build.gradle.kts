@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm:2.1.3")
+    implementation("io.ktor:ktor-server-core-jvm:2.2.3")
     implementation("io.ktor:ktor-server-host-common-jvm:2.1.3")
     implementation("io.ktor:ktor-server-netty-jvm:2.1.3")
     implementation("io.ktor:ktor-server-auth-jvm:2.1.3")
