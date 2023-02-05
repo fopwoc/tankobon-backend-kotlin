@@ -6,8 +6,8 @@ import org.jetbrains.exposed.sql.Table
 
 object UtilsModel : Table(name = "UTILS") {
     val instanceId = varchar("uuid", 36)
-    val public = varchar("public", 512)
-    val private = varchar("private", 2048)
+    val public = varchar("public", 1024)
+    val private = varchar("private", 4096)
     var creationDate = long("creationDate")
     var instanceName = text("instanceName")
     var instanceDescription = text("instanceDescription")

@@ -1,11 +1,14 @@
 package com.tankobon.manga.library
 
+import com.tankobon.database.model.MangaUpdate
 import com.tankobon.manga.library.filesystem.title
+import com.tankobon.mangaService
 import com.tankobon.utils.injectLogger
 import java.io.File
 import java.util.UUID
 import kotlin.system.measureTimeMillis
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 enum class TaskState { WAITING, ONGOING, DONE, }
 data class Task(
@@ -73,6 +76,17 @@ class TaskQueue {
             val result = title(task)
             log.debug("result for ${task.uuid} is ${result.map { it.size }}")
             log.trace("trace result for ${task.uuid} is $result")
+            runBlocking {
+                mangaService.updateMangaList(
+                    listOf(
+                        MangaUpdate(
+                            id = task.uuid.toString(),
+                            title = "test",
+                            volume = result.map { it.size }
+                        )
+                    )
+                )
+            }
         }
         log.debug("task ${task.uuid} done. Time estimated ${time / 1000 / 60}:${time / 1000 % 60}:${time % 1000}")
         submit(task.copy(state = TaskState.DONE, lastUpdate = System.currentTimeMillis()))

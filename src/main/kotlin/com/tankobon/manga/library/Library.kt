@@ -9,6 +9,7 @@ import java.io.File
 import java.nio.file.Path
 import java.util.UUID
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,27 +33,27 @@ class Library {
         val taskQueue = TaskQueue()
 
         runBlocking {
-            launch(newSingleThreadContext("LibraryThread")) {
-                launch { taskQueue.runQueue() }
+            GlobalScope.launch { taskQueue.runQueue() }
 
-                // before start service recalculate all items in library
-                mangaFile.listFiles()?.forEach { e ->
-                    if (!e.name.contains(".DS_Store")) {
-                        taskQueue.submit(
-                            Task(
-                                file = e,
-                                uuid = uuidFromString(e.name) ?: UUID.randomUUID(),
-                                state = TaskState.WAITING,
-                                lastUpdate = System.currentTimeMillis()
-                            )
+            // before start service recalculate all items in library
+            mangaFile.listFiles()?.forEach { e ->
+                if (!e.name.contains(".DS_Store")) {
+                    taskQueue.submit(
+                        Task(
+                            file = e,
+                            uuid = uuidFromString(e.name) ?: UUID.randomUUID(),
+                            state = TaskState.WAITING,
+                            lastUpdate = System.currentTimeMillis()
                         )
-                    }
+                    )
                 }
+            }
 
-                while (taskQueue.getCount() != 0) {
-                    delay(1000L)
-                }
+            while (taskQueue.getCount() != 0) {
+                delay(1000L)
+            }
 
+            GlobalScope.launch(newSingleThreadContext("LibraryThread")) {
                 while (true) {
                     log.debug("START FILE EVENT WATCH CHANNEL")
                     mangaFile.asWatchChannel(mode = KWatchChannel.Mode.Recursive).consumeEach { event ->

@@ -10,7 +10,11 @@ fun callToFile(call: ApplicationCall, initialPath: File): File {
     val page = call.parameters["page"]
 
     if (isValidUUID(uuid) && isNumber(volume.orEmpty()) && isNumber(page.orEmpty())) {
-        return File("${initialPath.path}/$uuid/$volume/$page.jpg")
+        return File(
+            "${initialPath.path}/$uuid/${"%04d".format(volume?.toIntOrNull() ?: 0)}/${"%05d".format(
+                page?.toIntOrNull() ?: 0
+            )}.jpg"
+        )
     } else {
         throw BadRequestError()
     }
