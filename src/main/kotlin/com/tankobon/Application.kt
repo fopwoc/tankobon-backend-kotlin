@@ -2,15 +2,17 @@ package com.tankobon
 
 import com.tankobon.manga.library.Library
 import com.tankobon.utils.logger
-import java.io.File
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 val globalAddress = System.getenv("tkbn_address") ?: "localhost"
 val globalPort = Integer.parseInt(System.getenv("tkbn_port") ?: "8080")
 
 val globalMangaPath = File(System.getenv("tkbn_manga_path") ?: "manga")
-val globalThumbPath = File(System.getenv("tkbn_thumb_path") ?: "data/thumb")
+val globalDataPath = File(System.getenv("tkbn_thumb_path") ?: "data")
+val globalThumbPath = File("$globalDataPath/thumb")
+val globalUnsupportedPath = File("$globalDataPath/unsupported")
 
 val globalInstanceName = System.getenv("tkbn_instance_name") ?: "Tankobon"
 val globalInstanceDescription = System.getenv("tkbn_instance_description") ?: "Tankobon instance with some cool manga"

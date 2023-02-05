@@ -4,16 +4,17 @@ import com.tankobon.utils.archive.unRAR
 import com.tankobon.utils.archive.unZIP
 import com.tankobon.utils.imageConverter
 import com.tankobon.utils.logger
+import com.tankobon.utils.unsupported
 import java.io.File
 
-enum class FileProcessingType { ARCHIVE, IMAGES, ALL, UNSUPPORTED }
+enum class FileRouterType { ARCHIVE, IMAGES, ALL, UNSUPPORTED }
 
-fun fileProcessing(
+fun fileRouter(
     file: File,
-    type: FileProcessingType = FileProcessingType.ALL,
-    increaseHierarchy: Boolean = false
+    type: FileRouterType = FileRouterType.ALL,
+    increaseHierarchy: Boolean = false,
 ): File? {
-    val log = logger("file-processing")
+    val log = logger("file-router")
 
     // skip macos .DS_Store file
     if (file.name.contains(".DS_Store")) {
@@ -21,16 +22,16 @@ fun fileProcessing(
     }
 
     when {
-
         // archives
         Regex("^(zip|cbz)\$").matches(file.extension) -> {
-            if (type == FileProcessingType.ALL || type == FileProcessingType.ARCHIVE) {
+            if (type == FileRouterType.ALL || type == FileRouterType.ARCHIVE) {
                 log.trace("unzip ${file.path}")
                 return unZIP(file, increaseHierarchy)
             }
         }
+
         Regex("^(rar|cbr)\$").matches(file.extension) -> {
-            if (type == FileProcessingType.ALL || type == FileProcessingType.ARCHIVE) {
+            if (type == FileRouterType.ALL || type == FileRouterType.ARCHIVE) {
                 log.trace("unrar ${file.path}")
                 return unRAR(file, increaseHierarchy)
             }
@@ -39,29 +40,29 @@ fun fileProcessing(
         // images
         Regex("^(jpg)\$").matches(file.extension) -> {
             log.trace("jpg do nothing ${file.path}")
-            //do nothing
+            // do nothing
         }
+
         Regex("^(png|PNG)\$").matches(file.extension) -> {
-            if (type == FileProcessingType.ALL || type == FileProcessingType.IMAGES) {
+            if (type == FileRouterType.ALL || type == FileRouterType.IMAGES) {
                 log.trace("png convert ${file.path}")
                 imageConverter(file)
             }
         }
+
         Regex("^(jpeg|jpe|JPEG|JPE|JPG)\$").matches(file.extension) -> {
-            if (type == FileProcessingType.ALL || type == FileProcessingType.IMAGES) {
+            if (type == FileRouterType.ALL || type == FileRouterType.IMAGES) {
                 log.trace("jpg but with wrong extension ${file.path}")
                 file.renameTo(File("${file.parentFile.path}/${file.nameWithoutExtension}.jpg"))
             }
         }
 
-        //unsupported
+        // unsupported
         else -> {
-            if (type == FileProcessingType.ALL || type == FileProcessingType.UNSUPPORTED) {
-                log.debug("unsupported file ${file.path}")
-                unsupportedExtension(file)
-            }
+            log.debug("unsupported file ${file.path}")
+            unsupported(file)
         }
     }
 
-    return  null;
+    return null
 }

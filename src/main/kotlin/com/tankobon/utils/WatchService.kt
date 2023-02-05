@@ -1,7 +1,7 @@
 // original code taken from https://github.com/vishna/watchservice-ktx/
 // ty so much for this piece of code :>
 
-package com.tankobon.utils;
+package com.tankobon.utils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +24,7 @@ import java.nio.file.attribute.BasicFileAttributes
 data class KWatchEvent(
     val file: File,
     val kind: Kind,
-    val tag: Any?
+    val tag: Any?,
 ) {
     enum class Kind(val kind: String) {
         Initialized("initialized"),
@@ -37,7 +37,7 @@ data class KWatchEvent(
 fun File.asWatchChannel(
     mode: KWatchChannel.Mode? = null,
     tag: Any? = null,
-    scope: CoroutineScope = GlobalScope
+    scope: CoroutineScope = GlobalScope,
 ) = KWatchChannel(
     file = this,
     mode = mode ?: if (isFile) KWatchChannel.Mode.SingleFile else KWatchChannel.Mode.Recursive,
@@ -50,8 +50,9 @@ class KWatchChannel(
     val scope: CoroutineScope = GlobalScope,
     val mode: Mode,
     val tag: Any? = null,
-    private val channel: Channel<KWatchEvent> = Channel()
+    private val channel: Channel<KWatchEvent> = Channel(),
 ) : Channel<KWatchEvent> by channel {
+    val log = logger("watch-channel")
 
     private val watchService: WatchService = FileSystems.getDefault().newWatchService()
     private val registeredKeys = ArrayList<WatchKey>()
@@ -67,12 +68,15 @@ class KWatchChannel(
             clear()
         }
         if (mode == Mode.Recursive) {
-            Files.walkFileTree(path, object : SimpleFileVisitor<Path>() {
-                override fun preVisitDirectory(subPath: Path, attrs: BasicFileAttributes): FileVisitResult {
-                    registeredKeys += subPath.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE)
-                    return FileVisitResult.CONTINUE
+            Files.walkFileTree(
+                path,
+                object : SimpleFileVisitor<Path>() {
+                    override fun preVisitDirectory(subPath: Path, attrs: BasicFileAttributes): FileVisitResult {
+                        registeredKeys += subPath.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE)
+                        return FileVisitResult.CONTINUE
+                    }
                 }
-            })
+            )
         } else {
             registeredKeys += path.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE)
         }
@@ -85,7 +89,8 @@ class KWatchChannel(
                     file = path.toFile(),
                     tag = tag,
                     kind = KWatchEvent.Kind.Initialized
-                ))
+                )
+            )
 
             var shouldRegisterPath = true
 
@@ -99,13 +104,20 @@ class KWatchChannel(
                 val monitorKey = watchService.take()
                 val dirPath = monitorKey.watchable() as? Path ?: break
                 monitorKey.pollEvents().forEach {
+                    if (it.context() == null) {
+                        log.debug("caught null in events polling")
+                        return@forEach
+                    }
+
                     val eventPath = dirPath.resolve(it.context() as Path)
+
+                    log.trace("event for $eventPath, kind ${it.kind()}")
 
                     if (mode == Mode.SingleFile && eventPath.toFile().absolutePath != file.absolutePath) {
                         return@forEach
                     }
 
-                    val eventType = when(it.kind()) {
+                    val eventType = when (it.kind()) {
                         ENTRY_CREATE -> KWatchEvent.Kind.Created
                         ENTRY_DELETE -> KWatchEvent.Kind.Deleted
                         else -> KWatchEvent.Kind.Modified
@@ -119,7 +131,8 @@ class KWatchChannel(
 
                     if (mode == Mode.Recursive &&
                         event.kind in listOf(KWatchEvent.Kind.Created, KWatchEvent.Kind.Deleted) &&
-                        event.file.isDirectory) {
+                        event.file.isDirectory
+                    ) {
                         shouldRegisterPath = true
                     }
 
@@ -130,8 +143,7 @@ class KWatchChannel(
                     monitorKey.cancel()
                     close()
                     break
-                }
-                else if (isClosedForSend) {
+                } else if (isClosedForSend) {
                     break
                 }
             }

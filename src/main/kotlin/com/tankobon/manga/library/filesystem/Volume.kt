@@ -1,8 +1,8 @@
 package com.tankobon.manga.library.filesystem
 
 import com.tankobon.globalThumbPath
-import com.tankobon.manga.library.FileProcessingType
-import com.tankobon.manga.library.fileProcessing
+import com.tankobon.manga.library.FileRouterType
+import com.tankobon.manga.library.fileRouter
 import com.tankobon.utils.logger
 import com.tankobon.utils.md5
 import com.tankobon.utils.thumbnailGenerator
@@ -17,16 +17,16 @@ fun volume(file: File): List<String> {
 
     runBlocking {
         file.listFiles()
-            ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+            ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
             ?.forEach { e ->
                 launch(Dispatchers.Default) {
-                    fileProcessing(e, type = FileProcessingType.IMAGES)
+                    fileRouter(e, type = FileRouterType.IMAGES)
                 }
             }
     }
 
     file.listFiles()
-        ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+        ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
         ?.sorted()
         ?.forEachIndexed { i, e ->
             val path = File("${e.parentFile.path}/${"%05d".format(i)}.${e.extension}")
@@ -34,12 +34,18 @@ fun volume(file: File): List<String> {
             e.renameTo(path)
         }
 
+    if (file.listFiles()?.none { ! it.name.equals(".DS_Store") } == true) {
+        log.warn("volume ${file.name} is empty")
+        file.delete()
+        return emptyList()
+    }
+
     val newThumb = File("${globalThumbPath.path}/${file.parentFile.name}/${file.name}")
     newThumb.mkdirs()
 
     runBlocking {
         file.listFiles()
-            ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+            ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
             ?.forEach {
                 launch(Dispatchers.Default) {
                     thumbnailGenerator(it, newThumb)
@@ -48,7 +54,7 @@ fun volume(file: File): List<String> {
     }
 
     return file.listFiles()
-        ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+        ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
         ?.sorted()
         ?.map { md5(it) } ?: listOf()
 }
