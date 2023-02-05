@@ -44,7 +44,7 @@ val utilsService = UtilsService()
 val tokenService = TokenService()
 
 @DelicateCoroutinesApi
-fun main() {
+fun main(args: Array<String>) {
     val log = logger("main")
     log.info("Tankōbon-server is starting")
 
@@ -55,7 +55,7 @@ fun main() {
         Netty,
         host = globalAddress,
         port = globalPort,
-        module = Application::webServer
+        module = Application::webServer,
     ).start(wait = true)
 }
 
