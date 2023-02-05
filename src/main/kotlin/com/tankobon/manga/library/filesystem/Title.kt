@@ -74,7 +74,7 @@ fun title(task: Task): List<List<String>> {
         result
     } else {
         log.warn("title ${file.name} is empty")
-        file.delete()
+        file.deleteRecursively()
         emptyList()
     }
 }
