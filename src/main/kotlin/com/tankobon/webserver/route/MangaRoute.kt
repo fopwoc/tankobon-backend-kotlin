@@ -22,10 +22,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 
-
 fun Route.mangaRoute(mangaService: MangaService, userService: UserService) {
     authenticate("auth-jwt") {
-
         get("/manga") {
             call.respond(mangaService.getMangaList(null))
         }
@@ -40,7 +38,7 @@ fun Route.mangaRoute(mangaService: MangaService, userService: UserService) {
             call.respond(mangaService.getManga(payload.id))
         }
 
-        post ("/manga/{uuid}/update") {
+        post("/manga/{uuid}/update") {
             val requestUser = userService.getUser(
                 call.principal<JWTPrincipal>()?.payload?.getClaim("uuid").toString()
             )

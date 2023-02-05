@@ -17,7 +17,7 @@ fun volume(file: File): List<String> {
 
     runBlocking {
         file.listFiles()
-            ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
+            ?.filter { it.isFile && !it.name.equals(".DS_Store") }
             ?.forEach { e ->
                 launch(Dispatchers.Default) {
                     fileRouter(e, type = FileRouterType.IMAGES)
@@ -26,7 +26,7 @@ fun volume(file: File): List<String> {
     }
 
     file.listFiles()
-        ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
+        ?.filter { it.isFile && !it.name.equals(".DS_Store") }
         ?.sorted()
         ?.forEachIndexed { i, e ->
             val path = File("${e.parentFile.path}/${"%05d".format(i)}.${e.extension}")
@@ -34,7 +34,7 @@ fun volume(file: File): List<String> {
             e.renameTo(path)
         }
 
-    if (file.listFiles()?.none { ! it.name.equals(".DS_Store") } == true) {
+    if (file.listFiles()?.none { !it.name.equals(".DS_Store") } == true) {
         log.warn("volume ${file.name} is empty")
         file.delete()
         return emptyList()
@@ -45,7 +45,7 @@ fun volume(file: File): List<String> {
 
     runBlocking {
         file.listFiles()
-            ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
+            ?.filter { it.isFile && !it.name.equals(".DS_Store") }
             ?.forEach {
                 launch(Dispatchers.Default) {
                     thumbnailGenerator(it, newThumb)
@@ -54,7 +54,7 @@ fun volume(file: File): List<String> {
     }
 
     return file.listFiles()
-        ?.filter { it.isFile && ! it.name.equals(".DS_Store") }
+        ?.filter { it.isFile && !it.name.equals(".DS_Store") }
         ?.sorted()
         ?.map { md5(it) } ?: listOf()
 }

@@ -5,15 +5,15 @@ import com.tankobon.utils.KWatchChannel
 import com.tankobon.utils.asWatchChannel
 import com.tankobon.utils.injectLogger
 import com.tankobon.utils.uuidFromString
+import java.io.File
+import java.nio.file.Path
+import java.util.UUID
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
-import java.io.File
-import java.nio.file.Path
-import java.util.*
 
 class Library {
     companion object { val log by injectLogger() }
@@ -35,7 +35,7 @@ class Library {
             launch(newSingleThreadContext("LibraryThread")) {
                 launch { taskQueue.runQueue() }
 
-                //before start service recalculate all items in library
+                // before start service recalculate all items in library
                 mangaFile.listFiles()?.forEach { e ->
                     if (!e.name.contains(".DS_Store")) {
                         taskQueue.submit(
@@ -59,7 +59,7 @@ class Library {
                         if (event.file.toPath().nameCount >= 2 && !event.file.name.contains(".DS_Store")) {
                             val file = pathRecursion(event.file)
 
-                            log.trace("watch channel event ${event}")
+                            log.trace("watch channel event $event")
 
                             taskQueue.submit(
                                 Task(
@@ -74,7 +74,6 @@ class Library {
                     log.debug("PROBABLY, WATCH CHANNEL DIED, REVIVING")
                 }
             }
-
         }
     }
 }

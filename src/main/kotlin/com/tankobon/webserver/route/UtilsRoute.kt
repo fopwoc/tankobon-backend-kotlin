@@ -16,7 +16,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 
 fun Route.utilsRoute(utilsService: UtilsService, userService: UserService) {
-
     get("/about") {
         call.respond(utilsService.getAbout())
     }

@@ -11,6 +11,7 @@ import com.tankobon.globalThumbPath
 import com.tankobon.utils.uuidFromString
 import com.tankobon.webserver.InternalServerError
 import io.ktor.server.plugins.NotFoundException
+import java.io.File
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -20,13 +21,11 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
-import java.io.File
 
 class MangaService {
     val database = DatabaseInstance.instance
 
     suspend fun getMangaList(payload: MangaPayload?): List<Manga> = newSuspendedTransaction(db = database) {
-
         val query = if (!payload?.search.isNullOrBlank()) {
             MangaModel.select { MangaModel.title match payload?.search.toString() }
         } else {

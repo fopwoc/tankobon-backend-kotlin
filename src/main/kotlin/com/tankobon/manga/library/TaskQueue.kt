@@ -44,18 +44,21 @@ class TaskQueue {
         if (oldTask != null && updateTask != null) {
             when (updateTask.state) {
                 TaskState.WAITING -> {
-                    if (oldTask.state == TaskState.WAITING)
+                    if (oldTask.state == TaskState.WAITING) {
                         queue[queue.indexOf(oldTask)] = updateTask
+                    }
                 }
 
                 TaskState.ONGOING -> {
-                    if (oldTask.state == TaskState.WAITING)
+                    if (oldTask.state == TaskState.WAITING) {
                         queue[queue.indexOf(oldTask)] = updateTask
+                    }
                 }
 
                 TaskState.DONE -> {
-                    if (oldTask.state != TaskState.DONE)
+                    if (oldTask.state != TaskState.DONE) {
                         queue[queue.indexOf(oldTask)] = updateTask
+                    }
                 }
             }
         } else {
@@ -83,7 +86,7 @@ class TaskQueue {
             .firstOrNull()
 
         if (newTask != null && newTask.lastUpdate < System.currentTimeMillis()) runTask(newTask)
-        //if (task.lastUpdate + (1000L * 60) < System.currentTimeMillis()) queue.remove(oldTask)
+        // if (task.lastUpdate + (1000L * 60) < System.currentTimeMillis()) queue.remove(oldTask)
         return null
     }
 
