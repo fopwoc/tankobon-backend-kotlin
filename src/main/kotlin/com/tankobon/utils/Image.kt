@@ -1,5 +1,6 @@
 package com.tankobon.utils
 
+import com.sksamuel.scrimage.ImageParseException
 import com.sksamuel.scrimage.ImmutableImage
 import com.sksamuel.scrimage.nio.JpegWriter
 import java.awt.Graphics2D
@@ -23,11 +24,16 @@ fun thumbnailGenerator(originalPath: File, thumbnailPath: File) {
     val log = logger("fs-thumbnail")
     log.trace("${originalPath.path} ${thumbnailPath.path}")
 
-    ImmutableImage.loader()
-        .fromFile(originalPath)
-        .scaleToHeight(340)
-        .output(
-            JpegWriter().withCompression(50),
-            File("${thumbnailPath.path}/${originalPath.nameWithoutExtension}.jpg")
-        )
+    try {
+        ImmutableImage.loader()
+            .fromFile(originalPath)
+            .scaleToHeight(340)
+            .output(
+                JpegWriter().withCompression(50),
+                File("${thumbnailPath.path}/${originalPath.nameWithoutExtension}.jpg")
+            )
+    } catch (e: ImageParseException) {
+        log.debug("cant parse ${originalPath.path}")
+        originalPath.delete()
+    }
 }
