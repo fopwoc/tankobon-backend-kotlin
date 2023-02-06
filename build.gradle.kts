@@ -52,7 +52,7 @@ dependencies {
 
     implementation("com.sksamuel.scrimage:scrimage-core:4.0.33")
 
-    implementation("ch.qos.logback:logback-core:1.4.4")
+    implementation("ch.qos.logback:logback-core:1.4.5")
     implementation("ch.qos.logback:logback-classic:1.4.4")
     implementation("org.slf4j:slf4j-api:2.0.3")
 
