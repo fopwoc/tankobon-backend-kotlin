@@ -50,7 +50,7 @@ dependencies {
 
     implementation("com.lordcodes.turtle:turtle:0.8.0")
 
-    implementation("com.sksamuel.scrimage:scrimage-core:4.0.32")
+    implementation("com.sksamuel.scrimage:scrimage-core:4.0.33")
 
     implementation("ch.qos.logback:logback-core:1.4.4")
     implementation("ch.qos.logback:logback-classic:1.4.4")
