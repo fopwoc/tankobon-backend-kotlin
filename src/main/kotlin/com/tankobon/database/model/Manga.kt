@@ -1,10 +1,11 @@
 package com.tankobon.database.model
 
-import com.tankobon.utils.intListUtils
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
 
 object MangaLibraryModel : UUIDTable(name = "MANGA") {
     val title = varchar("title", 255)
@@ -19,7 +20,7 @@ data class Manga(
     val title: String,
     val description: String,
     val cover: String,
-    val volume: List<Int>
+    val volume: List<MangaVolume>
 )
 
 fun ResultRow.toManga() = Manga(
@@ -27,7 +28,7 @@ fun ResultRow.toManga() = Manga(
     title = this[MangaLibraryModel.title],
     description = this[MangaLibraryModel.description],
     cover = this[MangaLibraryModel.cover],
-    volume = intListUtils(this[MangaLibraryModel.volume])
+    volume = Json.decodeFromString(this[MangaLibraryModel.volume])
 )
 
 // TODO refactor db models, local models and payload models to their specific folders
