@@ -70,6 +70,7 @@ object DatabaseFactory {
         return serviceDB
     }
 
+    // TODO postgres
     private fun hikariPersist(): HikariDataSource {
         val config = HikariConfig()
         config.driverClassName = "org.h2.Driver"

@@ -38,6 +38,7 @@ class Library {
             GlobalScope.launch { taskQueue.runQueue() }
 
             // before start service recalculate all items in library
+            // FIXME if after restart folder will change (ex. one title was removed), it will remain in DB
             mangaFile.listFiles()?.forEach { e ->
                 if (!e.name.contains(".DS_Store")) {
                     taskQueue.submit(

@@ -1,16 +1,25 @@
 package com.tankobon.database.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.decodeFromString
 
 object MangaLibraryModel : UUIDTable(name = "MANGA") {
     val title = varchar("title", 255)
     val description = text("description")
     val cover = text("cover")
+
+    /* / FIXME by architecture, this is broken solution in case
+    *     that i want to change names of volumes not every time i
+    *     caught update in watch service.
+    *     Also not really convenient to change specific volume titles
+    *     with possible REST
+    *     And now this is heavy json if i trying to get all
+    *     manga list by /manga REST
+    *     ГОВНО ПЕРЕДЕЛЫВАЙ! */
     val volume = text("volume")
 }
 

@@ -25,6 +25,7 @@ import java.io.File
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.slf4j.event.Level
 
+// FIXME env is absolutely broken
 val globalAddress = System.getenv("tkbn_address") ?: "localhost"
 val globalPort = Integer.parseInt(System.getenv("tkbn_port") ?: "8080")
 
