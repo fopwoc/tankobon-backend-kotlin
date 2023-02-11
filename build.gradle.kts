@@ -1,6 +1,13 @@
 val kotlinVersion: String by project
 val ktorVersion: String by project
 val detektVersion: String by project
+val hopliteVersion: String by project
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
 
 tasks.wrapper {
     gradleVersion = "7.6"
@@ -16,6 +23,7 @@ application {
 
 plugins {
     application
+    `java-library`
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow")
@@ -57,6 +65,12 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.6")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+
+    implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-yaml:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-toml:$hopliteVersion")
+    implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 

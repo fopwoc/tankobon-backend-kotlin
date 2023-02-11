@@ -1,5 +1,7 @@
 package com.tankobon
 
+import com.sksamuel.hoplite.ConfigLoaderBuilder
+import com.sksamuel.hoplite.addResourceOrFileSource
 import com.tankobon.database.service.MangaService
 import com.tankobon.database.service.TokenService
 import com.tankobon.database.service.UserService
@@ -21,18 +23,35 @@ import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.routing.Routing
-import java.io.File
 import kotlinx.coroutines.DelicateCoroutinesApi
 import org.slf4j.event.Level
+import java.io.File
 
-// FIXME env is absolutely broken
-val globalAddress = System.getenv("tkbn_address") ?: "localhost"
-val globalPort = Integer.parseInt(System.getenv("tkbn_port") ?: "8080")
+data class Config(
+    val globalAddress: String,
+    val globalPort: Int,
+    val globalMangaPath: String,
+    val globalDataPath: String,
+    val globalInstanceName: String,
+    val globalInstanceDescription: String,
+)
 
-val globalMangaPath = File(System.getenv("tkbn_manga_path") ?: "manga")
-val globalDataPath = File(System.getenv("tkbn_thumb_path") ?: "data")
-val globalThumbPath = File("$globalDataPath/thumb")
-val globalUnsupportedPath = File("$globalDataPath/unsupported")
+val configPath = File(System.getenv("tkbn_config_path") ?: "tankobon-config.yml")
+
+val globalConfig = ConfigLoaderBuilder
+    .default()
+    .addResourceOrFileSource(
+        configPath.absolutePath,
+    ).build()
+    .loadConfigOrThrow<Config>()
+
+val globalAddress = globalConfig.globalAddress
+val globalPort = globalConfig.globalPort
+
+val globalMangaPath = File(globalConfig.globalMangaPath).canonicalFile
+val globalDataPath = File(globalConfig.globalDataPath).canonicalFile
+val globalThumbPath = File("$globalDataPath/thumb").canonicalFile
+val globalUnsupportedPath = File("$globalDataPath/unsupported").canonicalFile
 
 val globalInstanceName = System.getenv("tkbn_instance_name") ?: "Tankobon"
 val globalInstanceDescription = System.getenv("tkbn_instance_description") ?: "Tankobon instance with some cool manga"
