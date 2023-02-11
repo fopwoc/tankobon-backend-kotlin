@@ -5,9 +5,6 @@ import com.tankobon.utils.KWatchChannel
 import com.tankobon.utils.asWatchChannel
 import com.tankobon.utils.injectLogger
 import com.tankobon.utils.uuidFromString
-import java.io.File
-import java.nio.file.Path
-import java.util.UUID
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.consumeEach
@@ -15,6 +12,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
+import java.io.File
+import java.nio.file.Path
+import java.util.UUID
 
 class Library {
     companion object { val log by injectLogger() }
@@ -30,6 +30,8 @@ class Library {
     @DelicateCoroutinesApi
     fun watchLibrary() {
         val mangaFile = Path.of(globalMangaPath.path).toFile()
+        mangaFile.mkdirs()
+
         val taskQueue = TaskQueue()
 
         runBlocking {
