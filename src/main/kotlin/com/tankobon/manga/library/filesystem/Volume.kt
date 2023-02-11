@@ -16,8 +16,6 @@ fun volume(file: File): MangaVolume {
     val log = logger("fs-volume")
     log.trace("current work is ${file.name} ${file.path}")
 
-    var originalName: String? = null
-
     runBlocking {
         file.listFiles()
             ?.filter { it.isFile && !it.name.equals(".DS_Store") }
@@ -32,11 +30,6 @@ fun volume(file: File): MangaVolume {
         ?.filter { it.isFile && !it.name.equals(".DS_Store") }
         ?.sorted()
         ?.forEachIndexed { i, e ->
-            // TODO regexes of d{N} to utils
-            if (!Regex("^\\d{5}\$").matches(e.name)) {
-                originalName = e.name
-            }
-
             // TODO formatting of %0Nd to utils
             val path = File("${e.parentFile.path}/${"%05d".format(i)}.${e.extension}")
             log.trace("rename ${e.name} to ${path.path}")
@@ -48,8 +41,8 @@ fun volume(file: File): MangaVolume {
         file.delete()
         return MangaVolume(
             order = 0,
-            title = originalName,
-            content = emptyList()
+            title = null,
+            content = emptyList(),
         )
     }
 
@@ -68,7 +61,7 @@ fun volume(file: File): MangaVolume {
 
     return MangaVolume(
         order = 0,
-        title = originalName,
+        title = null,
         content = file.listFiles()
             ?.filter { it.isFile && !it.name.equals(".DS_Store") }
             ?.sorted()

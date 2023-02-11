@@ -58,7 +58,7 @@ class MangaService {
             if (MangaLibraryModel.select { MangaLibraryModel.id eq update.id }.none()) {
                 MangaLibraryModel.insert {
                     it[id] = update.id
-                    it[title] = update.title.orEmpty()
+                    if (!update.title.isNullOrBlank()) it[title] = update.title
                     it[description] = ""
                     it[cover] = ""
                     it[volume] = Json.encodeToString(update.volume)

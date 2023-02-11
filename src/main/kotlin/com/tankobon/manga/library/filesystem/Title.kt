@@ -14,7 +14,7 @@ fun title(task: Task): MangaUpdate {
     var file = task.file
     log.trace("current work is ${file.name} ${file.path}")
 
-    var originalName: String? = null
+    var originalTitleName: String? = null
 
     if (file.isFile && !file.name.contains(".DS_Store")) {
         log.debug("${file.name} is file")
@@ -29,6 +29,8 @@ fun title(task: Task): MangaUpdate {
         log.trace("${file.listFiles()?.map { it.name }}")
 
         if (!isValidUUID(file.name)) {
+            originalTitleName = file.name
+
             val path = Path.of("${file.parentFile}/${task.uuid}").toFile()
             file.renameTo(path)
             file = path
@@ -60,10 +62,12 @@ fun title(task: Task): MangaUpdate {
         ?.filter { it.isDirectory }
         ?.sorted()
         ?.mapIndexed { i, e ->
+            var originalVolumeName: String? = null
+
             volume(
                 // TODO regexes of d{N} to utils
                 if (!Regex("^\\d{4}\$").matches(e.name)) {
-                    originalName = e.name
+                    originalVolumeName = e.name
                     // TODO formatting of %0Nd to utils
                     val path = File("${e.parentFile.path}/${"%04d".format(i)}")
                     e.renameTo(path)
@@ -71,7 +75,7 @@ fun title(task: Task): MangaUpdate {
                 } else {
                     e
                 }
-            ).copy(order = i)
+            ).copy(order = i, title = originalVolumeName)
         } ?: listOf()
 
     log.debug("work for $file ends")
@@ -79,7 +83,7 @@ fun title(task: Task): MangaUpdate {
     if (result.flatMap { it.content }.isNotEmpty()) {
         return MangaUpdate(
             id = task.uuid,
-            title = originalName,
+            title = originalTitleName,
             volume = result,
         )
     } else {
@@ -87,7 +91,7 @@ fun title(task: Task): MangaUpdate {
         file.deleteRecursively()
         return MangaUpdate(
             id = task.uuid,
-            title = originalName,
+            title = originalTitleName,
             volume = result,
         )
     }
