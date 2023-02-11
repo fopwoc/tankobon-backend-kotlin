@@ -2,16 +2,15 @@ package com.tankobon.database.service
 
 import com.tankobon.database.DatabaseInstance
 import com.tankobon.database.model.Manga
-import com.tankobon.database.model.MangaModel
+import com.tankobon.database.model.MangaLibraryModel
 import com.tankobon.database.model.MangaPayload
 import com.tankobon.database.model.MangaUpdate
 import com.tankobon.database.model.MangaUpdatePayload
 import com.tankobon.database.model.toManga
 import com.tankobon.globalThumbPath
+import com.tankobon.utils.injectLogger
 import com.tankobon.utils.uuidFromString
-import com.tankobon.webserver.InternalServerError
 import io.ktor.server.plugins.NotFoundException
-import java.io.File
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -21,15 +20,20 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
+import java.io.File
 
 class MangaService {
+    companion object {
+        val log by injectLogger()
+    }
+
     val database = DatabaseInstance.instance
 
     suspend fun getMangaList(payload: MangaPayload?): List<Manga> = newSuspendedTransaction(db = database) {
         val query = if (!payload?.search.isNullOrBlank()) {
-            MangaModel.select { MangaModel.title match payload?.search.toString() }
+            MangaLibraryModel.select { MangaLibraryModel.title match payload?.search.toString() }
         } else {
-            MangaModel.selectAll()
+            MangaLibraryModel.selectAll()
         }
 
         return@newSuspendedTransaction query.limit(payload?.limit ?: 10, offset = payload?.offset ?: 0)
@@ -37,46 +41,38 @@ class MangaService {
     }
 
     suspend fun getManga(id: String): Manga = newSuspendedTransaction(db = database) {
-        return@newSuspendedTransaction MangaModel
+        return@newSuspendedTransaction MangaLibraryModel
             .select {
-                MangaModel.id eq (uuidFromString(id) ?: throw NotFoundException())
+                MangaLibraryModel.id eq (uuidFromString(id) ?: throw NotFoundException())
             }.firstOrNull()?.toManga()
             ?: throw NotFoundException()
     }
 
-    private suspend fun addMangaList(mangaUpdate: MangaUpdate) = newSuspendedTransaction(db = database) {
-        MangaModel.insert {
-            it[id] = uuidFromString(mangaUpdate.id) ?: throw InternalServerError()
-            it[title] = mangaUpdate.title.orEmpty()
-            it[description] = ""
-            it[cover] = ""
-            it[volume] = Json.encodeToString(mangaUpdate.volume)
-        }
-    }
+    suspend fun updateMangaLibrary(update: MangaUpdate) = newSuspendedTransaction(db = database) {
+        log.debug("addMangaList is $update")
 
-    @Deprecated("TODO - rework from list to single")
-    suspend fun updateMangaList(listMangaUpdate: List<MangaUpdate>) = newSuspendedTransaction(db = database) {
-        val currentList = MangaModel.selectAll().map { it.toManga() }
-
-        currentList.filter { e -> listMangaUpdate.none { it.id == e.id } }
-            .forEach { v ->
-                MangaModel.deleteWhere { MangaModel.id eq uuidFromString(v.id) }
-                File("${globalThumbPath.path}/${v.id}").deleteRecursively()
-            }
-
-        listMangaUpdate.forEach { e ->
-            if (MangaModel.select { MangaModel.id eq uuidFromString(e.id) }.none()) {
-                addMangaList(e)
+        if (update.volume.isEmpty()) {
+            MangaLibraryModel.deleteWhere { MangaLibraryModel.id eq update.id }
+            File("${globalThumbPath.path}/${update.id}").deleteRecursively()
+        } else {
+            if (MangaLibraryModel.select { MangaLibraryModel.id eq update.id }.none()) {
+                MangaLibraryModel.insert {
+                    it[id] = update.id
+                    it[title] = update.title.orEmpty()
+                    it[description] = ""
+                    it[cover] = ""
+                    it[volume] = Json.encodeToString(update.volume)
+                }
             } else {
-                MangaModel.update({ MangaModel.id eq uuidFromString(e.id) }) {
-                    it[volume] = Json.encodeToString(e.volume)
+                MangaLibraryModel.update({ MangaLibraryModel.id eq update.id }) {
+                    it[volume] = Json.encodeToString(update.volume)
                 }
             }
         }
     }
 
     suspend fun updateManga(id: String?, mangaUpdate: MangaUpdatePayload) = newSuspendedTransaction(db = database) {
-        MangaModel.update({ MangaModel.id eq uuidFromString(id) }) {
+        MangaLibraryModel.update({ MangaLibraryModel.id eq uuidFromString(id) }) {
             it[title] = mangaUpdate.title
             it[description] = mangaUpdate.description
             it[cover] = mangaUpdate.cover

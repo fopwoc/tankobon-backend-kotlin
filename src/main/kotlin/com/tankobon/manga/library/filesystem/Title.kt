@@ -1,5 +1,6 @@
 package com.tankobon.manga.library.filesystem
 
+import com.tankobon.database.model.MangaUpdate
 import com.tankobon.manga.library.FileRouterType
 import com.tankobon.manga.library.Task
 import com.tankobon.manga.library.fileRouter
@@ -8,11 +9,12 @@ import com.tankobon.utils.logger
 import java.io.File
 import java.nio.file.Path
 
-fun title(task: Task): List<List<String>> {
+fun title(task: Task): MangaUpdate {
     val log = logger("fs-title")
-
     var file = task.file
     log.trace("current work is ${file.name} ${file.path}")
+
+    var originalName: String? = null
 
     if (file.isFile && !file.name.contains(".DS_Store")) {
         log.debug("${file.name} is file")
@@ -59,22 +61,34 @@ fun title(task: Task): List<List<String>> {
         ?.sorted()
         ?.mapIndexed { i, e ->
             volume(
+                // TODO regexes of d{N} to utils
                 if (!Regex("^\\d{4}\$").matches(e.name)) {
+                    originalName = e.name
+                    // TODO formatting of %0Nd to utils
                     val path = File("${e.parentFile.path}/${"%04d".format(i)}")
                     e.renameTo(path)
                     path
                 } else {
                     e
                 }
-            )
+            ).copy(order = i)
         } ?: listOf()
 
     log.debug("work for $file ends")
-    return if (result.flatten().isNotEmpty()) {
-        result
+
+    if (result.flatMap { it.content }.isNotEmpty()) {
+        return MangaUpdate(
+            id = task.uuid,
+            title = originalName,
+            volume = result,
+        )
     } else {
         log.warn("title ${file.name} is empty")
         file.deleteRecursively()
-        emptyList()
+        return MangaUpdate(
+            id = task.uuid,
+            title = originalName,
+            volume = result,
+        )
     }
 }

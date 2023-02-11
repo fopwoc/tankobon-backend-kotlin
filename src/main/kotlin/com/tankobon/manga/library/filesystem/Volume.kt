@@ -1,19 +1,22 @@
 package com.tankobon.manga.library.filesystem
 
+import com.tankobon.database.model.MangaVolume
 import com.tankobon.globalThumbPath
 import com.tankobon.manga.library.FileRouterType
 import com.tankobon.manga.library.fileRouter
 import com.tankobon.utils.logger
 import com.tankobon.utils.md5
 import com.tankobon.utils.thumbnailGenerator
-import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
-fun volume(file: File): List<String> {
+fun volume(file: File): MangaVolume {
     val log = logger("fs-volume")
     log.trace("current work is ${file.name} ${file.path}")
+
+    var originalName: String? = null
 
     runBlocking {
         file.listFiles()
@@ -29,6 +32,12 @@ fun volume(file: File): List<String> {
         ?.filter { it.isFile && !it.name.equals(".DS_Store") }
         ?.sorted()
         ?.forEachIndexed { i, e ->
+            // TODO regexes of d{N} to utils
+            if (!Regex("^\\d{5}\$").matches(e.name)) {
+                originalName = e.name
+            }
+
+            // TODO formatting of %0Nd to utils
             val path = File("${e.parentFile.path}/${"%05d".format(i)}.${e.extension}")
             log.trace("rename ${e.name} to ${path.path}")
             e.renameTo(path)
@@ -37,7 +46,11 @@ fun volume(file: File): List<String> {
     if (file.listFiles()?.none { !it.name.equals(".DS_Store") } == true) {
         log.warn("volume ${file.name} is empty")
         file.delete()
-        return emptyList()
+        return MangaVolume(
+            order = 0,
+            title = originalName,
+            content = emptyList()
+        )
     }
 
     val newThumb = File("${globalThumbPath.path}/${file.parentFile.name}/${file.name}")
@@ -53,8 +66,12 @@ fun volume(file: File): List<String> {
             }
     }
 
-    return file.listFiles()
-        ?.filter { it.isFile && !it.name.equals(".DS_Store") }
-        ?.sorted()
-        ?.map { md5(it) } ?: listOf()
+    return MangaVolume(
+        order = 0,
+        title = originalName,
+        content = file.listFiles()
+            ?.filter { it.isFile && !it.name.equals(".DS_Store") }
+            ?.sorted()
+            ?.map { md5(it) } ?: listOf()
+    )
 }

@@ -1,6 +1,6 @@
 package com.tankobon.database
 
-import com.tankobon.database.model.MangaModel
+import com.tankobon.database.model.MangaLibraryModel
 import com.tankobon.database.model.RefreshTokenModel
 import com.tankobon.database.model.UserModel
 import com.tankobon.database.model.UtilsModel
@@ -59,8 +59,8 @@ object DatabaseFactory {
                 }
             }
 
-            if (!MangaModel.exists()) {
-                create(MangaModel)
+            if (!MangaLibraryModel.exists()) {
+                create(MangaLibraryModel)
             }
 
             if (!RefreshTokenModel.exists()) {
