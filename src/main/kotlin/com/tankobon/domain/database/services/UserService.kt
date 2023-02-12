@@ -27,14 +27,14 @@ class UserService {
             .mapNotNull { it.toUser() }.singleOrNull() ?: throw InternalServerError()
     }
 
-    fun addUser(newUsername: String, newPassword: String, newAdmin: Boolean? = null) = transaction(db = database) {
-        if (UserModel.selectAll().andWhere { UserModel.username eq newUsername }.toList().isEmpty()) {
+    fun addUser(username: String, password: String, isActive: Boolean? = null, isAdmin: Boolean? = null) = transaction(db = database) {
+        if (UserModel.selectAll().andWhere { UserModel.username eq username }.toList().isEmpty()) {
             UserModel.insert {
-                it[username] = newUsername
-                it[password] = BCrypt.hashpw(newPassword, BCrypt.gensalt())
+                it[this.username] = username
+                it[this.password] = BCrypt.hashpw(password, BCrypt.gensalt())
                 it[registerDate] = System.currentTimeMillis()
-                it[active] = true
-                it[admin] = newAdmin ?: false
+                it[active] = isActive ?: true
+                it[admin] = isAdmin ?: false
             }
         } else {
             throw UserExistException()

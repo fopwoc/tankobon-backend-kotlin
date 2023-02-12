@@ -6,6 +6,7 @@ import com.tankobon.api.route.userRoute
 import com.tankobon.api.route.utilsRoute
 import com.tankobon.api.security
 import com.tankobon.api.statusPages
+import com.tankobon.domain.database.DatabaseFactory
 import com.tankobon.domain.library.Library
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.utils.logger
@@ -25,6 +26,8 @@ import org.slf4j.event.Level
 fun main() {
     val log = logger("main")
     log.info("Tankōbon-server is starting")
+
+    DatabaseFactory().init()
 
     Library().watchLibrary()
 

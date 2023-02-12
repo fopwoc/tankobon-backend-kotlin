@@ -1,9 +1,16 @@
 server:
   title: "Tankobon"
   description: "Tankobon instance with some cool manga"
+  user: "user"
+  password: "password"
+
+database:
+  url: "jdbc:pgsql://postgres:5432/postgres"
+  user: "postgres"
+  password: "password"
 
 api:
-  address: "localhost"
+  address: "0.0.0.0"
   port: 8080
 
 library:

@@ -5,9 +5,8 @@ import com.tankobon.domain.database.models.RefreshTokenModel
 import com.tankobon.domain.database.models.UserModel
 import com.tankobon.domain.database.models.UtilsModel
 import com.tankobon.domain.providers.ConfigProvider
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
-import org.jetbrains.exposed.sql.Database
+import com.tankobon.domain.providers.DatabaseProvider
+import com.tankobon.domain.providers.UserServiceProvider
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.insert
@@ -18,26 +17,23 @@ import java.security.KeyPairGenerator
 import java.util.Base64
 import java.util.UUID
 
-private const val HIKARI_MAXIMUM_POOL_SIZE = 3
 private const val BCRYPT_ROUNDS = 12
-
 class DatabaseFactory {
-    fun init(): Database {
-        val serviceDB = Database.connect(hikariPersist())
-        transaction(serviceDB) {
+    fun init() {
+        transaction(DatabaseProvider.get()) {
             // TODO refactor to use UserService.addUser
             if (!UserModel.exists()) {
                 create(UserModel)
-                UserModel.insert {
-                    it[username] = System.getenv("tkbn_username") ?: "user"
-                    it[password] = BCrypt.hashpw(
-                        System.getenv("tkbn_password") ?: "password",
+                UserServiceProvider.get().addUser(
+                    username = ConfigProvider.get().server.user,
+                    password = BCrypt.hashpw(
+                        ConfigProvider.get().server.password,
                         BCrypt.gensalt(BCRYPT_ROUNDS)
-                    )
-                    it[registerDate] = System.currentTimeMillis()
-                    it[active] = true
-                    it[admin] = true
-                }
+                    ),
+                    isActive = true,
+                    isAdmin = true,
+
+                )
             }
 
             if (!UtilsModel.exists()) {
@@ -63,18 +59,5 @@ class DatabaseFactory {
                 create(RefreshTokenModel)
             }
         }
-        return serviceDB
-    }
-
-    // TODO postgres
-    private fun hikariPersist(): HikariDataSource {
-        val config = HikariConfig()
-        config.driverClassName = "org.h2.Driver"
-        config.jdbcUrl = "jdbc:h2:file:./data/serviceDB"
-        config.maximumPoolSize = HIKARI_MAXIMUM_POOL_SIZE
-        config.isAutoCommit = false
-        config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-        config.validate()
-        return HikariDataSource(config)
     }
 }

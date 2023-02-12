@@ -4,6 +4,7 @@ import java.io.File
 
 data class Config(
     val server: ConfigServerInstance,
+    val database: ConfigDatabase,
     val api: ConfigApi,
     val library: ConfigLibrary,
 )
@@ -11,6 +12,14 @@ data class Config(
 data class ConfigServerInstance(
     val title: String,
     val description: String,
+    val user: String = "user",
+    val password: String = "password",
+)
+
+data class ConfigDatabase(
+    val url: String,
+    val user: String,
+    val password: String,
 )
 
 data class ConfigApi(

@@ -2,8 +2,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val kotlinVersion: String by project
 val ktorVersion: String by project
+val exposedVersion: String by project
 val detektVersion: String by project
 val hopliteVersion: String by project
+val logbackVersion: String by project
 
 tasks.wrapper {
     gradleVersion = "7.6"
@@ -48,23 +50,23 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("org.mindrot:jbcrypt:0.4")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
-    implementation("org.jetbrains.exposed:exposed-core:0.41.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
+    implementation("org.mindrot:jbcrypt:0.4")
 
-    implementation("com.h2database:h2:2.1.214")
-    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+
+    implementation("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
 
     implementation("com.lordcodes.turtle:turtle:0.8.0")
 
     implementation("com.sksamuel.scrimage:scrimage-core:4.0.33")
 
-    implementation("ch.qos.logback:logback-core:1.4.5")
-    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("ch.qos.logback:logback-core:$logbackVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.slf4j:slf4j-api:2.0.6")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
