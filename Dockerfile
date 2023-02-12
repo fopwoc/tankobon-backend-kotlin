@@ -1,6 +1,6 @@
 FROM gradle:7.6.0-jdk19 AS build
 
-LABEL MAINTAINER="Ilya Dobryakov <aspirin@govno.tech>"
+LABEL MAINTAINER="Ilya Dobryakov <ilya.dobryakov@icloud.com>"
 
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
