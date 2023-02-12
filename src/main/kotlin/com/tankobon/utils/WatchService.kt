@@ -4,6 +4,7 @@
 package com.tankobon.utils
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -34,6 +35,7 @@ data class KWatchEvent(
     }
 }
 
+@DelicateCoroutinesApi
 fun File.asWatchChannel(
     mode: KWatchChannel.Mode? = null,
     tag: Any? = null,
@@ -45,6 +47,7 @@ fun File.asWatchChannel(
     tag = tag
 )
 
+@DelicateCoroutinesApi
 class KWatchChannel(
     val file: File,
     val scope: CoroutineScope = GlobalScope,

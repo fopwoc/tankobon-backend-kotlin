@@ -1,6 +1,7 @@
 package com.tankobon.utils
 
-import com.tankobon.webserver.BadRequestError
+import com.tankobon.api.BadRequestError
+import com.tankobon.domain.providers.ConfigProvider
 import io.ktor.server.application.ApplicationCall
 import java.io.File
 
@@ -11,15 +12,11 @@ fun callToFile(call: ApplicationCall, initialPath: File): File {
 
     if (isValidUUID(uuid) && isNumber(volume.orEmpty()) && isNumber(page.orEmpty())) {
         return File(
-            "${initialPath.path}/$uuid/${"%04d".format(volume?.toIntOrNull() ?: 0)}/${"%05d".format(
-                page?.toIntOrNull() ?: 0
-            )}.jpg"
+            "${initialPath.path}/$uuid/" +
+                "${formatDigits(volume?.toIntOrNull() ?: 0, ConfigProvider.get().library.titleDigits)}/" +
+                "${formatDigits(page?.toIntOrNull() ?: 0, ConfigProvider.get().library.volumeDigits)}.jpg"
         )
     } else {
         throw BadRequestError()
     }
-}
-
-private fun isNumber(string: String): Boolean {
-    return Regex("^(\\d*)\$").matches(string)
 }

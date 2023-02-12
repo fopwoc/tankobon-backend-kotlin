@@ -1,14 +1,14 @@
 package com.tankobon.utils.archive
 
 import com.lordcodes.turtle.shellRun
+import com.tankobon.utils.formatFile
 import com.tankobon.utils.logger
-import com.tankobon.utils.pathNameFormatter
 import java.io.File
 
 fun unRAR(file: File, increaseHierarchy: Boolean = false): File {
-    val log = logger("fs-archive-rar")
+    val log = logger("archive-rar")
 
-    val newFile = pathNameFormatter(file, increaseHierarchy)
+    val newFile = formatFile(file, increaseHierarchy)
     newFile.mkdirs()
 
     log.trace("archive path ${file.path}")

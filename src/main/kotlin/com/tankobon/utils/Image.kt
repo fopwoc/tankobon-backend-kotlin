@@ -8,6 +8,9 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
+private const val THUMBNAIL_HEIGHT = 340
+private const val JPEG_COMPRESSION_FACTOR = 50
+
 fun imageConverter(file: File) {
     val originalBuffer: BufferedImage = ImageIO.read(file)
     val thumbnail = BufferedImage(originalBuffer.width, originalBuffer.height, BufferedImage.TYPE_INT_RGB)
@@ -27,9 +30,9 @@ fun thumbnailGenerator(originalPath: File, thumbnailPath: File) {
     try {
         ImmutableImage.loader()
             .fromFile(originalPath)
-            .scaleToHeight(340)
+            .scaleToHeight(THUMBNAIL_HEIGHT)
             .output(
-                JpegWriter().withCompression(50),
+                JpegWriter().withCompression(JPEG_COMPRESSION_FACTOR),
                 File("${thumbnailPath.path}/${originalPath.nameWithoutExtension}.jpg")
             )
     } catch (e: ImageParseException) {

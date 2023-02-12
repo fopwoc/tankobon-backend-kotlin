@@ -1,7 +1,9 @@
 package com.tankobon.utils
 
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 fun formatTime(time: LocalDateTime = LocalDateTime.now()): String {
     val log = logger("format-time")
@@ -13,4 +15,20 @@ fun formatTime(time: LocalDateTime = LocalDateTime.now()): String {
     log.trace("$time formatted to $result")
 
     return result
+}
+
+fun daysToMs(days: Int): Long {
+    return TimeUnit.MILLISECONDS.convert(days.toLong(), TimeUnit.DAYS)
+}
+
+fun msToMinutes(time: Long): Long {
+    return time / Duration.ofSeconds(1).toMillis() / Duration.ofMinutes(1).toSeconds()
+}
+
+fun msToRemainderSeconds(time: Long): Long {
+    return time / Duration.ofSeconds(1).toMillis() % Duration.ofMinutes(1).toSeconds()
+}
+
+fun msToRemainderMs(time: Long): Long {
+    return time % Duration.ofSeconds(1).toMillis()
 }
