@@ -1,17 +1,19 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 val kotlinVersion: String by project
 val ktorVersion: String by project
 val detektVersion: String by project
 val hopliteVersion: String by project
 
+tasks.wrapper {
+    gradleVersion = "7.6"
+    distributionType = Wrapper.DistributionType.BIN
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
     }
-}
-
-tasks.wrapper {
-    gradleVersion = "7.6"
-    distributionType = Wrapper.DistributionType.BIN
 }
 
 group = "com.tankobon"
@@ -26,6 +28,7 @@ plugins {
     `java-library`
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("io.ktor.plugin")
     id("com.github.johnrengelman.shadow")
     id("io.gitlab.arturbosch.detekt")
 }
@@ -77,3 +80,14 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion")
 }
 
+tasks {
+    named<ShadowJar>("shadowJar") {
+        mergeServiceFiles()
+    }
+}
+
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
+}

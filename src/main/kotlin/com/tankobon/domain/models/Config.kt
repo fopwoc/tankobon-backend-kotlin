@@ -29,6 +29,6 @@ data class ConfigLibrary(
     val thumbFile: File = File("$data/thumb").canonicalFile,
     val unsupportedFile: File = File("$data/unsupported").canonicalFile,
 
-    val titleDigits: Int,
-    val volumeDigits: Int,
+    val titleDigits: Int = 4,
+    val volumeDigits: Int = 5,
 )

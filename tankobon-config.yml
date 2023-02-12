@@ -1,0 +1,11 @@
+server:
+  title: "Tankobon"
+  description: "Tankobon instance with some cool manga"
+
+api:
+  address: "localhost"
+  port: 8080
+
+library:
+  manga: "./manga"
+  data: "./data"
