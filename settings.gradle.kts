@@ -9,7 +9,7 @@ pluginManagement {
         kotlin("jvm") version kotlinVersion
         kotlin("plugin.serialization") version kotlinVersion
         id("io.ktor.plugin") version ktorVersion
-        id("com.github.johnrengelman.shadow") version "7.1.2"
+        id("com.github.johnrengelman.shadow") version "8.1.0"
         id("io.gitlab.arturbosch.detekt") version detektVersion
     }
 }
