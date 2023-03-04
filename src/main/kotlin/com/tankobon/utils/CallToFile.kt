@@ -1,20 +1,17 @@
 package com.tankobon.utils
 
 import com.tankobon.api.BadRequestError
-import com.tankobon.domain.providers.ConfigProvider
 import io.ktor.server.application.ApplicationCall
 import java.io.File
 
 fun callToFile(call: ApplicationCall, initialPath: File): File {
-    val uuid = call.parameters["uuid"]
-    val volume = call.parameters["volume"]
-    val page = call.parameters["page"]
+    val idTitle = call.parameters["id-title"]
+    val idVolume = call.parameters["id-volume"]
+    val idPage = call.parameters["id-page"]
 
-    if (isValidUUID(uuid) && isNumber(volume.orEmpty()) && isNumber(page.orEmpty())) {
+    if (isValidUUID(idTitle) && isValidUUID(idVolume) && isValidUUID(idPage)) {
         return File(
-            "${initialPath.path}/$uuid/" +
-                "${formatDigits(volume?.toIntOrNull() ?: 0, ConfigProvider.get().library.titleDigits)}/" +
-                "${formatDigits(page?.toIntOrNull() ?: 0, ConfigProvider.get().library.volumeDigits)}.jpg"
+            "${initialPath.path}/$idTitle/$idVolume/$idPage.jpg"
         )
     } else {
         throw BadRequestError()

@@ -20,7 +20,7 @@ fun Application.security() {
                     .build()
             )
             validate { credential ->
-                if (credential.payload.getClaim("uuid").asString() != "") {
+                if (credential.payload.getClaim("userId").asString() != "") {
                     JWTPrincipal(credential.payload)
                 } else {
                     null

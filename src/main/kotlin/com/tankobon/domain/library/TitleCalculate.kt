@@ -1,13 +1,11 @@
 package com.tankobon.domain.library
 
 import com.tankobon.domain.models.MangaUpdate
-import com.tankobon.domain.providers.ConfigProvider
-import com.tankobon.utils.formatDigits
-import com.tankobon.utils.isTitleDigits
 import com.tankobon.utils.isValidUUID
 import com.tankobon.utils.logger
 import java.io.File
 import java.nio.file.Path
+import java.util.UUID
 
 fun titleCalculate(task: Task): MangaUpdate {
     val log = logger("library-title")
@@ -35,7 +33,7 @@ fun titleCalculate(task: Task): MangaUpdate {
         if (!isValidUUID(file.name)) {
             originalTitleName = file.name
 
-            val path = Path.of("${file.parentFile}/${task.uuid}").toFile()
+            val path = Path.of("${file.parentFile}/${task.id}").toFile()
             file.renameTo(path)
             file = path
         }
@@ -62,33 +60,34 @@ fun titleCalculate(task: Task): MangaUpdate {
         }
     }
 
-    val result = file.listFiles()
-        ?.filter { it.isDirectory }
-        ?.sorted()
-        ?.mapIndexed { i, e ->
-            var originalVolumeName: String? = null
+    val fileList = file.listFiles()
+        ?.filter { it.isDirectory } ?: emptyList()
 
-            volumeCalculate(
-                // TODO regexes of d{N} to utils
-                if (!isTitleDigits(e.name)) {
-                    originalVolumeName = e.name
-                    val path = File(
-                        "${e.parentFile.path}/" +
-                            formatDigits(i, ConfigProvider.get().library.titleDigits)
-                    )
-                    e.renameTo(path)
-                    path
-                } else {
-                    e
-                }
-            ).copy(order = i, title = originalVolumeName)
-        } ?: listOf()
+    val result = (
+        fileList.filter { isValidUUID(it.nameWithoutExtension) }
+            .plus(fileList.filter { !isValidUUID(it.nameWithoutExtension) }.sorted())
+        ).map { e ->
+        var originalVolumeName: String? = null
+
+        volumeCalculate(
+            if (!isValidUUID(e.name)) {
+                originalVolumeName = e.name
+                val path = File(
+                    "${e.parentFile.path}/" + UUID.randomUUID()
+                )
+                e.renameTo(path)
+                path
+            } else {
+                e
+            }
+        ).copy(title = originalVolumeName)
+    }
 
     log.debug("work for $file ends")
 
     return if (result.flatMap { it.content }.isNotEmpty()) {
         MangaUpdate(
-            id = task.uuid,
+            id = task.id,
             title = originalTitleName,
             volume = result,
         )
@@ -96,7 +95,7 @@ fun titleCalculate(task: Task): MangaUpdate {
         log.warn("title ${file.name} is empty")
         file.deleteRecursively()
         MangaUpdate(
-            id = task.uuid,
+            id = task.id,
             title = originalTitleName,
             volume = result,
         )

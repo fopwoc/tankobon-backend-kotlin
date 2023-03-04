@@ -63,6 +63,10 @@ Content-Type: application/json
   "id": "{{title}}"
 }
 
+> {%
+    client.global.set("title", response.body.id);
+    client.global.set("volume", response.body.content[0].id);
+%}
 
 ### update instance
 POST http://localhost:8080/about/update
@@ -86,6 +90,15 @@ Content-Type: application/json
   "cover": ""
 }
 
+### update manga volume
+POST http://localhost:8080/manga/{{title}}/{{volume}}/update
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "title": "volume name test"
+}
+
 
 ### get page
 GET http://localhost:8080/manga/{{title}}/0/0
@@ -98,7 +111,7 @@ Authorization: Bearer {{access_token}}
 
 
 ### test newuser
-POST http://localhost:8080/newuser
+POST http://localhost:8080/users/create
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 

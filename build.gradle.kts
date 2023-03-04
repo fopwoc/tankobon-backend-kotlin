@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+val javaVersion: String by project
 val kotlinVersion: String by project
 val ktorVersion: String by project
 val exposedVersion: String by project
@@ -14,7 +15,13 @@ tasks.wrapper {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(javaVersion.toInt()))
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion.toInt()))
     }
 }
 
@@ -59,7 +66,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 
-    implementation("com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9")
+    implementation("org.postgresql:postgresql:42.5.4")
 
     implementation("com.lordcodes.turtle:turtle:0.8.0")
 
@@ -91,5 +98,14 @@ tasks {
 tasks {
     build {
         dependsOn(shadowJar)
+    }
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = javaVersion
+        }
+    }
+    shadowJar {
+        isZip64 = true
+        mergeServiceFiles()
     }
 }

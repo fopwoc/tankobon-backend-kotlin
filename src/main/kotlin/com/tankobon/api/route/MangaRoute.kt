@@ -4,6 +4,7 @@ import com.tankobon.api.AdminAuthenticationException
 import com.tankobon.api.models.MangaIdPayload
 import com.tankobon.api.models.MangaPayload
 import com.tankobon.api.models.MangaUpdatePayload
+import com.tankobon.api.models.MangaVolumeUpdatePayload
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.MangaServiceProvider
 import com.tankobon.domain.providers.UserServiceProvider
@@ -11,8 +12,6 @@ import com.tankobon.utils.callToFile
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
@@ -40,24 +39,35 @@ fun Route.mangaRoute() {
             call.respond(mangaService.getManga(payload.id))
         }
 
-        post("/manga/{uuid}/update") {
-            val requestUser = userService.getUser(
-                call.principal<JWTPrincipal>()?.payload?.getClaim("uuid").toString()
-            )
+        post("/manga/{id-title}/update") {
+            val requestUser = userService.getUserCall(call)
+
             if (requestUser.admin) {
                 val payload = call.receive<MangaUpdatePayload>()
-                mangaService.updateManga(call.parameters["uuid"], payload)
+                mangaService.updateMangaInfo(call.parameters["id-title"], payload)
                 call.respond(HttpStatusCode.OK)
             } else {
                 throw AdminAuthenticationException()
             }
         }
 
-        get("/manga/{uuid}/{volume}/{page}") {
+        post("/manga/{id-title}/{id-volume}/update") {
+            val requestUser = userService.getUserCall(call)
+
+            if (requestUser.admin) {
+                val payload = call.receive<MangaVolumeUpdatePayload>()
+                mangaService.updateMangaVolumeInfo(call.parameters["id-title"], call.parameters["id-volume"], payload)
+                call.respond(HttpStatusCode.OK)
+            } else {
+                throw AdminAuthenticationException()
+            }
+        }
+
+        get("/manga/{id-title}/{id-volume}/{id-page}") {
             call.respondFile(callToFile(call, ConfigProvider.get().library.mangaFile))
         }
 
-        get("/thumb/{uuid}/{volume}/{page}") {
+        get("/thumb/{id-title}/{id-volume}/{id-page}") {
             call.respondFile(callToFile(call, ConfigProvider.get().library.thumbFile))
         }
     }

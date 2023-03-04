@@ -5,13 +5,21 @@ server:
   password: "password"
 
 database:
-  url: "jdbc:pgsql://postgres:5432/postgres"
+  #url: "jdbc:pgsql://postgres:5432/postgres"
+  url: "jdbc:postgresql://localhost:5432/postgres"
   user: "postgres"
   password: "password"
+  schema: "tankobon"
+  bcryptRounds: 12
 
 api:
   address: "0.0.0.0"
   port: 8080
+  expire:
+    # milliseconds
+    # 0 - infinite
+    access: 86400000
+    refresh: 1209600000
 
 library:
   manga: "./manga"

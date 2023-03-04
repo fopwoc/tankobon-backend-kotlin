@@ -1,6 +1,8 @@
 package com.tankobon.domain.models
 
+import java.util.UUID
+
 data class UserHash(
-    val id: String,
+    val id: UUID,
     val password: String,
 )

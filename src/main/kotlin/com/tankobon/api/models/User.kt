@@ -1,15 +1,19 @@
 package com.tankobon.api.models
 
+import com.tankobon.utils.UUIDSerializer
+import java.util.UUID
 import kotlinx.serialization.Serializable
 
 // TODO show expire time
 @Serializable
 data class User(
-    val uuid: String,
+    @Serializable(with = UUIDSerializer::class)
+    val id: UUID,
     val username: String,
-    val registerDate: Long,
     val active: Boolean,
     val admin: Boolean,
+    val created: Long,
+    val modified: Long,
 )
 
 @Serializable

@@ -17,7 +17,7 @@ private const val TASK_DEBOUNCE = 1000L * 5
 enum class TaskState { WAITING, ONGOING, DONE, }
 data class Task(
     val file: File,
-    val uuid: UUID,
+    val id: UUID,
     val state: TaskState,
     val lastUpdate: Long,
 )
@@ -40,10 +40,10 @@ class TaskQueue {
         val currentQueue = queue
 
         val oldTask = currentQueue.firstOrNull {
-            it.uuid == newTask.uuid || it.file.nameWithoutExtension == newTask.file.nameWithoutExtension
+            it.id == newTask.id || it.file.nameWithoutExtension == newTask.file.nameWithoutExtension
         }
 
-        val updateTask = oldTask?.let { newTask.copy(uuid = it.uuid) }
+        val updateTask = oldTask?.let { newTask.copy(id = it.id) }
 
         log.trace("previous task was $oldTask")
         log.trace("update task is $updateTask")
@@ -78,13 +78,13 @@ class TaskQueue {
         submit(task.copy(state = TaskState.ONGOING, lastUpdate = System.currentTimeMillis()))
         val time = measureTimeMillis {
             val result = titleCalculate(task)
-            log.debug("result for ${task.uuid} is ${result.volume.map { it.content.size }}")
-            log.trace("trace result for ${task.uuid} is $result")
-            runBlocking { MangaServiceProvider.get().updateMangaLibrary(result) }
+            log.debug("result for ${task.id} is ${result.volume.map { it.content.size }}")
+            log.trace("trace result for ${task.id} is $result")
+            runBlocking { MangaServiceProvider.get().updateManga(result) }
         }
 
         log.debug(
-            "task ${task.uuid} done. Time estimated " +
+            "task ${task.id} done. Time estimated " +
                 "${msToMinutes(time)}:${msToRemainderSeconds(time)}:${msToRemainderMs(time)}"
         )
         submit(task.copy(state = TaskState.DONE, lastUpdate = System.currentTimeMillis()))

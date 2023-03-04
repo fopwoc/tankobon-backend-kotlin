@@ -1,6 +1,7 @@
 package com.tankobon.domain.library
 
 import com.tankobon.domain.providers.ConfigProvider
+import com.tankobon.domain.providers.MangaServiceProvider
 import com.tankobon.domain.providers.TaskQueueProvider
 import com.tankobon.utils.KWatchChannel
 import com.tankobon.utils.asWatchChannel
@@ -42,14 +43,22 @@ class Library {
         runBlocking {
             GlobalScope.launch { taskQueue.runQueue() }
 
-            // before start service recalculate all items in library
-            // FIXME if after restart folder will change (ex. one title was removed), it will remain in DB
-            mangaFile.listFiles()?.forEach { e ->
+            val listFiles = mangaFile.listFiles()?.filter {
+                !it.name.contains(".DS_Store")
+            } ?: emptyList()
+
+            MangaServiceProvider.get().cleanupMangaByIds(
+                listFiles.mapNotNull {
+                    uuidFromString(it.nameWithoutExtension)
+                }
+            )
+
+            listFiles.forEach { e ->
                 if (!e.name.contains(".DS_Store")) {
                     taskQueue.submit(
                         Task(
                             file = e,
-                            uuid = uuidFromString(e.name) ?: UUID.randomUUID(),
+                            id = uuidFromString(e.nameWithoutExtension) ?: UUID.randomUUID(),
                             state = TaskState.WAITING,
                             lastUpdate = System.currentTimeMillis()
                         )
@@ -76,7 +85,7 @@ class Library {
                             taskQueue.submit(
                                 Task(
                                     file = file,
-                                    uuid = uuidFromString(file.name) ?: UUID.randomUUID(),
+                                    id = uuidFromString(file.name) ?: UUID.randomUUID(),
                                     state = TaskState.WAITING,
                                     lastUpdate = System.currentTimeMillis() + TASK_DEBOUNCE,
                                 )

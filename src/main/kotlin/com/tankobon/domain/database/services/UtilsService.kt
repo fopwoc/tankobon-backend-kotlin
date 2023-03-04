@@ -43,18 +43,20 @@ class UtilsService {
         ) as RSAPrivateKey
     }
 
-    fun getInstanceId(): String = transaction(db = database) {
-        UtilsModel.selectAll().map { it.toUtils() }.first().instanceUuid
+    fun getInstanceId(): UUID = transaction(db = database) {
+        UtilsModel.selectAll().map { it.toUtils() }.first().instanceId
     }
 
     suspend fun getAbout(): UtilsAbout = newSuspendedTransaction(db = database) {
         UtilsModel.selectAll().map { it.toAbout() }.first()
     }
 
-    suspend fun setAbout(payload: UtilsAboutUpdatePayload) = newSuspendedTransaction(db = database) {
-        UtilsModel.update({ UtilsModel.instanceUuid.isNotNull() }) {
-            it[instanceTitle] = payload.instanceName
-            it[instanceDescription] = payload.instanceDescription
+    suspend fun setAbout(
+        payload: UtilsAboutUpdatePayload,
+    ) = newSuspendedTransaction(db = database) {
+        UtilsModel.update {
+            it[this.instanceTitle] = payload.instanceName
+            it[this.instanceDescription] = payload.instanceDescription
         }
     }
 }

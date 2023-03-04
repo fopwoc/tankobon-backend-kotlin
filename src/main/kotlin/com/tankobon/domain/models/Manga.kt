@@ -5,6 +5,6 @@ import java.util.UUID
 
 data class MangaUpdate(
     val id: UUID,
-    val title: String?,
-    val volume: List<MangaVolume>,
+    val title: String? = null,
+    val volume: List<MangaVolume> = emptyList(),
 )

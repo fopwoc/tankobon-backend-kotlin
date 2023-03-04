@@ -20,12 +20,20 @@ data class ConfigDatabase(
     val url: String,
     val user: String,
     val password: String,
+    val schema: String = "tankobon",
+    val bcryptRounds: Int = 12,
 )
 
 data class ConfigApi(
     val address: String,
     val port: Int,
     val issuer: String = "http://$address:$port/",
+    val expire: ExpireApi,
+)
+
+data class ExpireApi(
+    val access: Int = 86400000,
+    val refresh: Int = 1209600000,
 )
 
 data class ConfigLibrary(
@@ -37,7 +45,4 @@ data class ConfigLibrary(
 
     val thumbFile: File = File("$data/thumb").canonicalFile,
     val unsupportedFile: File = File("$data/unsupported").canonicalFile,
-
-    val titleDigits: Int = 4,
-    val volumeDigits: Int = 5,
 )

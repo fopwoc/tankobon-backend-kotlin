@@ -17,10 +17,6 @@ fun formatTime(time: LocalDateTime = LocalDateTime.now()): String {
     return result
 }
 
-fun daysToMs(days: Int): Long {
-    return TimeUnit.MILLISECONDS.convert(days.toLong(), TimeUnit.DAYS)
-}
-
 fun msToMinutes(time: Long): Long {
     return time / Duration.ofSeconds(1).toMillis() / Duration.ofMinutes(1).toSeconds()
 }

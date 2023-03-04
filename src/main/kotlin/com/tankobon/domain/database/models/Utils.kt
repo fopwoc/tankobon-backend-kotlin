@@ -2,24 +2,24 @@ package com.tankobon.domain.database.models
 
 import com.tankobon.api.models.UtilsAbout
 import com.tankobon.domain.models.Utils
+import com.tankobon.domain.providers.ConfigProvider
+import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
 
-private const val UTILS_MODEL_INSTANCE_UUID_LENGTH = 36
-private const val UTILS_MODEL_PUBLIC_KEY_LENGTH = 1024
-private const val UTILS_MODEL_PRIVATE_KEY_LENGTH = 4096
+private const val UTILS_MODEL_INSTANCE_TITLE = 64
 
-object UtilsModel : Table(name = "UTILS") {
-    val instanceUuid = varchar("uuid", UTILS_MODEL_INSTANCE_UUID_LENGTH)
-    val publicKey = varchar("publickey", UTILS_MODEL_PUBLIC_KEY_LENGTH)
-    val privateKey = varchar("privatekey", UTILS_MODEL_PRIVATE_KEY_LENGTH)
-    var creationDate = long("creationDate")
-    var instanceTitle = text("instanceTitle")
-    var instanceDescription = text("instanceDescription")
+object UtilsModel : UUIDTable(
+    name = "${ConfigProvider.get().database.schema}.utils"
+) {
+    val publicKey = text("public_key")
+    val privateKey = text("private_key")
+    var creationDate = long("creation_date")
+    var instanceTitle = varchar("instance_title", UTILS_MODEL_INSTANCE_TITLE)
+    var instanceDescription = text("instance_description")
 }
 
 fun ResultRow.toUtils() = Utils(
-    instanceUuid = this[UtilsModel.instanceUuid],
+    instanceId = this[UtilsModel.id].value,
     public = this[UtilsModel.publicKey],
     private = this[UtilsModel.privateKey],
     creationDate = this[UtilsModel.creationDate],

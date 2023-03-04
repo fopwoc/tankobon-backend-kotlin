@@ -27,7 +27,7 @@ fun Route.utilsRoute() {
         post("/about/update") {
             val payload = call.receive<UtilsAboutUpdatePayload>()
             val requestUser = userService.getUser(
-                call.principal<JWTPrincipal>()?.payload?.getClaim("uuid").toString()
+                call.principal<JWTPrincipal>()?.payload?.getClaim("userId").toString()
             )
             if (requestUser.admin) {
                 utilsService.setAbout(payload)

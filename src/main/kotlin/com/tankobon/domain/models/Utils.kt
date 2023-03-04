@@ -1,7 +1,9 @@
 package com.tankobon.domain.models
 
+import java.util.UUID
+
 data class Utils(
-    val instanceUuid: String,
+    val instanceId: UUID,
     val public: String,
     val private: String,
     val creationDate: Long,

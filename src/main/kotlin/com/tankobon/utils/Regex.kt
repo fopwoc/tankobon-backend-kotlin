@@ -1,19 +1,5 @@
 package com.tankobon.utils
 
-import com.tankobon.domain.providers.ConfigProvider
-
-fun isNumber(string: String): Boolean {
-    return Regex("^(\\d*)\$").matches(string)
-}
-
-fun isTitleDigits(name: String): Boolean {
-    return Regex("^\\d{${ConfigProvider.get().library.titleDigits}}\$").matches(name)
-}
-
-fun isVolumeDigits(name: String): Boolean {
-    return Regex("^\\d{${ConfigProvider.get().library.titleDigits}}\$").matches(name)
-}
-
 fun isZipFile(name: String): Boolean {
     return Regex("^(zip|cbz)\$").matches(name)
 }
