@@ -13,7 +13,6 @@ import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.injectLogger
 import com.tankobon.utils.uuidFromString
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.application.call
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import org.jetbrains.exposed.sql.andWhere
