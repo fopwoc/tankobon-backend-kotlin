@@ -1,4 +1,4 @@
-FROM gradle:7.6.0-jdk17 AS build
+FROM gradle:8-jdk17 AS build
 
 LABEL MAINTAINER="Ilya Dobryakov <ilya.dobryakov@icloud.com>"
 
