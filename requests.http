@@ -7,7 +7,7 @@ POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-  "username": "user",
+  "username": "user2",
   "password": "password"
 }
 
@@ -66,6 +66,7 @@ Content-Type: application/json
 > {%
     client.global.set("title", response.body.id);
     client.global.set("volume", response.body.content[0].id);
+    client.global.set("page", response.body.content[0].content[0].id);
 %}
 
 ### update instance
@@ -101,12 +102,12 @@ Content-Type: application/json
 
 
 ### get page
-GET http://localhost:8080/manga/{{title}}/0/0
+GET http://localhost:8080/manga/{{title}}/{{volume}}/{{page}}
 Authorization: Bearer {{access_token}}
 
 
 ### get thumb
-GET http://localhost:8080/thumb/{{title}}/0/0
+GET http://localhost:8080/thumb/{{title}}/{{volume}}/{{page}}
 Authorization: Bearer {{access_token}}
 
 
