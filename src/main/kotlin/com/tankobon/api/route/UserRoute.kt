@@ -29,7 +29,7 @@ fun Route.userRoute() {
                 call.principal<JWTPrincipal>()?.payload?.getClaim("userId").toString()
             )
             if (requestUser.admin) {
-                userService.addUser(newUser.username, newUser.password, newUser.admin)
+                userService.addUser(newUser.username, newUser.password, isAdmin = newUser.admin)
                 call.respond(HttpStatusCode.OK, "user ${newUser.username} created")
             } else {
                 throw AdminAuthenticationException()

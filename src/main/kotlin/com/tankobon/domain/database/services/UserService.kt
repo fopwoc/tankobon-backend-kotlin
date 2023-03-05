@@ -48,8 +48,8 @@ class UserService {
     fun addUser(
         username: String,
         password: String,
-        isActive: Boolean? = null,
-        isAdmin: Boolean? = null,
+        isActive: Boolean = true,
+        isAdmin: Boolean = false,
     ) = transaction(db = database) {
         if (UserModel.selectAll().andWhere { UserModel.username eq username }.toList().isEmpty()) {
             UserModel.insert {
@@ -60,8 +60,8 @@ class UserService {
                 )
                 it[this.created] = System.currentTimeMillis()
                 it[this.modified] = System.currentTimeMillis()
-                it[this.active] = isActive ?: true
-                it[this.admin] = isAdmin ?: false
+                it[this.active] = isActive
+                it[this.admin] = isAdmin
             }
         } else {
             throw UserExistException()
