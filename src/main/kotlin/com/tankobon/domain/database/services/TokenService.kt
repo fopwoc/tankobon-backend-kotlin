@@ -3,13 +3,13 @@ package com.tankobon.domain.database.services
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.tankobon.api.CredentialsException
-import com.tankobon.api.models.TokenPair
-import com.tankobon.domain.database.models.RefreshTokenModel
+import com.tankobon.api.models.TokenPairModel
+import com.tankobon.domain.database.models.RefreshTokenTable
 import com.tankobon.domain.database.models.toRefreshTokenData
-import com.tankobon.domain.models.RefreshTokenData
+import com.tankobon.domain.models.TokenData
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.DatabaseProvider
-import com.tankobon.domain.providers.UtilsServiceProvider
+import com.tankobon.domain.providers.InstanceServiceProvider
 import com.tankobon.utils.sha256
 import com.tankobon.utils.toHex
 import kotlinx.coroutines.Dispatchers.Default
@@ -31,8 +31,9 @@ class TokenService {
     fun getTokenPair(
         userId: UUID,
         userAgent: String? = null,
+        userIP: String? = null,
         oldToken: String? = null,
-    ): TokenPair {
+    ): TokenPairModel {
         return runBlocking {
             val currentTime = System.currentTimeMillis()
             val access = createAccessToken(userId)
@@ -43,31 +44,33 @@ class TokenService {
             withContext(Default) {
                 if (oldToken.isNullOrEmpty()) {
                     newSuspendedTransaction(db = database) {
-                        RefreshTokenModel.insert {
+                        RefreshTokenTable.insert {
+                            it[this.id] = UUID.randomUUID()
                             it[this.userId] = userId
                             it[this.userAgent] = userAgent ?: "unknown"
+                            it[this.userIP] = userIP ?: "unknown"
                             it[this.refreshToken] = refresh
                             it[this.expires] = if (expireRefresh != 0) { currentTime + expireRefresh } else { 0 }
                         }
                     }
                 } else {
                     newSuspendedTransaction(db = database) {
-                        RefreshTokenModel.update({ RefreshTokenModel.refreshToken eq oldToken }) {
+                        RefreshTokenTable.update({ RefreshTokenTable.refreshToken eq oldToken }) {
                             it[this.refreshToken] = refresh
                             it[this.expires] = if (expireRefresh != 0) { currentTime + expireRefresh } else { 0 }
                         }
                     }
                 }
             }
-            return@runBlocking TokenPair(UtilsService().getInstanceId(), access, refresh)
+            return@runBlocking TokenPairModel(InstanceService().getInstanceId(), access, refresh)
         }
     }
 
-    fun getRefreshData(refreshToken: String): RefreshTokenData {
+    fun getRefreshData(refreshToken: String): TokenData {
         return transaction(db = database) {
             val newRefreshToken = (
-                RefreshTokenModel
-                    .select { RefreshTokenModel.refreshToken eq refreshToken }
+                RefreshTokenTable
+                    .select { RefreshTokenTable.refreshToken eq refreshToken }
                     .mapNotNull { it.toRefreshTokenData() }.singleOrNull()
                 )
 
@@ -77,8 +80,8 @@ class TokenService {
 
     suspend fun deleteRefreshData(refreshToken: String) {
         return newSuspendedTransaction(db = database) {
-            RefreshTokenModel
-                .deleteWhere { RefreshTokenModel.refreshToken eq refreshToken }
+            RefreshTokenTable
+                .deleteWhere { RefreshTokenTable.refreshToken eq refreshToken }
         }
     }
 
@@ -89,6 +92,6 @@ class TokenService {
             .withIssuer(ConfigProvider.get().api.issuer)
             .withClaim("userId", userId.toString())
             .withExpiresAt(Date(if (expireAccess != 0) { currentTime + expireAccess } else { 0 }))
-            .sign(Algorithm.RSA256(null, UtilsServiceProvider.get().getPrivateKey()))
+            .sign(Algorithm.RSA256(null, InstanceServiceProvider.get().getPrivateKey()))
     }
 }

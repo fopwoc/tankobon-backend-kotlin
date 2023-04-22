@@ -1,6 +1,7 @@
 package com.tankobon.api
 
-import com.tankobon.api.models.ExceptionResponse
+import com.tankobon.api.models.ExceptionMessageModel
+import com.tankobon.domain.models.BackendExceptionType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.plugins.NotFoundException
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
@@ -22,8 +23,8 @@ fun StatusPagesConfig.statusPages() {
     exception<CredentialsException> { call, _ ->
         call.respond(
             HttpStatusCode.Forbidden,
-            ExceptionResponse(
-                type = "wrong_credentials",
+            ExceptionMessageModel(
+                type = BackendExceptionType.WRONG_CREDENTIALS,
                 message = null,
             ),
         )
@@ -32,8 +33,8 @@ fun StatusPagesConfig.statusPages() {
     exception<AdminAuthenticationException> { call, _ ->
         call.respond(
             HttpStatusCode.Forbidden,
-            ExceptionResponse(
-                type = "not_admin",
+            ExceptionMessageModel(
+                type = BackendExceptionType.NOT_ADMIN,
                 message = null,
             ),
         )
@@ -42,8 +43,8 @@ fun StatusPagesConfig.statusPages() {
     exception<UserExistException> { call, _ ->
         call.respond(
             HttpStatusCode.Conflict,
-            ExceptionResponse(
-                type = "user_exist",
+            ExceptionMessageModel(
+                type = BackendExceptionType.USER_EXIST,
                 message = null,
             ),
         )
@@ -52,8 +53,8 @@ fun StatusPagesConfig.statusPages() {
     exception<InternalServerError> { call, trace ->
         call.respond(
             HttpStatusCode.InternalServerError,
-            ExceptionResponse(
-                type = "unknown",
+            ExceptionMessageModel(
+                type = BackendExceptionType.UNKNOWN,
                 message = "${trace.message}",
             ),
         )

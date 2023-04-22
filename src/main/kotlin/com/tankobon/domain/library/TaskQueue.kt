@@ -15,6 +15,7 @@ private const val TASK_DELAY = 1000L
 private const val TASK_DEBOUNCE = 1000L * 5
 
 enum class TaskState { WAITING, ONGOING, DONE, }
+
 data class Task(
     val file: File,
     val id: UUID,
@@ -78,7 +79,7 @@ class TaskQueue {
         submit(task.copy(state = TaskState.ONGOING, lastUpdate = System.currentTimeMillis()))
         val time = measureTimeMillis {
             val result = titleCalculate(task)
-            log.debug("result for ${task.id} is ${result.volume.map { it.content.size }}")
+            log.debug("result for ${task.id} is ${result.content.map { it.content.size }}")
             log.trace("trace result for ${task.id} is $result")
             runBlocking { MangaServiceProvider.get().updateManga(result) }
         }
@@ -103,6 +104,8 @@ class TaskQueue {
 
     suspend fun runQueue() {
         keepWorking = true
+
+        //TODO: try to rewrite with coroutines and flow
         while (keepWorking) {
             delay(TASK_DELAY)
             log.trace("queue $queue")
@@ -116,7 +119,7 @@ class TaskQueue {
         }
     }
 
-    // TODO SIGKILL support
+    // TODO: SIGKILL support
     fun stopQueue() {
         keepWorking = false
     }

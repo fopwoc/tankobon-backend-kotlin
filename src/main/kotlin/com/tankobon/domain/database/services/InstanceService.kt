@@ -1,10 +1,10 @@
 package com.tankobon.domain.database.services
 
-import com.tankobon.api.models.UtilsAbout
-import com.tankobon.api.models.UtilsAboutUpdatePayload
-import com.tankobon.domain.database.models.UtilsModel
-import com.tankobon.domain.database.models.toAbout
-import com.tankobon.domain.database.models.toUtils
+import com.tankobon.api.models.InstanceAboutModel
+import com.tankobon.api.models.InstanceAboutUpdatePayloadModel
+import com.tankobon.domain.database.models.InstanceTable
+import com.tankobon.domain.database.models.toInstance
+import com.tankobon.domain.database.models.toInstanceAbout
 import com.tankobon.domain.providers.DatabaseProvider
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -15,9 +15,10 @@ import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 
-class UtilsService {
+class InstanceService {
     val database = DatabaseProvider.get()
 
     private val decoder: Base64.Decoder = Base64.getDecoder()
@@ -27,7 +28,7 @@ class UtilsService {
         keyFactory.generatePublic(
             X509EncodedKeySpec(
                 decoder.decode(
-                    UtilsModel.selectAll().map { it.toUtils() }.first().public
+                    InstanceTable.selectAll().map { it.toInstance() }.first().publicKey
                 )
             )
         ) as RSAPublicKey
@@ -37,26 +38,26 @@ class UtilsService {
         keyFactory.generatePrivate(
             PKCS8EncodedKeySpec(
                 decoder.decode(
-                    UtilsModel.selectAll().map { it.toUtils() }.first().private
+                    InstanceTable.selectAll().map { it.toInstance() }.first().privateKey
                 )
             )
         ) as RSAPrivateKey
     }
 
     fun getInstanceId(): UUID = transaction(db = database) {
-        UtilsModel.selectAll().map { it.toUtils() }.first().instanceId
+        InstanceTable.selectAll().map { it.toInstance() }.first().id
     }
 
-    suspend fun getAbout(): UtilsAbout = newSuspendedTransaction(db = database) {
-        UtilsModel.selectAll().map { it.toAbout() }.first()
+    suspend fun getAbout(): InstanceAboutModel = newSuspendedTransaction(db = database) {
+        InstanceTable.selectAll().map { it.toInstanceAbout() }.first()
     }
 
     suspend fun setAbout(
-        payload: UtilsAboutUpdatePayload,
+        payload: InstanceAboutUpdatePayloadModel,
     ) = newSuspendedTransaction(db = database) {
-        UtilsModel.update {
-            it[this.instanceTitle] = payload.instanceName
-            it[this.instanceDescription] = payload.instanceDescription
+        InstanceTable.update {
+            it[this.title] = payload.title
+            it[this.description] = payload.description
         }
     }
 }

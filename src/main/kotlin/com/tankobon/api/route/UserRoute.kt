@@ -1,8 +1,8 @@
 package com.tankobon.api.route
 
-import com.tankobon.api.AdminAuthenticationException
-import com.tankobon.api.models.CreateUserPayload
+import com.tankobon.api.models.CreateUserPayloadModel
 import com.tankobon.domain.providers.UserServiceProvider
+import com.tankobon.utils.isAdmin
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -18,21 +18,22 @@ fun Route.userRoute() {
     val userService = UserServiceProvider.get()
 
     authenticate("auth-jwt") {
+        // gets info about user itself
         get("/users/me") {
             val principal = call.principal<JWTPrincipal>() // TODO \"\" fix
             call.respond(userService.getUser(principal?.payload?.getClaim("userId").toString()))
         }
 
+        // creates new user
         post("/users/create") {
-            val newUser = call.receive<CreateUserPayload>()
-            val requestUser = userService.getUser(
-                call.principal<JWTPrincipal>()?.payload?.getClaim("userId").toString()
-            )
-            if (requestUser.admin) {
-                userService.addUser(newUser.username, newUser.password, isAdmin = newUser.admin)
+            isAdmin(call) {
+                val newUser = call.receive<CreateUserPayloadModel>()
+                userService.addUser(
+                    username = newUser.username,
+                    password = newUser.password,
+                    isAdmin = newUser.admin,
+                )
                 call.respond(HttpStatusCode.OK, "user ${newUser.username} created")
-            } else {
-                throw AdminAuthenticationException()
             }
         }
     }

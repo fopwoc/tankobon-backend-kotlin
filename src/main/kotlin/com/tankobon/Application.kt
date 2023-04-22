@@ -3,7 +3,7 @@ package com.tankobon
 import com.tankobon.api.route.authRoute
 import com.tankobon.api.route.mangaRoute
 import com.tankobon.api.route.userRoute
-import com.tankobon.api.route.utilsRoute
+import com.tankobon.api.route.instanceRoute
 import com.tankobon.api.security
 import com.tankobon.api.statusPages
 import com.tankobon.domain.database.DatabaseFactory
@@ -59,6 +59,6 @@ fun Application.webServer() {
         authRoute()
         userRoute()
         mangaRoute()
-        utilsRoute()
+        instanceRoute()
     }
 }

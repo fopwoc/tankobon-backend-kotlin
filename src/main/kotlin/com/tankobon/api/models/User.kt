@@ -1,30 +1,38 @@
 package com.tankobon.api.models
 
+import com.tankobon.domain.models.DateEntity
+import com.tankobon.domain.models.IdEntity
+import com.tankobon.domain.models.UserPrivilegedUpdatable
+import com.tankobon.domain.models.UserPublic
+import com.tankobon.domain.models.UserUpdatable
 import com.tankobon.utils.UUIDSerializer
-import java.util.UUID
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
-// TODO show expire time
+// TODO: show expire time
 @Serializable
-data class User(
+data class UserModel(
     @Serializable(with = UUIDSerializer::class)
-    val id: UUID,
-    val username: String,
-    val active: Boolean,
-    val admin: Boolean,
-    val created: Long,
-    val modified: Long,
-)
+    override val id: UUID,
+    override val username: String,
+    override val active: Boolean,
+    override val admin: Boolean,
+    override val creation: Long,
+    override val modified: Long,
+) : IdEntity<UUID>, DateEntity<Long>, UserPublic, UserPrivilegedUpdatable
 
 @Serializable
-data class CreateUserPayload(
-    val username: String,
-    val password: String,
-    val admin: Boolean,
-)
+data class CreateUserPayloadModel(
+    override val username: String,
+    override val password: String,
+    override val admin: Boolean,
+    override val active: Boolean,
+) : UserUpdatable, UserPrivilegedUpdatable
 
 @Serializable
-data class UserPayload(
-    val username: String,
-    val password: String,
-)
+data class UserLoginPayloadModel(
+    override val username: String,
+    override val password: String
+) : UserUpdatable
+
+

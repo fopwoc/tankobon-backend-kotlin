@@ -8,11 +8,6 @@ val detektVersion: String by project
 val hopliteVersion: String by project
 val logbackVersion: String by project
 
-tasks.wrapper {
-    gradleVersion = "7.6"
-    distributionType = Wrapper.DistributionType.BIN
-}
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion.toInt()))
@@ -66,11 +61,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 
-    implementation("org.postgresql:postgresql:42.5.4")
+    implementation("org.postgresql:postgresql:42.6.0")
 
     implementation("com.lordcodes.turtle:turtle:0.8.0")
 
-    implementation("com.sksamuel.scrimage:scrimage-core:4.0.33")
+    implementation("com.sksamuel.scrimage:scrimage-core:4.0.34")
 
     implementation("ch.qos.logback:logback-core:$logbackVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -84,7 +79,7 @@ dependencies {
     implementation("com.sksamuel.hoplite:hoplite-toml:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
+    testImplementation(kotlin("test"))
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion")
 }
@@ -108,4 +103,8 @@ tasks {
         isZip64 = true
         mergeServiceFiles()
     }
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

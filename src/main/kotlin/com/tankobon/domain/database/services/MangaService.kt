@@ -1,14 +1,13 @@
 package com.tankobon.domain.database.services
 
 import com.tankobon.api.models.Manga
-import com.tankobon.api.models.MangaEntity
-import com.tankobon.api.models.MangaPayload
+import com.tankobon.api.models.MangaFilterPayloadModel
 import com.tankobon.api.models.MangaTitle
-import com.tankobon.api.models.MangaUpdatePayload
-import com.tankobon.api.models.MangaVolumeUpdatePayload
-import com.tankobon.domain.database.models.MangaPageModel
-import com.tankobon.domain.database.models.MangaTitleModel
-import com.tankobon.domain.database.models.MangaVolumeModel
+import com.tankobon.api.models.MangaTitleUpdatePayloadModel
+import com.tankobon.api.models.MangaVolumeUpdatePayloadModel
+import com.tankobon.domain.database.models.MangaPageTable
+import com.tankobon.domain.database.models.MangaTitleTable
+import com.tankobon.domain.database.models.MangaVolumeTable
 import com.tankobon.domain.database.models.toManga
 import com.tankobon.domain.database.models.toMangaPage
 import com.tankobon.domain.database.models.toMangaTitle
@@ -21,6 +20,7 @@ import com.tankobon.domain.database.services.manga.deleteMangaTitle
 import com.tankobon.domain.database.services.manga.deleteMangaVolume
 import com.tankobon.domain.database.services.manga.doesTitleExists
 import com.tankobon.domain.database.services.manga.updateDateMangaTitle
+import com.tankobon.domain.models.IdEntity
 import com.tankobon.domain.models.MangaUpdate
 import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.injectLogger
@@ -44,12 +44,12 @@ class MangaService {
     val database = DatabaseProvider.get()
 
     suspend fun getMangaList(
-        payload: MangaPayload?,
+        payload: MangaFilterPayloadModel?,
     ): List<MangaTitle> = newSuspendedTransaction(db = database) {
         val query = if (!payload?.search.isNullOrBlank()) {
-            MangaTitleModel.select { MangaTitleModel.title match payload?.search.toString() }
+            MangaTitleTable.select { MangaTitleTable.title match payload?.search.toString() }
         } else {
-            MangaTitleModel.selectAll()
+            MangaTitleTable.selectAll()
         }
 
         return@newSuspendedTransaction query.limit(
@@ -59,21 +59,21 @@ class MangaService {
     }
 
     suspend fun getManga(
-        id: UUID,
+        id: UUID?,
     ): Manga = newSuspendedTransaction(db = database) {
-        val mangaTitle = MangaTitleModel
+        val mangaTitle = MangaTitleTable
             .select {
-                MangaTitleModel.id eq id
+                MangaTitleTable.id eq id
             }.firstOrNull()?.toManga()
             ?: throw NotFoundException()
 
-        val mangaVolume = MangaVolumeModel.select {
-            MangaVolumeModel.titleId eq mangaTitle.id
-        }.sortedBy { it[MangaVolumeModel.order] }.map { volume ->
+        val mangaVolume = MangaVolumeTable.select {
+            MangaVolumeTable.titleId eq mangaTitle.id
+        }.sortedBy { it[MangaVolumeTable.order] }.map { volume ->
             volume.toMangaVolume().copy(
-                content = MangaPageModel.select {
-                    MangaPageModel.volumeId eq volume[MangaVolumeModel.id]
-                }.sortedBy { it[MangaPageModel.order] }.map { it.toMangaPage() }
+                content = MangaPageTable.select {
+                    MangaPageTable.volumeId eq volume[MangaVolumeTable.id]
+                }.sortedBy { it[MangaPageTable.order] }.map { it.toMangaPage() }
             )
         }
 
@@ -85,7 +85,7 @@ class MangaService {
     ) = newSuspendedTransaction(db = database) {
         log.debug("addMangaList is $update")
 
-        val empty = update.volume.flatMap { it.content }.isEmpty()
+        val empty = update.content.flatMap { it.content }.isEmpty()
 
         if (!empty) {
             val condition = doesTitleExists(update.id)
@@ -95,8 +95,8 @@ class MangaService {
                 updateMangaContent(update)
             } else {
                 createMangeTitle(update)
-                createMangeVolume(update.id, update.volume)
-                update.volume.map { createMangePage(it.id, it.content) }
+                createMangeVolume(update.id, update.content)
+                update.content.map { createMangePage(it.id, it.content) }
             }
         } else {
             deleteMangaPage(update.id)
@@ -107,24 +107,23 @@ class MangaService {
 
     suspend fun updateMangaInfo(
         titleId: String?,
-        mangaUpdate: MangaUpdatePayload,
+        mangaUpdate: MangaTitleUpdatePayloadModel,
     ) = newSuspendedTransaction(db = database) {
-        MangaTitleModel.update({ MangaTitleModel.id eq uuidFromString(titleId) }) {
+        MangaTitleTable.update({ MangaTitleTable.id eq uuidFromString(titleId) }) {
             it[this.title] = mangaUpdate.title
             it[this.description] = mangaUpdate.description
-            it[this.cover] = mangaUpdate.cover
-            it[this.updatedDate] = System.currentTimeMillis() // TODO all time to Instant.now().toEpochMilli()
+            it[this.modified] = System.currentTimeMillis() // TODO all time to Instant.now().toEpochMilli()
         }
     }
 
     suspend fun updateMangaVolumeInfo(
         titleId: String?,
         volumeId: String?,
-        mangaUpdate: MangaVolumeUpdatePayload,
+        mangaUpdate: MangaVolumeUpdatePayloadModel,
     ) = newSuspendedTransaction(db = database) {
-        // TODO check is title id correct before changing volume title
+        // TODO: check is title id correct before changing volume title
 
-        MangaVolumeModel.update({ MangaVolumeModel.id eq uuidFromString(volumeId) }) {
+        MangaVolumeTable.update({ MangaVolumeTable.id eq uuidFromString(volumeId) }) {
             it[this.title] = mangaUpdate.title
         }
         updateDateMangaTitle(UUID.fromString(titleId))
@@ -133,7 +132,7 @@ class MangaService {
     suspend fun cleanupMangaByIds(
         ids: List<UUID>,
     ) = newSuspendedTransaction(db = database) {
-        val mangaList = MangaTitleModel.selectAll().map { it[MangaTitleModel.id].value }
+        val mangaList = MangaTitleTable.selectAll().map { it[MangaTitleTable.id].value }
         val deletedIds = mangaList.filter { !ids.contains(it) }
 
         log.debug("deleted ids $deletedIds")
@@ -149,16 +148,16 @@ class MangaService {
         val originalManga = getManga(update.id)
 
         val updateCorrectOrder = sortEntity(
-            MangaVolumeModel.select {
-                MangaVolumeModel.titleId eq originalManga.id
-            }.orderBy(MangaVolumeModel.order).map { it.toMangaVolume() },
-            update.volume,
+            MangaVolumeTable.select {
+                MangaVolumeTable.titleId eq originalManga.id
+            }.orderBy(MangaVolumeTable.order).map { it.toMangaVolume() },
+            update.content,
         ).map { volume ->
             volume.copy(
                 content = sortEntity(
-                    MangaPageModel.select {
-                        MangaPageModel.volumeId eq volume.id
-                    }.orderBy(MangaPageModel.order).map { it.toMangaPage() },
+                    MangaPageTable.select {
+                        MangaPageTable.id eq volume.id
+                    }.orderBy(MangaPageTable.order).map { it.toMangaPage() },
                     volume.content,
                 )
             )
@@ -182,8 +181,8 @@ class MangaService {
 
         if (isContentUpdated) {
             newSuspendedTransaction(db = database) {
-                originalManga.content.forEach { volume -> MangaPageModel.deleteWhere { volumeId eq volume.id } }
-                MangaVolumeModel.deleteWhere { titleId eq originalManga.id }
+                originalManga.content.forEach { volume -> MangaPageTable.deleteWhere { volumeId eq volume.id } }
+                MangaVolumeTable.deleteWhere { titleId eq originalManga.id }
                 commit()
 
                 createMangeVolume(originalManga.id, updateCorrectTitle)
@@ -195,7 +194,7 @@ class MangaService {
     }
 }
 
-fun <T : MangaEntity> sortEntity(originalList: List<T>, updateList: List<T>): List<T> {
+fun <T : IdEntity<UUID>> sortEntity(originalList: List<T>, updateList: List<T>): List<T> {
     val orderById = originalList.withIndex().associate { (index, it) -> it.id to index }
     return updateList.sortedBy { orderById[it.id] ?: Integer.MAX_VALUE }
 }

@@ -3,11 +3,11 @@ package com.tankobon.domain.database.services
 import com.tankobon.api.CredentialsException
 import com.tankobon.api.InternalServerError
 import com.tankobon.api.UserExistException
-import com.tankobon.api.models.User
-import com.tankobon.domain.database.models.UserModel
+import com.tankobon.api.models.UserModel
+import com.tankobon.domain.database.models.UserTable
 import com.tankobon.domain.database.models.toUser
-import com.tankobon.domain.database.models.toUserHash
-import com.tankobon.domain.models.UserHash
+import com.tankobon.domain.database.models.toUserCredentials
+import com.tankobon.domain.models.UserCredentials
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.injectLogger
@@ -32,13 +32,13 @@ class UserService {
 
     val database = DatabaseProvider.get()
 
-    suspend fun getUser(userId: String): User = newSuspendedTransaction(db = database) {
-        return@newSuspendedTransaction UserModel
-            .select { UserModel.id eq uuidFromString(userId.replace("\"", "")) }
+    suspend fun getUser(userId: String): UserModel = newSuspendedTransaction(db = database) {
+        return@newSuspendedTransaction UserTable
+            .select { UserTable.id eq uuidFromString(userId.replace("\"", "")) }
             .mapNotNull { it.toUser() }.singleOrNull() ?: throw InternalServerError()
     }
 
-    suspend fun getUserCall(call: ApplicationCall): User = newSuspendedTransaction(db = database) {
+    suspend fun getUserCall(call: ApplicationCall): com.tankobon.api.models.UserModel = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction getUser(
             call.principal<JWTPrincipal>()?.payload?.getClaim("userId").toString()
         )
@@ -50,14 +50,15 @@ class UserService {
         isActive: Boolean = true,
         isAdmin: Boolean = false,
     ) = transaction(db = database) {
-        if (UserModel.selectAll().andWhere { UserModel.username eq username }.toList().isEmpty()) {
-            UserModel.insert {
+        if (UserTable.selectAll().andWhere { UserTable.username eq username }.toList().isEmpty()) {
+            UserTable.insert {
+                it[this.id] = UUID.randomUUID()
                 it[this.username] = username
                 it[this.password] = BCrypt.hashpw(
                     password,
                     BCrypt.gensalt(ConfigProvider.get().database.bcryptRounds)
                 )
-                it[this.created] = System.currentTimeMillis()
+                it[this.creation] = System.currentTimeMillis()
                 it[this.modified] = System.currentTimeMillis()
                 it[this.active] = isActive
                 it[this.admin] = isAdmin
@@ -69,15 +70,15 @@ class UserService {
 
     suspend fun authUser(username: String, password: String): UUID {
         return newSuspendedTransaction(db = database) {
-            val userHash: UserHash = UserModel.select { UserModel.username eq username }
-                .map { it.toUserHash() }.firstOrNull() ?: throw CredentialsException()
+            val user = UserTable.select { UserTable.username eq username }
+                .map { it.toUserCredentials() }.firstOrNull() ?: throw CredentialsException()
 
-            val passwordCheck = BCrypt.checkpw(password, userHash.password)
+            val passwordCheck = BCrypt.checkpw(password, user.password)
 
-            log.debug("password hash for ${userHash.id} $username check is $passwordCheck")
+            log.debug("password hash for ${user.id} $username check is $passwordCheck")
 
             if (passwordCheck) {
-                return@newSuspendedTransaction userHash.id
+                return@newSuspendedTransaction user.id
             }
             throw CredentialsException()
         }
