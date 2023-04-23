@@ -28,15 +28,16 @@ fun Route.authRoute() {
 
     // login
     post(AuthRoute.LOGIN.path) {
-        val user = call.receive<UserLoginPayloadModel>()
-        val userId = userService.authUser(user.username, user.password)
-        val token = tokenService.getTokenPair(
-            userId,
-            userAgent = call.request.userAgent(),
-            // TODO: idk is it correct. And also for second `getTokenPair` usage
-            userIP = call.request.local.remoteAddress,
-        )
-        call.respond(token)
+        receivePayload<UserLoginPayloadModel>(call) {
+            val userId = userService.authUser(it.username, it.password)
+            val token = tokenService.getTokenPair(
+                userId,
+                userAgent = call.request.userAgent(),
+                // TODO: idk is it correct. And also for second `getTokenPair` usage
+                userIP = call.request.local.remoteAddress,
+            )
+            call.respond(token)
+        }
     }
 
     // token refresh
