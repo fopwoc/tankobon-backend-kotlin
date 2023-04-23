@@ -18,7 +18,6 @@ import com.tankobon.domain.providers.InstanceServiceProvider
 import com.tankobon.utils.injectLogger
 import com.tankobon.utils.sha256
 import com.tankobon.utils.toHex
-import com.tankobon.utils.uuidFromString
 import io.ktor.server.plugins.NotFoundException
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.greater

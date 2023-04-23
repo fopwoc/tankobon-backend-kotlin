@@ -34,7 +34,8 @@ fun callToTokenId(principal: JWTCredential): UUID {
 }
 
 private fun callToTokenId(payload: Payload): UUID {
-    return uuidFromString(payload.getClaim(TokenClaim.TOKEN_ID.name)?.asString()
+    return uuidFromString(
+        payload.getClaim(TokenClaim.TOKEN_ID.name)?.asString()
     ) ?: throw NotFoundException()
 }
 
@@ -47,7 +48,7 @@ fun callToUserId(principal: JWTCredential): UUID {
 }
 
 private fun callToUserId(payload: Payload): UUID {
-    return uuidFromString(payload.getClaim(TokenClaim.USER_ID.name)?.asString()
+    return uuidFromString(
+        payload.getClaim(TokenClaim.USER_ID.name)?.asString()
     ) ?: throw NotFoundException()
 }
-

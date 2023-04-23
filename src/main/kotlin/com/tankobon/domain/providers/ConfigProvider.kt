@@ -1,9 +1,6 @@
 package com.tankobon.domain.providers
 
 import com.sksamuel.hoplite.ConfigLoader
-import com.sksamuel.hoplite.ConfigLoaderBuilder
-import com.sksamuel.hoplite.parsers.defaultParserRegistry
-import com.sksamuel.hoplite.yaml.YamlParser
 import com.tankobon.domain.models.Config
 import java.io.File
 

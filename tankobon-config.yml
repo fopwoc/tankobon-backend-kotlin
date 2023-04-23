@@ -4,7 +4,7 @@ server:
   user: "user"
   password: "password"
   logFile: "./data/logfile.log"
-  logLevel: "INFO"
+  logLevel: "INFO" # INFO, WARN, DEBUG, TRACE
 
 database:
   #url: "jdbc:pgsql://postgres:5432/postgres"

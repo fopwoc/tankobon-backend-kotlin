@@ -1,8 +1,8 @@
 package com.tankobon.domain.library
 
+import com.tankobon.api.InternalServerError
 import com.tankobon.api.models.MangaPageModel
 import com.tankobon.api.models.MangaVolumeModel
-import com.tankobon.domain.database.services.MangaService
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.utils.isValidUUID
 import com.tankobon.utils.logger
@@ -22,8 +22,8 @@ fun volumeCalculate(file: File): MangaVolumeModel {
     val idOfVolume = uuidFromString(file.name)
 
     if (idOfVolume == null) {
-        MangaService.log.debug("uuid ${file.name} is actually not uuid")
-        throw Exception()
+        log.debug("uuid ${file.name} is actually not uuid")
+        throw InternalServerError()
     }
 
     runBlocking {

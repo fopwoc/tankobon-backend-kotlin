@@ -1,6 +1,5 @@
 package com.tankobon.utils
 
-import com.tankobon.domain.providers.ConfigProvider
 import java.io.File
 import java.util.UUID
 

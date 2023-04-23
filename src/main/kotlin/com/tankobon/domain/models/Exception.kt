@@ -1,6 +1,5 @@
 package com.tankobon.domain.models
 
-
 enum class BackendExceptionType {
     WRONG_CREDENTIALS,
     NOT_ADMIN,
