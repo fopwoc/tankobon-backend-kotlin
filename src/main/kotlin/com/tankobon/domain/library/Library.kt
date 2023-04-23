@@ -6,6 +6,7 @@ import com.tankobon.domain.providers.TaskQueueProvider
 import com.tankobon.utils.KWatchChannel
 import com.tankobon.utils.asWatchChannel
 import com.tankobon.utils.injectLogger
+import com.tankobon.utils.msToPrettyTime
 import com.tankobon.utils.uuidFromString
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -16,6 +17,7 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.UUID
+import kotlin.system.measureTimeMillis
 
 private const val TASK_DELAY = 1000L
 private const val TASK_DEBOUNCE = 1000L * 10
@@ -43,32 +45,37 @@ class Library {
         runBlocking {
             GlobalScope.launch { taskQueue.runQueue() }
 
-            val listFiles = mangaFile.listFiles()?.filter {
-                !it.name.contains(".DS_Store")
-            } ?: emptyList()
+            log.info("Library recalculation...")
+            val timeConsumed = measureTimeMillis {
+                val listFiles = mangaFile.listFiles()?.filter {
+                    !it.name.contains(".DS_Store")
+                } ?: emptyList()
 
-            MangaServiceProvider.get().cleanupMangaByIds(
-                listFiles.mapNotNull {
-                    uuidFromString(it.nameWithoutExtension)
-                }
-            )
+                MangaServiceProvider.get().cleanupMangaByIds(
+                    listFiles.mapNotNull {
+                        uuidFromString(it.nameWithoutExtension)
+                    }
+                )
 
-            listFiles.forEach { e ->
-                if (!e.name.contains(".DS_Store")) {
-                    taskQueue.submit(
-                        Task(
-                            file = e,
-                            id = uuidFromString(e.nameWithoutExtension) ?: UUID.randomUUID(),
-                            state = TaskState.WAITING,
-                            lastUpdate = System.currentTimeMillis()
+                listFiles.forEach { e ->
+                    if (!e.name.contains(".DS_Store")) {
+                        taskQueue.submit(
+                            Task(
+                                file = e,
+                                id = uuidFromString(e.nameWithoutExtension) ?: UUID.randomUUID(),
+                                state = TaskState.WAITING,
+                                lastUpdate = System.currentTimeMillis()
+                            )
                         )
-                    )
+                    }
+                }
+
+                while (taskQueue.getCount() != 0) {
+                    delay(TASK_DELAY)
                 }
             }
 
-            while (taskQueue.getCount() != 0) {
-                delay(TASK_DELAY)
-            }
+            log.info("Library recalculation done, time consumed ${msToPrettyTime(timeConsumed)}")
 
             GlobalScope.launch(newSingleThreadContext("LibraryThread")) {
                 while (true) {

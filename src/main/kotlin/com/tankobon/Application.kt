@@ -26,13 +26,13 @@ import org.slf4j.event.Level
 @DelicateCoroutinesApi
 fun main() {
     val log = logger("main")
-    log.info("Tankōbon-server is starting")
+    log.info("Tankōbon-server is starting...")
 
     runBlocking { DatabaseFactory().init() }
 
     Library().watchLibrary()
 
-    log.info("Library is ready! webserver has started!")
+    log.info("Library is ready! Starting webserver...")
     embeddedServer(
         Netty,
         host = ConfigProvider.get().api.address,

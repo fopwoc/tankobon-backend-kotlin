@@ -2,9 +2,7 @@ package com.tankobon.domain.library
 
 import com.tankobon.domain.providers.MangaServiceProvider
 import com.tankobon.utils.injectLogger
-import com.tankobon.utils.msToMinutes
-import com.tankobon.utils.msToRemainderMs
-import com.tankobon.utils.msToRemainderSeconds
+import com.tankobon.utils.msToPrettyTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -77,17 +75,14 @@ class TaskQueue {
 
     private fun runTask(task: Task) {
         submit(task.copy(state = TaskState.ONGOING, lastUpdate = System.currentTimeMillis()))
-        val time = measureTimeMillis {
+        val timeConsumed = measureTimeMillis {
             val result = titleCalculate(task)
             log.debug("result for ${task.id} is ${result.content.map { it.content.size }}")
             log.trace("trace result for ${task.id} is $result")
             runBlocking { MangaServiceProvider.get().updateManga(result) }
         }
 
-        log.debug(
-            "task ${task.id} done. Time estimated " +
-                "${msToMinutes(time)}:${msToRemainderSeconds(time)}:${msToRemainderMs(time)}"
-        )
+        log.info("Title with id ${task.id} recalculated. Time consumed ${msToPrettyTime(timeConsumed)}")
         submit(task.copy(state = TaskState.DONE, lastUpdate = System.currentTimeMillis()))
     }
 
