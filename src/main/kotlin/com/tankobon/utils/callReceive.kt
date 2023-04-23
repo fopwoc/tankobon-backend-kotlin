@@ -12,7 +12,7 @@ import io.ktor.server.plugins.NotFoundException
 import io.ktor.server.request.receive
 import java.util.UUID
 
-suspend inline fun <reified T : Any> callReceive(call: ApplicationCall, function: (payload: T) -> Unit) {
+suspend inline fun <reified T : Any> receivePayload(call: ApplicationCall, function: (payload: T) -> Unit) {
     try {
         function(call.receive<T>())
     } catch (e: Exception) {

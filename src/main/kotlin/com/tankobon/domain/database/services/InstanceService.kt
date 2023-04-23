@@ -52,6 +52,7 @@ class InstanceService {
         InstanceTable.selectAll().map { it.toInstanceAbout() }.first()
     }
 
+    // TODO: its broken
     suspend fun setAbout(
         payload: InstanceAboutUpdatePayloadModel,
     ) = newSuspendedTransaction(db = database) {

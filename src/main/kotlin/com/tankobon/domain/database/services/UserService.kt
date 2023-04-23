@@ -31,9 +31,12 @@ class UserService {
 
     private suspend fun getUser(userId: UUID): UserModel = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction UserTable
-            // .select { UserTable.id eq uuidFromString(userId.replace("\"", "")) }
             .select { UserTable.id eq userId }
             .mapNotNull { it.toUser() }.singleOrNull() ?: throw InternalServerError()
+    }
+
+    suspend fun getAllUsers(): List<UserModel> = newSuspendedTransaction(db = database) {
+        return@newSuspendedTransaction UserTable.selectAll().map { it.toUser() }
     }
 
     suspend fun callToUser(call: ApplicationCall): UserModel {

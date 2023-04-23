@@ -3,6 +3,12 @@ package com.tankobon.domain.models
 import com.tankobon.api.models.MangaVolumeModel
 import java.util.UUID
 
+enum class MangaRouteType {
+    ID_TITLE,
+    ID_VOLUME,
+    ID_PAGE,
+}
+
 interface MangaTitleMeta {
     val title: String
     val description: String

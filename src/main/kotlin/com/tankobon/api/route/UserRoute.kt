@@ -1,14 +1,13 @@
 package com.tankobon.api.route
 
 import com.tankobon.api.models.CreateUserPayloadModel
+import com.tankobon.domain.models.UserRoute
 import com.tankobon.domain.providers.UserServiceProvider
 import com.tankobon.utils.isAdmin
+import com.tankobon.utils.receivePayload
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -19,31 +18,39 @@ fun Route.userRoute() {
 
     authenticate("auth-jwt") {
         // gets info about user itself
-        get("/users/me") {
-            val principal = call.principal<JWTPrincipal>() // TODO \"\" fix
+        get(UserRoute.ME.path) {
             call.respond(userService.callToUser(call))
         }
 
-        // creates new user
-        post("/users/create") {
+        // get all users
+        get(UserRoute.ALL.path) {
             isAdmin(call) {
-                val newUser = call.receive<CreateUserPayloadModel>()
-                userService.addUser(
-                    username = newUser.username,
-                    password = newUser.password,
-                    isAdmin = newUser.admin,
-                )
-                call.respond(HttpStatusCode.OK, "user ${newUser.username} created")
+                call.respond(userService.getAllUsers())
             }
         }
 
-        post("/users/edit") {
+        // creates new user
+        post(UserRoute.CREATE.path) {
+            isAdmin(call) {
+                receivePayload<CreateUserPayloadModel>(call) {
+                    userService.addUser(
+                        username = it.username,
+                        password = it.password,
+                        isAdmin = it.admin,
+                        isActive = it.active ?: true,
+                    )
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
+        }
+
+        post(UserRoute.EDIT.path) {
             isAdmin(call) {
                 TODO("not implemented")
             }
         }
 
-        post("/users/delete") {
+        post(UserRoute.DELETE.path) {
             isAdmin(call) {
                 TODO("not implemented")
             }
