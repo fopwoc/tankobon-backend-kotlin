@@ -4,7 +4,7 @@ import com.tankobon.domain.database.models.InstanceTable
 import com.tankobon.domain.database.models.MangaPageTable
 import com.tankobon.domain.database.models.MangaTitleTable
 import com.tankobon.domain.database.models.MangaVolumeTable
-import com.tankobon.domain.database.models.RefreshTokenTable
+import com.tankobon.domain.database.models.TokenTable
 import com.tankobon.domain.database.models.UserTable
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.DatabaseProvider
@@ -67,8 +67,8 @@ class DatabaseFactory {
                 create(MangaPageTable)
             }
 
-            if (!RefreshTokenTable.exists()) {
-                create(RefreshTokenTable)
+            if (!TokenTable.exists()) {
+                create(TokenTable)
             }
         }
     }

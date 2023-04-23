@@ -21,7 +21,7 @@ fun Route.userRoute() {
         // gets info about user itself
         get("/users/me") {
             val principal = call.principal<JWTPrincipal>() // TODO \"\" fix
-            call.respond(userService.getUser(principal?.payload?.getClaim("userId").toString()))
+            call.respond(userService.callToUser(call))
         }
 
         // creates new user
@@ -34,6 +34,18 @@ fun Route.userRoute() {
                     isAdmin = newUser.admin,
                 )
                 call.respond(HttpStatusCode.OK, "user ${newUser.username} created")
+            }
+        }
+
+        post("/users/edit") {
+            isAdmin(call) {
+                TODO("not implemented")
+            }
+        }
+
+        post("/users/delete") {
+            isAdmin(call) {
+                TODO("not implemented")
             }
         }
     }

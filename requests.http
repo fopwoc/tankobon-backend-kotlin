@@ -3,11 +3,11 @@ GET http://127.0.0.1:8080/about
 
 
 ### get token
-POST http://localhost:8080/login
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "username": "user2",
+  "username": "user",
   "password": "password"
 }
 
@@ -23,7 +23,7 @@ Authorization: Bearer {{access_token}}
 
 
 ### refresh token
-POST http://localhost:8080/refresh
+POST http://localhost:8080/auth/refresh
 Content-Type: application/json
 
 {
@@ -34,6 +34,27 @@ Content-Type: application/json
 client.global.set("access_token", response.body.accessToken);
 client.global.set("refresh_token", response.body.refreshToken);
 %}
+
+### get all tokens
+GET http://localhost:8080/auth/refresh
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+> {% client.global.set("tokenId", response.body[0].id); %}
+
+### delete token
+POST http://localhost:8080/auth/refresh/delete
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "id": "{{tokenId}}"
+}
+
+### cleanup tokens
+GET http://localhost:8080/auth/refresh/cleanup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
 
 ### get list
 GET http://localhost:8080/manga
@@ -55,13 +76,9 @@ Content-Type: application/json
 > {% client.global.set("title", response.body[0].id); %}
 
 ### get current manga
-POST http://localhost:8080/manga/id
+GET http://localhost:8080/manga/{{title}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
-
-{
-  "id": "{{title}}"
-}
 
 > {%
     client.global.set("title", response.body.id);
@@ -121,3 +138,8 @@ Content-Type: application/json
   "password": "password",
   "admin": false
 }
+
+### logout
+GET http://localhost:8080/auth/logout
+Authorization: Bearer {{access_token}}
+Content-Type: application/json

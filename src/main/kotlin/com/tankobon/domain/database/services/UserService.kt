@@ -7,14 +7,11 @@ import com.tankobon.api.models.UserModel
 import com.tankobon.domain.database.models.UserTable
 import com.tankobon.domain.database.models.toUser
 import com.tankobon.domain.database.models.toUserCredentials
-import com.tankobon.domain.models.UserCredentials
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.DatabaseProvider
+import com.tankobon.utils.callToUserId
 import com.tankobon.utils.injectLogger
-import com.tankobon.utils.uuidFromString
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -32,16 +29,15 @@ class UserService {
 
     val database = DatabaseProvider.get()
 
-    suspend fun getUser(userId: String): UserModel = newSuspendedTransaction(db = database) {
+    private suspend fun getUser(userId: UUID): UserModel = newSuspendedTransaction(db = database) {
         return@newSuspendedTransaction UserTable
-            .select { UserTable.id eq uuidFromString(userId.replace("\"", "")) }
+            // .select { UserTable.id eq uuidFromString(userId.replace("\"", "")) }
+            .select { UserTable.id eq userId }
             .mapNotNull { it.toUser() }.singleOrNull() ?: throw InternalServerError()
     }
 
-    suspend fun getUserCall(call: ApplicationCall): com.tankobon.api.models.UserModel = newSuspendedTransaction(db = database) {
-        return@newSuspendedTransaction getUser(
-            call.principal<JWTPrincipal>()?.payload?.getClaim("userId").toString()
-        )
+    suspend fun callToUser(call: ApplicationCall): UserModel {
+        return getUser(callToUserId(call))
     }
 
     fun addUser(

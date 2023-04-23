@@ -2,10 +2,18 @@ package com.tankobon.api.route
 
 import com.tankobon.api.CredentialsException
 import com.tankobon.api.models.RefreshTokenPayloadModel
+import com.tankobon.api.models.TokenIdPayloadModel
 import com.tankobon.api.models.UserLoginPayloadModel
+import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.TokenServiceProvider
 import com.tankobon.domain.providers.UserServiceProvider
+import com.tankobon.utils.callReceive
+import com.tankobon.utils.callToTokenId
+import com.tankobon.utils.callToUserId
+import com.tankobon.utils.isAdmin
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receive
 import io.ktor.server.request.userAgent
 import io.ktor.server.response.respond
@@ -13,13 +21,14 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 
-// TODO: maybe change base url /auth/login for example
 fun Route.authRoute() {
+    val baseUrl = "/auth"
+
     val userService = UserServiceProvider.get()
     val tokenService = TokenServiceProvider.get()
 
     // login
-    post("/login") {
+    post("$baseUrl/login") {
         val user = call.receive<UserLoginPayloadModel>()
         val userId = userService.authUser(user.username, user.password)
         val token = tokenService.getTokenPair(
@@ -32,12 +41,13 @@ fun Route.authRoute() {
     }
 
     // token refresh
-    post("/refresh") {
+    post("$baseUrl/refresh") {
         val currentRefreshToken = call.receive<RefreshTokenPayloadModel>().refreshToken
         val currentTime = System.currentTimeMillis()
+        val expireRefresh = ConfigProvider.get().api.expire.refresh
         val tokenData = tokenService.getRefreshData(currentRefreshToken)
 
-        if (tokenData.expires > currentTime) {
+        if (expireRefresh == 0 || tokenData.modified + expireRefresh > currentTime) {
             val token = tokenService.getTokenPair(
                 userId = tokenData.userId,
                 userAgent = call.request.userAgent(),
@@ -46,19 +56,41 @@ fun Route.authRoute() {
             )
             call.respond(token)
         } else {
-            tokenService.deleteRefreshData(currentRefreshToken)
             throw CredentialsException()
         }
     }
 
-    // gets all refresh tokens
-    get("/refresh") {
-        TODO("not implementes")
-    }
+    authenticate("auth-jwt") {
+        // gets all refresh tokens
+        get("$baseUrl/refresh") {
+            val user = userService.callToUser(call)
+            call.respond(tokenService.getUserTokens(user))
+        }
 
-    // possible post for logout
-    // maybe it should delete all refresh tokens
-    post("/logout") {
-        TODO("not implemented")
+        // delete specific token
+        post("$baseUrl/refresh/delete") {
+            callReceive<TokenIdPayloadModel>(call) {
+                val user = callToUserId(call)
+                tokenService.deleteTokens(it.id, user)
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        // force cleanup expired tokenss
+        get("$baseUrl/refresh/cleanup") {
+            isAdmin(call) {
+                tokenService.cleanupRefreshTokens()
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        // possible post for logout
+        // maybe it should delete all refresh tokens
+        get("$baseUrl/logout") {
+            val tokenId = callToTokenId(call)
+            val user = callToUserId(call)
+            tokenService.deleteTokens(tokenId, user)
+            call.respond(HttpStatusCode.OK)
+        }
     }
 }
