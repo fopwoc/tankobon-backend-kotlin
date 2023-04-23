@@ -1,22 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <define name="logFile" class="com.tankobon.domain.providers.LoggingPropertiesProvider">
+        <propertyLookupKey>logFile</propertyLookupKey>
+    </define>
+    <define name="logLevel" class="com.tankobon.domain.providers.LoggingPropertiesProvider">
+        <propertyLookupKey>logLevel</propertyLookupKey>
+    </define>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger -%kvp- %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="debug">
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${logFile}</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="${logLevel}">
         <appender-ref ref="STDOUT"/>
     </root>
-<!--    <appender name="FILE" class="ch.qos.logback.core.FileAppender">-->
-<!--        <file>testFile.log</file>-->
-<!--        <append>true</append>-->
-<!--        <encoder>-->
-<!--            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
-<!--        </encoder>-->
-<!--    </appender>-->
-<!--    <root level="trace">-->
-<!--        <appender-ref ref="FILE"/>-->
-<!--    </root>-->
-    <logger name="io.netty" level="INFO"/>
-<!--    TODO exposed-->
+    <root level="${logLevel}">
+        <appender-ref ref="FILE"/>
+    </root>
+    <logger name="io.netty" level="${logLevel}">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="io.netty" level="${logLevel}">
+        <appender-ref ref="FILE"/>
+    </logger>
+    <logger name="Exposed" level="${logLevel}" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
 </configuration>

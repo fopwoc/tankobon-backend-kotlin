@@ -3,6 +3,8 @@ server:
   description: "Tankobon instance with some cool manga"
   user: "user"
   password: "password"
+  logFile: "./data/logfile.log"
+  logLevel: "INFO"
 
 database:
   #url: "jdbc:pgsql://postgres:5432/postgres"

@@ -14,6 +14,8 @@ data class ConfigServerInstance(
     val description: String,
     val user: String = "user",
     val password: String = "password",
+    val logFile: String = "./data/logfile.log",
+    val logLevel: String = "INFO",
 )
 
 data class ConfigDatabase(
