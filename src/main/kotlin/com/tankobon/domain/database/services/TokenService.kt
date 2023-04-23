@@ -105,7 +105,7 @@ class TokenService {
         if (expireRefresh != 0) TokenTable.deleteWhere { this.modified greater (currentTime + expireRefresh) }
     }
 
-    private fun createAccessToken(tokenId: UUID, userId: UUID): String {
+    private suspend fun createAccessToken(tokenId: UUID, userId: UUID): String {
         val currentTime = System.currentTimeMillis()
         val expireAccess = ConfigProvider.get().api.expire.access
         return JWT.create()

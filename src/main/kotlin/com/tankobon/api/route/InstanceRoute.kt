@@ -1,10 +1,7 @@
 package com.tankobon.api.route
 
 import com.tankobon.api.models.InstanceAboutUpdatePayloadModel
-import com.tankobon.domain.models.AuthRoute
 import com.tankobon.domain.models.InstanceRoute
-import com.tankobon.domain.models.MangaRoute
-import com.tankobon.domain.models.UserRoute
 import com.tankobon.domain.providers.InstanceServiceProvider
 import com.tankobon.utils.isAdmin
 import com.tankobon.utils.receivePayload

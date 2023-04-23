@@ -34,7 +34,7 @@ class InstanceService {
         ) as RSAPublicKey
     }
 
-    fun getPrivateKey(): RSAPrivateKey = transaction(db = database) {
+    suspend fun getPrivateKey(): RSAPrivateKey = newSuspendedTransaction(db = database) {
         keyFactory.generatePrivate(
             PKCS8EncodedKeySpec(
                 decoder.decode(
@@ -44,7 +44,7 @@ class InstanceService {
         ) as RSAPrivateKey
     }
 
-    fun getInstanceId(): UUID = transaction(db = database) {
+    suspend fun getInstanceId(): UUID = newSuspendedTransaction(db = database) {
         InstanceTable.selectAll().map { it.toInstance() }.first().id
     }
 

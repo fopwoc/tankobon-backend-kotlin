@@ -14,16 +14,17 @@ import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.SchemaUtils.createSchema
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.util.Base64
 import java.util.UUID
 
 class DatabaseFactory {
+    val database = DatabaseProvider.get()
 
-    fun init() {
-        transaction(DatabaseProvider.get()) {
+    suspend fun init() {
+        newSuspendedTransaction(db = database) {
             val schema = Schema(ConfigProvider.get().database.schema)
             if (!schema.exists()) {
                 createSchema(schema)
