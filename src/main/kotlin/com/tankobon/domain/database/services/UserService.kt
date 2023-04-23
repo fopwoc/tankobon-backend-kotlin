@@ -2,6 +2,7 @@ package com.tankobon.domain.database.services
 
 import com.tankobon.api.CredentialsException
 import com.tankobon.api.InternalServerError
+import com.tankobon.api.UserDisabledException
 import com.tankobon.api.UserExistException
 import com.tankobon.api.models.UserModel
 import com.tankobon.domain.database.models.UserTable
@@ -17,7 +18,6 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 import java.util.UUID
 
@@ -43,12 +43,12 @@ class UserService {
         return getUser(callToUserId(call))
     }
 
-    fun addUser(
+    suspend fun addUser(
         username: String,
         password: String,
         isActive: Boolean = true,
         isAdmin: Boolean = false,
-    ) = transaction(db = database) {
+    ) = newSuspendedTransaction(db = database) {
         if (UserTable.selectAll().andWhere { UserTable.username eq username }.toList().isEmpty()) {
             UserTable.insert {
                 it[this.id] = UUID.randomUUID()
@@ -67,19 +67,20 @@ class UserService {
         }
     }
 
-    suspend fun authUser(username: String, password: String): UUID {
-        return newSuspendedTransaction(db = database) {
-            val user = UserTable.select { UserTable.username eq username }
-                .map { it.toUserCredentials() }.firstOrNull() ?: throw CredentialsException()
+    suspend fun authUser(username: String, password: String): UUID = newSuspendedTransaction(db = database) {
+        val user = UserTable.select { UserTable.username eq username }
+            .map { it.toUserCredentials() }.firstOrNull() ?: throw CredentialsException()
 
-            val passwordCheck = BCrypt.checkpw(password, user.password)
+        val passwordCheck = BCrypt.checkpw(password, user.password)
 
-            log.debug("password hash for ${user.id} $username check is $passwordCheck")
-
-            if (passwordCheck) {
-                return@newSuspendedTransaction user.id
-            }
-            throw CredentialsException()
+        if (passwordCheck) {
+            if (!user.active) throw UserDisabledException()
+            return@newSuspendedTransaction user.id
         }
+        throw CredentialsException()
+    }
+
+    suspend fun isUserActive(userId: UUID): Boolean = newSuspendedTransaction {
+        UserTable.select { UserTable.id eq userId }.singleOrNull()?.toUser()?.active ?: throw CredentialsException()
     }
 }

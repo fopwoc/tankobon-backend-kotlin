@@ -5,6 +5,7 @@ enum class BackendExceptionType {
     WRONG_CREDENTIALS,
     NOT_ADMIN,
     USER_EXIST,
+    USER_DISABLED,
     UNKNOWN
 }
 

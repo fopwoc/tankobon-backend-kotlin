@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.InstanceServiceProvider
 import com.tankobon.domain.providers.TokenServiceProvider
+import com.tankobon.domain.providers.UserServiceProvider
 import com.tankobon.utils.callToTokenId
 import com.tankobon.utils.callToUserId
 import io.ktor.server.application.Application
@@ -15,11 +16,13 @@ import io.ktor.server.auth.jwt.jwt
 fun Application.security() {
     val instanceService = InstanceServiceProvider.get()
     val tokenService = TokenServiceProvider.get()
+    val userService = UserServiceProvider.get()
 
     authentication {
         jwt("auth-jwt") {
+            val publicKey = instanceService.getPublicKey()
             verifier(
-                JWT.require(Algorithm.RSA256(instanceService.getPublicKey(), null))
+                JWT.require(Algorithm.RSA256(publicKey, null))
                     .withIssuer(ConfigProvider.get().api.issuer)
                     .build()
             )
@@ -28,6 +31,9 @@ fun Application.security() {
                 val userId = callToUserId(credential)
 
                 if (tokenService.checkCredentials(tokenId, userId)) {
+                    val isActive = userService.isUserActive(userId)
+                    if (!isActive) throw UserDisabledException()
+
                     JWTPrincipal(credential.payload)
                 } else {
                     null

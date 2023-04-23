@@ -19,5 +19,7 @@ interface UserPrivilegedUpdatable {
 data class UserCredentials(
     override val id: UUID,
     override val username: String,
-    override val password: String
-) : IdEntity<UUID>, UserUpdatable
+    override val password: String,
+    override val admin: Boolean,
+    override val active: Boolean,
+) : IdEntity<UUID>, UserUpdatable, UserPrivilegedUpdatable

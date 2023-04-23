@@ -50,6 +50,16 @@ fun StatusPagesConfig.statusPages() {
         )
     }
 
+    exception<UserDisabledException> { call, _ ->
+        call.respond(
+            HttpStatusCode.Locked,
+            ExceptionMessageModel(
+                type = BackendExceptionType.USER_DISABLED,
+                message = null,
+            ),
+        )
+    }
+
     exception<InternalServerError> { call, trace ->
         call.respond(
             HttpStatusCode.InternalServerError,
