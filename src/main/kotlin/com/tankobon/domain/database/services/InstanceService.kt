@@ -6,8 +6,8 @@ import com.tankobon.domain.database.models.InstanceTable
 import com.tankobon.domain.database.models.toInstance
 import com.tankobon.domain.database.models.toInstanceAbout
 import com.tankobon.domain.providers.DatabaseProvider
+import com.tankobon.utils.dbQuery
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.security.KeyFactory
@@ -34,7 +34,7 @@ class InstanceService {
         ) as RSAPublicKey
     }
 
-    suspend fun getPrivateKey(): RSAPrivateKey = newSuspendedTransaction(db = database) {
+    suspend fun getPrivateKey(): RSAPrivateKey = dbQuery {
         keyFactory.generatePrivate(
             PKCS8EncodedKeySpec(
                 decoder.decode(
@@ -44,18 +44,18 @@ class InstanceService {
         ) as RSAPrivateKey
     }
 
-    suspend fun getInstanceId(): UUID = newSuspendedTransaction(db = database) {
+    suspend fun getInstanceId(): UUID = dbQuery {
         InstanceTable.selectAll().map { it.toInstance() }.first().id
     }
 
-    suspend fun getAbout(): InstanceAboutModel = newSuspendedTransaction(db = database) {
+    suspend fun getAbout(): InstanceAboutModel = dbQuery {
         InstanceTable.selectAll().map { it.toInstanceAbout() }.first()
     }
 
     // TODO: its broken
     suspend fun setAbout(
         payload: InstanceAboutUpdatePayloadModel,
-    ) = newSuspendedTransaction(db = database) {
+    ) = dbQuery {
         InstanceTable.update {
             it[this.title] = payload.title
             it[this.description] = payload.description

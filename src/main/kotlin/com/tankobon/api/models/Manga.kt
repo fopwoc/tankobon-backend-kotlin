@@ -10,6 +10,7 @@ import com.tankobon.domain.models.MangaVolumeMeta
 import com.tankobon.utils.UUIDSerializer
 import kotlinx.serialization.Serializable
 import java.util.UUID
+import kotlinx.datetime.Instant
 
 @Serializable
 data class Manga(
@@ -17,10 +18,10 @@ data class Manga(
     override val id: UUID,
     override val title: String,
     override val description: String,
-    override val creation: Long,
-    override val modified: Long,
+    override val creation: Instant,
+    override val modified: Instant,
     override val content: List<MangaVolumeModel>
-) : IdEntity<UUID>, ContentEntity<MangaVolumeModel>, DateEntity<Long>, MangaTitleMeta
+) : IdEntity<UUID>, ContentEntity<MangaVolumeModel>, DateEntity<Instant>, MangaTitleMeta
 
 @Serializable
 data class MangaTitle(
@@ -28,9 +29,9 @@ data class MangaTitle(
     override val id: UUID,
     override val title: String,
     override val description: String,
-    override val creation: Long,
-    override val modified: Long,
-) : IdEntity<UUID>, DateEntity<Long>, MangaTitleMeta
+    override val creation: Instant,
+    override val modified: Instant,
+) : IdEntity<UUID>, DateEntity<Instant>, MangaTitleMeta
 
 @Serializable
 data class MangaVolumeModel(

@@ -1,6 +1,7 @@
 package com.tankobon.domain.models
 
 import java.util.UUID
+import kotlinx.datetime.Instant
 
 enum class TokenClaim {
     TOKEN_ID,
@@ -23,7 +24,7 @@ interface TokenInstanceId {
     val instanceId: UUID
 }
 
-interface TokenMeta : DateEntity<Long> {
+interface TokenMeta : DateEntity<Instant> {
     val userAgent: String
     val userIP: String
 }
@@ -34,6 +35,6 @@ data class TokenData(
     override val userAgent: String,
     override val userIP: String,
     override val refreshToken: String,
-    override val creation: Long,
-    override val modified: Long
+    override val creation: Instant,
+    override val modified: Instant
 ) : IdEntity<UUID>, TokenUserId, TokenRefresh, TokenMeta

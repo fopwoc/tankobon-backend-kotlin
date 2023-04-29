@@ -9,12 +9,13 @@ import com.tankobon.domain.database.models.UserTable
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.domain.providers.UserServiceProvider
+import com.tankobon.utils.dbQuery
+import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.Schema
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.SchemaUtils.createSchema
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.util.Base64
@@ -24,7 +25,7 @@ class DatabaseFactory {
     val database = DatabaseProvider.get()
 
     suspend fun init() {
-        newSuspendedTransaction(db = database) {
+        dbQuery {
             val schema = Schema(ConfigProvider.get().database.schema)
             if (!schema.exists()) {
                 createSchema(schema)
@@ -44,6 +45,7 @@ class DatabaseFactory {
                 create(InstanceTable)
                 val encoder: Base64.Encoder = Base64.getEncoder()
                 val kp: KeyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
+                val time = Clock.System.now()
 
                 InstanceTable.insert {
                     it[this.id] = UUID.randomUUID()
@@ -51,8 +53,8 @@ class DatabaseFactory {
                     it[this.privateKey] = encoder.encodeToString(kp.private.encoded)
                     it[this.title] = ConfigProvider.get().server.title
                     it[this.description] = ConfigProvider.get().server.description
-                    it[this.creation] = System.currentTimeMillis()
-                    it[this.modified] = System.currentTimeMillis()
+                    it[this.creation] = time
+                    it[this.modified] = time
                 }
             }
 

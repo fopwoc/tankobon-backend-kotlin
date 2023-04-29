@@ -33,4 +33,7 @@
     <logger name="Exposed" level="${logLevel}" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
+    <logger name="com.zaxxer.hikari" level="${logLevel}">
+        <appender-ref ref="FILE"/>
+    </logger>
 </configuration>

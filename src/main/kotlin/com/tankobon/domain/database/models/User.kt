@@ -6,6 +6,7 @@ import com.tankobon.domain.providers.ConfigProvider
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
+import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 
 private const val USER_MODEL_USERNAME_LENGTH = 255
 private const val USER_MODEL_PASSWORD_LENGTH = 64
@@ -20,8 +21,8 @@ object UserTable : IdTable<UUID>(
     val password = varchar("password", USER_MODEL_PASSWORD_LENGTH)
     val active = bool("active")
     val admin = bool("admin")
-    val creation = long("created")
-    val modified = long("modified")
+    val creation = timestamp("created")
+    val modified = timestamp("modified")
 }
 
 fun ResultRow.toUser(): UserModel = UserModel(

@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 val javaVersion: String by project
 val kotlinVersion: String by project
 val ktorVersion: String by project
@@ -54,14 +52,18 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
     implementation("org.mindrot:jbcrypt:0.4")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
 
     implementation("org.postgresql:postgresql:42.6.0")
+    implementation("com.zaxxer:HikariCP:5.0.1")
 
     implementation("com.lordcodes.turtle:turtle:0.8.0")
 
@@ -71,23 +73,12 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.slf4j:slf4j-api:2.0.6")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
-
     implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
-    implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
     implementation("com.sksamuel.hoplite:hoplite-yaml:$hopliteVersion")
-    implementation("com.sksamuel.hoplite:hoplite-toml:$hopliteVersion")
-    implementation("com.sksamuel.hoplite:hoplite-hocon:$hopliteVersion")
 
     testImplementation(kotlin("test"))
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion")
-}
-
-tasks {
-    named<ShadowJar>("shadowJar") {
-        mergeServiceFiles()
-    }
 }
 
 tasks {

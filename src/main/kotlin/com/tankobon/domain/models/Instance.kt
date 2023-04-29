@@ -1,5 +1,6 @@
 package com.tankobon.domain.models
 
+import kotlinx.datetime.Instant
 import java.util.UUID
 
 interface InstancePrivate {
@@ -20,6 +21,6 @@ data class Instance(
     override val privateKey: String,
     override val title: String,
     override val description: String,
-    override val creation: Long,
-    override val modified: Long,
-) : IdEntity<UUID>, DateEntity<Long>, InstanceEntity
+    override val creation: Instant,
+    override val modified: Instant,
+) : IdEntity<UUID>, DateEntity<Instant>, InstanceEntity

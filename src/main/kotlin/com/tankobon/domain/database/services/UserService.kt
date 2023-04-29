@@ -11,15 +11,16 @@ import com.tankobon.domain.database.models.toUserCredentials
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.callToUserId
+import com.tankobon.utils.dbQuery
 import com.tankobon.utils.injectLogger
 import io.ktor.server.application.ApplicationCall
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.mindrot.jbcrypt.BCrypt
 import java.util.UUID
+import kotlinx.datetime.Clock
 
 class UserService {
 
@@ -29,14 +30,14 @@ class UserService {
 
     val database = DatabaseProvider.get()
 
-    private suspend fun getUser(userId: UUID): UserModel = newSuspendedTransaction(db = database) {
-        return@newSuspendedTransaction UserTable
+    private suspend fun getUser(userId: UUID): UserModel = dbQuery {
+        return@dbQuery UserTable
             .select { UserTable.id eq userId }
             .mapNotNull { it.toUser() }.singleOrNull() ?: throw InternalServerError()
     }
 
-    suspend fun getAllUsers(): List<UserModel> = newSuspendedTransaction(db = database) {
-        return@newSuspendedTransaction UserTable.selectAll().map { it.toUser() }
+    suspend fun getAllUsers(): List<UserModel> = dbQuery {
+        return@dbQuery UserTable.selectAll().map { it.toUser() }
     }
 
     suspend fun callToUser(call: ApplicationCall): UserModel {
@@ -48,8 +49,10 @@ class UserService {
         password: String,
         isActive: Boolean = true,
         isAdmin: Boolean = false,
-    ) = newSuspendedTransaction(db = database) {
+    ) = dbQuery {
         if (UserTable.selectAll().andWhere { UserTable.username eq username }.toList().isEmpty()) {
+            val time = Clock.System.now()
+
             UserTable.insert {
                 it[this.id] = UUID.randomUUID()
                 it[this.username] = username
@@ -57,8 +60,8 @@ class UserService {
                     password,
                     BCrypt.gensalt(ConfigProvider.get().database.bcryptRounds)
                 )
-                it[this.creation] = System.currentTimeMillis()
-                it[this.modified] = System.currentTimeMillis()
+                it[this.creation] = time
+                it[this.modified] = time
                 it[this.active] = isActive
                 it[this.admin] = isAdmin
             }
@@ -67,7 +70,7 @@ class UserService {
         }
     }
 
-    suspend fun authUser(username: String, password: String): UUID = newSuspendedTransaction(db = database) {
+    suspend fun authUser(username: String, password: String): UUID = dbQuery {
         val user = UserTable.select { UserTable.username eq username }
             .map { it.toUserCredentials() }.firstOrNull() ?: throw CredentialsException()
 
@@ -75,12 +78,12 @@ class UserService {
 
         if (passwordCheck) {
             if (!user.active) throw UserDisabledException()
-            return@newSuspendedTransaction user.id
+            return@dbQuery user.id
         }
         throw CredentialsException()
     }
 
-    suspend fun isUserActive(userId: UUID): Boolean = newSuspendedTransaction {
+    suspend fun isUserActive(userId: UUID): Boolean = dbQuery {
         UserTable.select { UserTable.id eq userId }.singleOrNull()?.toUser()?.active ?: throw CredentialsException()
     }
 }

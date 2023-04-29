@@ -6,6 +6,7 @@ import com.tankobon.domain.models.TokenInstanceId
 import com.tankobon.domain.models.TokenMeta
 import com.tankobon.domain.models.TokenRefresh
 import com.tankobon.utils.UUIDSerializer
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -36,6 +37,7 @@ data class TokenInfoModel(
     override val id: UUID,
     override val userAgent: String,
     override val userIP: String,
-    override val creation: Long,
-    override val modified: Long
+    override val creation: Instant,
+    override val modified: Instant
 ) : IdEntity<UUID>, TokenMeta
+

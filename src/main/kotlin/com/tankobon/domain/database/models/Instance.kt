@@ -6,6 +6,7 @@ import com.tankobon.domain.providers.ConfigProvider
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.util.UUID
+import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 
 private const val UTILS_MODEL_INSTANCE_TITLE = 64
 
@@ -19,8 +20,8 @@ object InstanceTable : IdTable<UUID>(
     val privateKey = text("private_key")
     val title = varchar("instance_title", UTILS_MODEL_INSTANCE_TITLE)
     val description = text("instance_description")
-    val creation = long("creation_date")
-    val modified = long("modified_date")
+    val creation = timestamp("creation_date")
+    val modified = timestamp("modified_date")
 }
 
 fun ResultRow.toInstance() = Instance(

@@ -21,6 +21,9 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import kotlinx.datetime.Clock
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 fun Route.authRoute() {
     val userService = UserServiceProvider.get()
@@ -43,11 +46,11 @@ fun Route.authRoute() {
     // token refresh
     post(AuthRoute.REFRESH.path) {
         val currentRefreshToken = call.receive<RefreshTokenPayloadModel>().refreshToken
-        val currentTime = System.currentTimeMillis()
+        val time = Clock.System.now()
         val expireRefresh = ConfigProvider.get().api.expire.refresh
         val tokenData = tokenService.getRefreshData(currentRefreshToken)
 
-        if (expireRefresh == 0 || tokenData.modified + expireRefresh > currentTime) {
+        if (expireRefresh == 0 || tokenData.modified.plus(expireRefresh.toDuration(DurationUnit.MILLISECONDS)) > time) {
             val token = tokenService.getTokenPair(
                 userId = tokenData.userId,
                 userAgent = call.request.userAgent(),

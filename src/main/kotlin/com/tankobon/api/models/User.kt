@@ -6,6 +6,7 @@ import com.tankobon.domain.models.UserPrivilegedUpdatable
 import com.tankobon.domain.models.UserPublic
 import com.tankobon.domain.models.UserUpdatable
 import com.tankobon.utils.UUIDSerializer
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -16,9 +17,9 @@ data class UserModel(
     override val username: String,
     override val admin: Boolean,
     override val active: Boolean,
-    override val creation: Long,
-    override val modified: Long,
-) : IdEntity<UUID>, DateEntity<Long>, UserPublic, UserPrivilegedUpdatable
+    override val creation: Instant,
+    override val modified: Instant,
+) : IdEntity<UUID>, DateEntity<Instant>, UserPublic, UserPrivilegedUpdatable
 
 @Serializable
 data class CreateUserPayloadModel(
