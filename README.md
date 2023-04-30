@@ -18,13 +18,12 @@ Kotlin REST backend build on top of Ktor+Exposed. It serves your local manga lib
 
 ## Features
 - Access + refresh tokens authentication using JWT
-- Passwords bcrypt hashing
 - Users management and basic privilege system
 - Decompression of cbz/zip and cbr/rar (*even rar5*) formats
 - Library hot reload on any changes in content folder
 - Thumbnail generation
+- Sync reading progress between devices
 - In some way designed for high load and many users
-- Can work on any UNIX-like os
 
 ## Build and run
 
@@ -52,7 +51,7 @@ Or you can use docker-compose:
     image: ghcr.io/fopwoc/tankobon-backend-kotlin:master
     volumes:
       - /path/to/tankobon-config.yml:/opt/app/tankobon-config.yml
-      - path/to/manga:/manga
+      - path/to/content:/content
       - tankobon-data:/data
     ports:
       - "8080:8080"
@@ -65,12 +64,12 @@ In any way there is docker cli way
 sudo docker run -d \
     -v "path/to/tankobon-config.yml:/opt/app/tankobon-config.yml" \
     -v "tankobon-data:/data" \
-    -v "path/to/manga:/manga" \
+    -v "path/to/content:/content" \
     ghcr.io/fopwoc/tankobon-backend-kotlin:master
 ```
 
 ## Usage
-1. Copy cbz/zip, cbr/rar or folders with images to `manga` generated folder.
+1. Copy cbz/zip, cbr/rar or folders with images to `content` generated folder.
 2. Get some patience... Thumbnail generation and image converting take some time. My M1 mac takes about 2 minutes to process 2.5GB folder.
 3. Have fun!
 
@@ -89,4 +88,4 @@ First created user always has admin privileges, which allows to create new users
 
 ## Reason why does this project exist
 
-I want to self-host my manga library for myself and... iPhone has no Tachiymi lol.
+I want to host my manga library for myself and... iPhone has no Tachiymi lol.
