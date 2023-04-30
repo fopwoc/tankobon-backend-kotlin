@@ -1,19 +1,19 @@
 package com.tankobon.api.route
 
-import com.tankobon.api.AdminAuthenticationException
-import com.tankobon.api.models.MangaIdPayload
-import com.tankobon.api.models.MangaPayload
-import com.tankobon.api.models.MangaUpdatePayload
-import com.tankobon.api.models.MangaVolumeUpdatePayload
+import com.tankobon.api.models.MangaFilterPayloadModel
+import com.tankobon.api.models.MangaTitleUpdatePayloadModel
+import com.tankobon.api.models.MangaVolumeUpdatePayloadModel
+import com.tankobon.domain.models.MangaRoute
+import com.tankobon.domain.models.MangaRouteType
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.MangaServiceProvider
-import com.tankobon.domain.providers.UserServiceProvider
 import com.tankobon.utils.callToFile
+import com.tankobon.utils.isAdmin
+import com.tankobon.utils.receivePayload
+import com.tankobon.utils.uuidFromString
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
-import io.ktor.server.request.receive
-import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondFile
 import io.ktor.server.routing.Route
@@ -22,53 +22,78 @@ import io.ktor.server.routing.post
 
 fun Route.mangaRoute() {
     val mangaService = MangaServiceProvider.get()
-    val userService = UserServiceProvider.get()
 
     authenticate("auth-jwt") {
-        get("/manga") {
+        // gets list of all manga without pages
+        get(MangaRoute.MANGA.path) {
             call.respond(mangaService.getMangaList(null))
         }
 
-        post("/manga") {
-            val payload = kotlin.runCatching { call.receiveNullable<MangaPayload>() }.getOrNull()
-            call.respond(mangaService.getMangaList(payload))
-        }
-
-        post("/manga/id") {
-            val payload = call.receive<MangaIdPayload>()
-            call.respond(mangaService.getManga(payload.id))
-        }
-
-        post("/manga/{id-title}/update") {
-            val requestUser = userService.getUserCall(call)
-
-            if (requestUser.admin) {
-                val payload = call.receive<MangaUpdatePayload>()
-                mangaService.updateMangaInfo(call.parameters["id-title"], payload)
-                call.respond(HttpStatusCode.OK)
-            } else {
-                throw AdminAuthenticationException()
+        // gets list of manga with filters
+        post(MangaRoute.MANGA.path) {
+            receivePayload<MangaFilterPayloadModel>(call) {
+                call.respond(mangaService.getMangaList(it))
             }
         }
 
-        post("/manga/{id-title}/{id-volume}/update") {
-            val requestUser = userService.getUserCall(call)
+        // gets detailed info about specific manga title with pages
+        get(MangaRoute.MANGA_TITLE.path) {
+            call.respond(
+                mangaService.getManga(
+                    uuidFromString(call.parameters["${MangaRouteType.ID_TITLE}"])
+                )
+            )
+        }
 
-            if (requestUser.admin) {
-                val payload = call.receive<MangaVolumeUpdatePayload>()
-                mangaService.updateMangaVolumeInfo(call.parameters["id-title"], call.parameters["id-volume"], payload)
-                call.respond(HttpStatusCode.OK)
-            } else {
-                throw AdminAuthenticationException()
+        // update manga title specific info
+        post(MangaRoute.MANGA_TITLE_UPDATE.path) {
+            isAdmin(call) {
+                receivePayload<MangaTitleUpdatePayloadModel>(call) {
+                    mangaService.updateMangaInfo(call.parameters["${MangaRouteType.ID_TITLE}"], it)
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
 
-        get("/manga/{id-title}/{id-volume}/{id-page}") {
-            call.respondFile(callToFile(call, ConfigProvider.get().library.mangaFile))
+        // update manga volume specific info
+        post(MangaRoute.MANGA_VOLUME_UPDATE.path) {
+            isAdmin(call) {
+                receivePayload<MangaVolumeUpdatePayloadModel>(call) {
+                    mangaService.updateMangaVolumeInfo(
+                        call.parameters["${MangaRouteType.ID_TITLE}"],
+                        call.parameters["${MangaRouteType.ID_VOLUME}"],
+                        it
+                    )
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
         }
 
-        get("/thumb/{id-title}/{id-volume}/{id-page}") {
+        // gets manga page
+        get(MangaRoute.MANGA_PAGE.path) {
+            call.respondFile(callToFile(call, ConfigProvider.get().library.contentFile))
+        }
+
+        // gets manga page thumbnail
+        get(MangaRoute.THUMB_PAGE.path) {
             call.respondFile(callToFile(call, ConfigProvider.get().library.thumbFile))
+        }
+
+        // gets where this user ended reading this title last time
+        get(MangaRoute.LAST_READ.path) {
+            TODO("not implemented")
+        }
+
+        // sets where this user ended reading this title last time
+        post(MangaRoute.LAST_READ.path) {
+            TODO("not implemented")
+        }
+
+        // force reload library
+        get(MangaRoute.RELOAD_LIBRARY.path) {
+            isAdmin(call) {
+                TODO("not implemented")
+            }
         }
     }
 }

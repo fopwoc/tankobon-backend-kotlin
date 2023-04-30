@@ -3,24 +3,37 @@ package com.tankobon.api
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.tankobon.domain.providers.ConfigProvider
-import com.tankobon.domain.providers.UtilsServiceProvider
+import com.tankobon.domain.providers.InstanceServiceProvider
+import com.tankobon.domain.providers.TokenServiceProvider
+import com.tankobon.domain.providers.UserServiceProvider
+import com.tankobon.utils.callToTokenId
+import com.tankobon.utils.callToUserId
 import io.ktor.server.application.Application
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 
 fun Application.security() {
-    val utilsService = UtilsServiceProvider.get()
+    val instanceService = InstanceServiceProvider.get()
+    val tokenService = TokenServiceProvider.get()
+    val userService = UserServiceProvider.get()
 
     authentication {
         jwt("auth-jwt") {
+            val publicKey = instanceService.getPublicKey()
             verifier(
-                JWT.require(Algorithm.RSA256(utilsService.getPublicKey(), null))
+                JWT.require(Algorithm.RSA256(publicKey, null))
                     .withIssuer(ConfigProvider.get().api.issuer)
                     .build()
             )
             validate { credential ->
-                if (credential.payload.getClaim("userId").asString() != "") {
+                val tokenId = callToTokenId(credential)
+                val userId = callToUserId(credential)
+
+                if (tokenService.checkCredentials(tokenId, userId)) {
+                    val isActive = userService.isUserActive(userId)
+                    if (!isActive) throw UserDisabledException()
+
                     JWTPrincipal(credential.payload)
                 } else {
                     null

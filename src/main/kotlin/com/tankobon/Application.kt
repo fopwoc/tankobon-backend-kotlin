@@ -1,9 +1,9 @@
 package com.tankobon
 
 import com.tankobon.api.route.authRoute
+import com.tankobon.api.route.instanceRoute
 import com.tankobon.api.route.mangaRoute
 import com.tankobon.api.route.userRoute
-import com.tankobon.api.route.utilsRoute
 import com.tankobon.api.security
 import com.tankobon.api.statusPages
 import com.tankobon.domain.database.DatabaseFactory
@@ -20,18 +20,19 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.routing.Routing
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.slf4j.event.Level
 
 @DelicateCoroutinesApi
 fun main() {
     val log = logger("main")
-    log.info("Tankōbon-server is starting")
+    log.info("Tankōbon-server is starting...")
 
-    DatabaseFactory().init()
+    runBlocking { DatabaseFactory().init() }
 
     Library().watchLibrary()
 
-    log.info("Library is ready! webserver has started!")
+    log.info("Library is ready! Starting webserver...")
     embeddedServer(
         Netty,
         host = ConfigProvider.get().api.address,
@@ -59,6 +60,6 @@ fun Application.webServer() {
         authRoute()
         userRoute()
         mangaRoute()
-        utilsRoute()
+        instanceRoute()
     }
 }

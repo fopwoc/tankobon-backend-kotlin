@@ -1,13 +1,24 @@
 ### about instance
 GET http://127.0.0.1:8080/about
 
-
-### get token
-POST http://localhost:8080/login
+### update instance
+POST http://localhost:8080/about/update
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "username": "user2",
+  "title": "test2333",
+  "description": "test123"
+}
+
+
+
+### get token
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "user",
   "password": "password"
 }
 
@@ -17,13 +28,32 @@ client.global.set("refresh_token", response.body.refreshToken);
 %}
 
 
-### test token
-GET http://localhost:8080/users/me
+### about current user
+GET http://localhost:8080/user/me
 Authorization: Bearer {{access_token}}
 
 
+### get all users
+GET http://localhost:8080/user/all
+Authorization: Bearer {{access_token}}
+
+
+### create newuser
+POST http://localhost:8080/user/create
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "username": "user3",
+  "password": "password",
+  "admin": false,
+  "active": false
+}
+
+
+
 ### refresh token
-POST http://localhost:8080/refresh
+POST http://localhost:8080/auth/refresh
 Content-Type: application/json
 
 {
@@ -35,14 +65,47 @@ client.global.set("access_token", response.body.accessToken);
 client.global.set("refresh_token", response.body.refreshToken);
 %}
 
-### get list
-GET http://localhost:8080/manga
+
+### get all tokens
+GET http://localhost:8080/auth/refresh
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+> {% client.global.set("tokenId", response.body[0].id); %}
+
+
+### delete token
+POST http://localhost:8080/auth/refresh/delete
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "id": "{{tokenId}}"
+}
+
+
+### cleanup tokens
+GET http://localhost:8080/auth/refresh/cleanup
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+
+### logout
+GET http://localhost:8080/auth/logout
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+
+
+### get manga list
+GET http://localhost:8080/content/manga
 Authorization: Bearer {{access_token}}
 
 > {% client.global.set("title", response.body[0].id); %}
 
-### get list POST
-POST http://localhost:8080/manga
+
+### get manga list with filter
+POST http://localhost:8080/content/manga
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -54,14 +117,11 @@ Content-Type: application/json
 
 > {% client.global.set("title", response.body[0].id); %}
 
+
 ### get current manga
-POST http://localhost:8080/manga/id
+GET http://localhost:8080/content/manga/{{title}}
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
-
-{
-  "id": "{{title}}"
-}
 
 > {%
     client.global.set("title", response.body.id);
@@ -69,30 +129,20 @@ Content-Type: application/json
     client.global.set("page", response.body.content[0].content[0].id);
 %}
 
-### update instance
-POST http://localhost:8080/about/update
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-
-{
-  "instanceName": "test2",
-  "instanceDescription": "test123"
-}
-
 
 ### update manga
-POST http://localhost:8080/manga/{{title}}/update
+POST http://localhost:8080/content/manga/{{title}}/update
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
   "title": "test2",
-  "description": "test123",
-  "cover": ""
+  "description": "test123"
 }
 
+
 ### update manga volume
-POST http://localhost:8080/manga/{{title}}/{{volume}}/update
+POST http://localhost:8080/content/manga/{{title}}/{{volume}}/update
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -102,22 +152,10 @@ Content-Type: application/json
 
 
 ### get page
-GET http://localhost:8080/manga/{{title}}/{{volume}}/{{page}}
+GET http://localhost:8080/content/manga/{{title}}/{{volume}}/{{page}}
 Authorization: Bearer {{access_token}}
 
 
 ### get thumb
-GET http://localhost:8080/thumb/{{title}}/{{volume}}/{{page}}
+GET http://localhost:8080/content/thumb/{{title}}/{{volume}}/{{page}}
 Authorization: Bearer {{access_token}}
-
-
-### test newuser
-POST http://localhost:8080/users/create
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-
-{
-  "username": "user2",
-  "password": "password",
-  "admin": false
-}

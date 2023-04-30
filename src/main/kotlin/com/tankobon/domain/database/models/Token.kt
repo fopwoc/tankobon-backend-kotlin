@@ -1,29 +1,44 @@
 package com.tankobon.domain.database.models
 
-import com.tankobon.domain.models.RefreshTokenData
+import com.tankobon.api.models.TokenInfoModel
+import com.tankobon.domain.models.TokenData
 import com.tankobon.domain.providers.ConfigProvider
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 import java.util.UUID
-import org.jetbrains.exposed.dao.id.UUIDTable
 
 private const val REFRESH_TOKEN_MODEL_REFRESH_TOKEN_LENGTH = 64
+private const val REFRESH_TOKEN_MODEL_IP_LENGTH = 15
 
-object RefreshTokenModel : UUIDTable(
+object TokenTable : IdTable<UUID>(
     name = "${ConfigProvider.get().database.schema}.tokens"
 ) {
-    val userId = reference("user_id", UserModel)
+    override val id = uuid("id").entityId()
+    override val primaryKey = PrimaryKey(id)
+
+    val userId = reference("user_id", UserTable)
     val userAgent = text("user_agent")
+    val userIP = varchar("user_ip", REFRESH_TOKEN_MODEL_IP_LENGTH)
     val refreshToken = varchar("refreshToken", REFRESH_TOKEN_MODEL_REFRESH_TOKEN_LENGTH)
-    val expires = long("expires")
+    val creation = timestamp("creation")
+    val modified = timestamp("modified")
 }
 
-fun ResultRow.toRefreshTokenData() = RefreshTokenData(
-    id = this[RefreshTokenModel.id].value,
-    userId = this[RefreshTokenModel.userId].value,
-    userAgent = this[RefreshTokenModel.userAgent],
-    refreshToken = this[RefreshTokenModel.refreshToken],
-    expires = this[RefreshTokenModel.expires],
+fun ResultRow.toRefreshTokenData() = TokenData(
+    id = this[TokenTable.id].value,
+    userId = this[TokenTable.userId].value,
+    userAgent = this[TokenTable.userAgent],
+    userIP = this[TokenTable.userIP],
+    refreshToken = this[TokenTable.refreshToken],
+    creation = this[TokenTable.creation],
+    modified = this[TokenTable.modified],
+)
+
+fun ResultRow.toTokenInfo() = TokenInfoModel(
+    id = this[TokenTable.id].value,
+    userAgent = this[TokenTable.userAgent],
+    userIP = this[TokenTable.userIP],
+    creation = this[TokenTable.creation],
+    modified = this[TokenTable.modified],
 )

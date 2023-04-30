@@ -6,6 +6,7 @@ import com.tankobon.domain.providers.TaskQueueProvider
 import com.tankobon.utils.KWatchChannel
 import com.tankobon.utils.asWatchChannel
 import com.tankobon.utils.injectLogger
+import com.tankobon.utils.msToPrettyTime
 import com.tankobon.utils.uuidFromString
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -16,6 +17,7 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.UUID
+import kotlin.system.measureTimeMillis
 
 private const val TASK_DELAY = 1000L
 private const val TASK_DEBOUNCE = 1000L * 10
@@ -26,7 +28,7 @@ class Library {
     }
 
     private fun pathRecursion(file: File): File {
-        return if (file.toPath().nameCount - ConfigProvider.get().library.mangaFile.toPath().nameCount > 1) {
+        return if (file.toPath().nameCount - ConfigProvider.get().library.contentFile.toPath().nameCount > 1) {
             pathRecursion(file.parentFile)
         } else {
             file
@@ -35,7 +37,7 @@ class Library {
 
     @DelicateCoroutinesApi
     fun watchLibrary() {
-        val mangaFile = ConfigProvider.get().library.mangaFile
+        val mangaFile = ConfigProvider.get().library.contentFile
         mangaFile.mkdirs()
 
         val taskQueue = TaskQueueProvider.get()
@@ -43,39 +45,44 @@ class Library {
         runBlocking {
             GlobalScope.launch { taskQueue.runQueue() }
 
-            val listFiles = mangaFile.listFiles()?.filter {
-                !it.name.contains(".DS_Store")
-            } ?: emptyList()
+            log.info("Library recalculation...")
+            val timeConsumed = measureTimeMillis {
+                val listFiles = mangaFile.listFiles()?.filter {
+                    !it.name.contains(".DS_Store")
+                } ?: emptyList()
 
-            MangaServiceProvider.get().cleanupMangaByIds(
-                listFiles.mapNotNull {
-                    uuidFromString(it.nameWithoutExtension)
-                }
-            )
+                MangaServiceProvider.get().cleanupMangaByIds(
+                    listFiles.mapNotNull {
+                        uuidFromString(it.nameWithoutExtension)
+                    }
+                )
 
-            listFiles.forEach { e ->
-                if (!e.name.contains(".DS_Store")) {
-                    taskQueue.submit(
-                        Task(
-                            file = e,
-                            id = uuidFromString(e.nameWithoutExtension) ?: UUID.randomUUID(),
-                            state = TaskState.WAITING,
-                            lastUpdate = System.currentTimeMillis()
+                listFiles.forEach { e ->
+                    if (!e.name.contains(".DS_Store")) {
+                        taskQueue.submit(
+                            Task(
+                                file = e,
+                                id = uuidFromString(e.nameWithoutExtension) ?: UUID.randomUUID(),
+                                state = TaskState.WAITING,
+                                lastUpdate = System.currentTimeMillis()
+                            )
                         )
-                    )
+                    }
+                }
+
+                while (taskQueue.getCount() != 0) {
+                    delay(TASK_DELAY)
                 }
             }
 
-            while (taskQueue.getCount() != 0) {
-                delay(TASK_DELAY)
-            }
+            log.info("Library recalculation done, time consumed ${msToPrettyTime(timeConsumed)}")
 
             GlobalScope.launch(newSingleThreadContext("LibraryThread")) {
                 while (true) {
                     log.debug("START FILE EVENT WATCH CHANNEL")
                     mangaFile.asWatchChannel(mode = KWatchChannel.Mode.Recursive).consumeEach { event ->
                         val eventNameCount = event.file.toPath().nameCount
-                        val libraryNameCount = ConfigProvider.get().library.mangaFile.toPath().nameCount
+                        val libraryNameCount = ConfigProvider.get().library.contentFile.toPath().nameCount
 
                         if (eventNameCount - libraryNameCount > 0 && !event.file.name.contains(".DS_Store")) {
                             val file = pathRecursion(event.file)

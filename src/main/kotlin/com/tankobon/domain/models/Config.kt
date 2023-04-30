@@ -10,10 +10,12 @@ data class Config(
 )
 
 data class ConfigServerInstance(
-    val title: String,
-    val description: String,
+    val title: String = "Tankōbon",
+    val description: String = "Tankōbon instance with some cool manga",
     val user: String = "user",
     val password: String = "password",
+    val logFile: String = "./data/logfile.log",
+    val logLevel: String = "INFO",
 )
 
 data class ConfigDatabase(
@@ -37,10 +39,10 @@ data class ExpireApi(
 )
 
 data class ConfigLibrary(
-    private val manga: String,
-    val mangaFile: File = File(manga).canonicalFile,
+    private val content: String = "./content",
+    val contentFile: File = File(content).canonicalFile,
 
-    private val data: String,
+    private val data: String = "./data",
     val dataFile: File = File(data).canonicalFile,
 
     val thumbFile: File = File("$data/thumb").canonicalFile,

@@ -89,7 +89,7 @@ fun titleCalculate(task: Task): MangaUpdate {
         MangaUpdate(
             id = task.id,
             title = originalTitleName,
-            volume = result,
+            content = result,
         )
     } else {
         log.warn("title ${file.name} is empty")
@@ -97,7 +97,7 @@ fun titleCalculate(task: Task): MangaUpdate {
         MangaUpdate(
             id = task.id,
             title = originalTitleName,
-            volume = result,
+            content = result,
         )
     }
 }
