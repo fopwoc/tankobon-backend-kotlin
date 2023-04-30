@@ -5,11 +5,9 @@ import com.tankobon.api.models.InstanceAboutUpdatePayloadModel
 import com.tankobon.domain.database.models.InstanceTable
 import com.tankobon.domain.database.models.toInstance
 import com.tankobon.domain.database.models.toInstanceAbout
-import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.dbQuery
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
@@ -20,12 +18,10 @@ import java.util.Base64
 import java.util.UUID
 
 class InstanceService {
-    val database = DatabaseProvider.get()
-
     private val decoder: Base64.Decoder = Base64.getDecoder()
     private val keyFactory: KeyFactory = KeyFactory.getInstance("RSA")
 
-    fun getPublicKey(): RSAPublicKey = transaction(db = database) {
+    suspend fun getPublicKey(): RSAPublicKey = dbQuery {
         keyFactory.generatePublic(
             X509EncodedKeySpec(
                 decoder.decode(

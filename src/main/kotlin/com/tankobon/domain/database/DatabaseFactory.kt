@@ -1,6 +1,7 @@
 package com.tankobon.domain.database
 
 import com.tankobon.domain.database.models.InstanceTable
+import com.tankobon.domain.database.models.LastPointTable
 import com.tankobon.domain.database.models.MangaPageTable
 import com.tankobon.domain.database.models.MangaTitleTable
 import com.tankobon.domain.database.models.MangaVolumeTable
@@ -22,8 +23,6 @@ import java.util.Base64
 import java.util.UUID
 
 class DatabaseFactory {
-    val database = DatabaseProvider.get()
-
     suspend fun init() {
         dbQuery {
             val schema = Schema(ConfigProvider.get().database.schema)
@@ -68,6 +67,10 @@ class DatabaseFactory {
 
             if (!MangaPageTable.exists()) {
                 create(MangaPageTable)
+            }
+
+            if (!LastPointTable.exists()) {
+                create(LastPointTable)
             }
 
             if (!TokenTable.exists()) {

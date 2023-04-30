@@ -1,5 +1,7 @@
 package com.tankobon.domain.models
 
+// WHY??? BECAUSE I CAN!
+
 interface RoutePath {
     val path: String
 }
@@ -37,7 +39,9 @@ enum class MangaRoute(override val path: String) : RoutePath {
     MANGA_VOLUME_UPDATE("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}${BaseMangaRoute.VOLUME.path}/update"),
     MANGA_PAGE("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}${BaseMangaRoute.PAGE.path}"),
     THUMB_PAGE("${BaseRoute.MANGA.path}${BaseMangaRoute.THUMB.path}${BaseMangaRoute.PAGE.path}"),
-    LAST_READ("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}${BaseMangaRoute.TITLE.path}/last_read"),
+    ALL_LAST_POINTS("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}/last_point"),
+    GET_LAST_POINTS("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}${BaseMangaRoute.TITLE.path}/last_point"),
+    SET_LAST_POINTS("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}${BaseMangaRoute.PAGE.path}/last_point"),
     RELOAD_LIBRARY("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}/reload_library"),
 }
 

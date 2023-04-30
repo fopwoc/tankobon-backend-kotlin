@@ -6,14 +6,17 @@ import com.tankobon.api.models.MangaVolumeUpdatePayloadModel
 import com.tankobon.domain.models.MangaRoute
 import com.tankobon.domain.models.MangaParameterType
 import com.tankobon.domain.providers.ConfigProvider
+import com.tankobon.domain.providers.LastPointServiceProvider
 import com.tankobon.domain.providers.MangaServiceProvider
 import com.tankobon.utils.toContentFile
 import com.tankobon.utils.isAdmin
 import com.tankobon.utils.paramToUuid
 import com.tankobon.utils.receivePayload
+import com.tankobon.utils.toUserId
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
+import io.ktor.server.plugins.NotFoundException
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondFile
 import io.ktor.server.routing.Route
@@ -22,6 +25,7 @@ import io.ktor.server.routing.post
 
 fun Route.mangaRoute() {
     val mangaService = MangaServiceProvider.get()
+    val lastPointService = LastPointServiceProvider.get()
 
     authenticate("auth-jwt") {
         // gets list of all manga without pages
@@ -79,14 +83,28 @@ fun Route.mangaRoute() {
             call.respondFile(call.toContentFile(ConfigProvider.get().library.thumbFile))
         }
 
-        // gets where this user ended reading this title last time
-        get(MangaRoute.LAST_READ.path) {
-            TODO("not implemented")
+        // gets where current user ended reading this title last time
+        get(MangaRoute.ALL_LAST_POINTS.path) {
+            val userId = call.toUserId()
+            call.respond(lastPointService.getAllLastPoints(userId))
         }
 
-        // sets where this user ended reading this title last time
-        post(MangaRoute.LAST_READ.path) {
-            TODO("not implemented")
+        // gets all last reading points
+        get(MangaRoute.GET_LAST_POINTS.path) {
+            val userId = call.toUserId()
+            val titleId = paramToUuid(call, MangaParameterType.ID_TITLE)
+
+            call.respond(lastPointService.getLastPoint(titleId, userId) ?: throw NotFoundException())
+        }
+
+        // sets last reading point
+        post(MangaRoute.SET_LAST_POINTS.path) {
+            val userId = call.toUserId()
+            val titleId = paramToUuid(call, MangaParameterType.ID_TITLE)
+            val volumeId = paramToUuid(call, MangaParameterType.ID_VOLUME)
+            val pageId = paramToUuid(call, MangaParameterType.ID_PAGE)
+            lastPointService.setLastPoint(titleId, volumeId, pageId, userId)
+            call.respond(HttpStatusCode.OK)
         }
 
         // force reload library

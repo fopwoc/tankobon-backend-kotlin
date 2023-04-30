@@ -159,3 +159,19 @@ Authorization: Bearer {{access_token}}
 ### get thumb
 GET http://localhost:8080/content/thumb/{{title}}/{{volume}}/{{page}}
 Authorization: Bearer {{access_token}}
+
+
+
+### get all last points
+GET http://localhost:8080/content/manga/last_point
+Authorization: Bearer {{access_token}}
+
+
+### get specific last points
+GET http://localhost:8080/content/manga/{{title}}/last_point
+Authorization: Bearer {{access_token}}
+
+
+### set last points
+POST http://localhost:8080/content/manga/{{title}}/{{volume}}/{{page}}/last_point
+Authorization: Bearer {{access_token}}

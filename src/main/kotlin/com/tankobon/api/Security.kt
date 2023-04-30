@@ -12,6 +12,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
+import kotlinx.coroutines.runBlocking
 
 fun Application.security() {
     val instanceService = InstanceServiceProvider.get()
@@ -20,7 +21,7 @@ fun Application.security() {
 
     authentication {
         jwt("auth-jwt") {
-            val publicKey = instanceService.getPublicKey()
+            val publicKey = runBlocking { instanceService.getPublicKey() }
             verifier(
                 JWT.require(Algorithm.RSA256(publicKey, null))
                     .withIssuer(ConfigProvider.get().api.issuer)

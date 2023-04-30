@@ -21,7 +21,6 @@ import com.tankobon.domain.database.services.manga.doesTitleExists
 import com.tankobon.domain.database.services.manga.updateDateMangaTitle
 import com.tankobon.domain.models.IdEntity
 import com.tankobon.domain.models.MangaUpdate
-import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.dbQuery
 import com.tankobon.utils.injectLogger
 import io.ktor.server.plugins.NotFoundException
@@ -40,8 +39,6 @@ class MangaService {
     companion object {
         val log by injectLogger()
     }
-
-    val database = DatabaseProvider.get()
 
     suspend fun getMangaList(
         payload: MangaFilterPayloadModel?,

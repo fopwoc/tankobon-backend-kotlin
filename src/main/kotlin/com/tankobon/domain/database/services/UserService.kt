@@ -8,7 +8,6 @@ import com.tankobon.domain.database.models.UserTable
 import com.tankobon.domain.database.models.toUser
 import com.tankobon.domain.database.models.toUserCredentials
 import com.tankobon.domain.providers.ConfigProvider
-import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.dbQuery
 import com.tankobon.utils.injectLogger
 import io.ktor.server.plugins.NotFoundException
@@ -26,8 +25,6 @@ class UserService {
         val log by injectLogger()
     }
 
-    val database = DatabaseProvider.get()
-
     internal suspend fun getUser(userId: UUID): UserModel = dbQuery {
         return@dbQuery UserTable.select { UserTable.id eq userId }.singleOrNull()?.toUser() ?: throw NotFoundException()
     }
@@ -35,8 +32,6 @@ class UserService {
     suspend fun getAllUsers(): List<UserModel> = dbQuery {
         return@dbQuery UserTable.selectAll().map { it.toUser() }
     }
-
-
 
     suspend fun addUser(
         username: String,
