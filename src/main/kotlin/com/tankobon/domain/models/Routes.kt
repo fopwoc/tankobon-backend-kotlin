@@ -50,6 +50,7 @@ enum class UserRoute(override val path: String) : RoutePath {
     ALL("${BaseRoute.USER.path}/all"),
     CREATE("${BaseRoute.USER.path}/create"),
     EDIT("${BaseRoute.USER.path}/edit"),
+    TOGGLE("${BaseRoute.USER.path}/toggle"),
     DELETE("${BaseRoute.USER.path}/delete"),
 }
 

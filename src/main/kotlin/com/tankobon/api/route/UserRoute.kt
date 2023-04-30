@@ -1,11 +1,14 @@
 package com.tankobon.api.route
 
-import com.tankobon.api.models.CreateUserPayloadModel
+import com.tankobon.api.models.UserCreatePayloadModel
+import com.tankobon.api.models.UserIdPayloadModel
+import com.tankobon.api.models.UserUpdatePayloadModel
 import com.tankobon.domain.models.UserRoute
 import com.tankobon.domain.providers.UserServiceProvider
 import com.tankobon.utils.isAdmin
 import com.tankobon.utils.receivePayload
 import com.tankobon.utils.toUser
+import com.tankobon.utils.toUserId
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -33,7 +36,7 @@ fun Route.userRoute() {
         // creates new user
         post(UserRoute.CREATE.path) {
             call.isAdmin {
-                call.receivePayload<CreateUserPayloadModel> {
+                call.receivePayload<UserCreatePayloadModel> {
                     userService.addUser(
                         username = it.username,
                         password = it.password,
@@ -45,15 +48,38 @@ fun Route.userRoute() {
             }
         }
 
+        // edit user
         post(UserRoute.EDIT.path) {
-            call.isAdmin {
-                TODO("not implemented")
+            call.receivePayload<UserUpdatePayloadModel> {
+                val userId = call.toUserId()
+                if (userId == it.id) {
+                    userService.editUser(it, false)
+                } else {
+                    call.isAdmin {
+                        userService.editUser(it, true)
+                    }
+                }
+                call.respond(HttpStatusCode.OK)
             }
         }
 
+        // toggle user
+        post(UserRoute.TOGGLE.path) {
+            call.isAdmin {
+                call.receivePayload<UserIdPayloadModel> {
+                    userService.toggleUser(it.id)
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
+        }
+
+        // delete user
         post(UserRoute.DELETE.path) {
             call.isAdmin {
-                TODO("not implemented")
+                call.receivePayload<UserIdPayloadModel> {
+                    userService.deleteUser(it.id)
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
     }

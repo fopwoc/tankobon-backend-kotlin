@@ -22,7 +22,7 @@ data class UserModel(
 ) : IdEntity<UUID>, DateEntity<Instant>, UserPublic, UserPrivilegedUpdatable
 
 @Serializable
-data class CreateUserPayloadModel(
+data class UserCreatePayloadModel(
     override val username: String,
     override val password: String,
     override val admin: Boolean,
@@ -34,3 +34,19 @@ data class UserLoginPayloadModel(
     override val username: String,
     override val password: String
 ) : UserUpdatable
+
+@Serializable
+data class UserIdPayloadModel(
+    @Serializable(with = UUIDSerializer::class)
+    override val id: UUID
+) : IdEntity<UUID>
+
+@Serializable
+data class UserUpdatePayloadModel(
+    @Serializable(with = UUIDSerializer::class)
+    override val id: UUID,
+    override val username: String,
+    override val password: String,
+    override val admin: Boolean,
+    override val active: Boolean,
+) : IdEntity<UUID>, UserPublic, UserPrivilegedUpdatable, UserUpdatable
