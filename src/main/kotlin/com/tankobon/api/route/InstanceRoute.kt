@@ -24,8 +24,8 @@ fun Route.instanceRoute() {
     authenticate("auth-jwt") {
         // sets info about instance
         post(InstanceRoute.ABOUT_UPDATE.path) {
-            isAdmin(call) {
-                receivePayload<InstanceAboutUpdatePayloadModel>(call) {
+            call.isAdmin {
+                call.receivePayload<InstanceAboutUpdatePayloadModel> {
                     instanceService.setAbout(it)
                     call.respond(HttpStatusCode.OK)
                 }

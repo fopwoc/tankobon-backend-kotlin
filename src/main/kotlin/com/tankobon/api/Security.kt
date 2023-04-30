@@ -6,8 +6,8 @@ import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.InstanceServiceProvider
 import com.tankobon.domain.providers.TokenServiceProvider
 import com.tankobon.domain.providers.UserServiceProvider
-import com.tankobon.utils.callToTokenId
-import com.tankobon.utils.callToUserId
+import com.tankobon.utils.toTokenId
+import com.tankobon.utils.toUserId
 import io.ktor.server.application.Application
 import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -27,8 +27,8 @@ fun Application.security() {
                     .build()
             )
             validate { credential ->
-                val tokenId = callToTokenId(credential)
-                val userId = callToUserId(credential)
+                val tokenId = credential.toTokenId()
+                val userId = credential.toUserId()
 
                 if (tokenService.checkCredentials(tokenId, userId)) {
                     val isActive = userService.isUserActive(userId)

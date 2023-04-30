@@ -3,7 +3,7 @@ package com.tankobon.domain.models
 import com.tankobon.api.models.MangaVolumeModel
 import java.util.UUID
 
-enum class MangaRouteType {
+enum class MangaParameterType {
     ID_TITLE,
     ID_VOLUME,
     ID_PAGE,

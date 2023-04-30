@@ -82,6 +82,8 @@ class TaskQueue {
             log.trace("trace result for ${task.id} is $result")
             runBlocking {
                 MangaServiceProvider.get().updateManga(result)
+
+                // TODO: rework to update if found changes
                 InstanceServiceProvider.get().instanceModifiedUpdate()
             }
         }

@@ -4,13 +4,13 @@ import com.tankobon.api.models.MangaFilterPayloadModel
 import com.tankobon.api.models.MangaTitleUpdatePayloadModel
 import com.tankobon.api.models.MangaVolumeUpdatePayloadModel
 import com.tankobon.domain.models.MangaRoute
-import com.tankobon.domain.models.MangaRouteType
+import com.tankobon.domain.models.MangaParameterType
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.MangaServiceProvider
-import com.tankobon.utils.callToFile
+import com.tankobon.utils.toContentFile
 import com.tankobon.utils.isAdmin
+import com.tankobon.utils.paramToUuid
 import com.tankobon.utils.receivePayload
-import com.tankobon.utils.uuidFromString
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -31,7 +31,7 @@ fun Route.mangaRoute() {
 
         // gets list of manga with filters
         post(MangaRoute.MANGA.path) {
-            receivePayload<MangaFilterPayloadModel>(call) {
+            call.receivePayload<MangaFilterPayloadModel>() {
                 call.respond(mangaService.getMangaList(it))
             }
         }
@@ -40,16 +40,16 @@ fun Route.mangaRoute() {
         get(MangaRoute.MANGA_TITLE.path) {
             call.respond(
                 mangaService.getManga(
-                    uuidFromString(call.parameters["${MangaRouteType.ID_TITLE}"])
+                    paramToUuid(call, MangaParameterType.ID_TITLE)
                 )
             )
         }
 
         // update manga title specific info
         post(MangaRoute.MANGA_TITLE_UPDATE.path) {
-            isAdmin(call) {
-                receivePayload<MangaTitleUpdatePayloadModel>(call) {
-                    mangaService.updateMangaInfo(call.parameters["${MangaRouteType.ID_TITLE}"], it)
+            call.isAdmin {
+                call.receivePayload<MangaTitleUpdatePayloadModel>() {
+                    mangaService.updateMangaInfo(paramToUuid(call, MangaParameterType.ID_TITLE), it)
                     call.respond(HttpStatusCode.OK)
                 }
             }
@@ -57,11 +57,11 @@ fun Route.mangaRoute() {
 
         // update manga volume specific info
         post(MangaRoute.MANGA_VOLUME_UPDATE.path) {
-            isAdmin(call) {
-                receivePayload<MangaVolumeUpdatePayloadModel>(call) {
+            call.isAdmin {
+                call.receivePayload<MangaVolumeUpdatePayloadModel>() {
                     mangaService.updateMangaVolumeInfo(
-                        call.parameters["${MangaRouteType.ID_TITLE}"],
-                        call.parameters["${MangaRouteType.ID_VOLUME}"],
+                        paramToUuid(call, MangaParameterType.ID_TITLE),
+                        paramToUuid(call, MangaParameterType.ID_VOLUME),
                         it
                     )
                     call.respond(HttpStatusCode.OK)
@@ -71,12 +71,12 @@ fun Route.mangaRoute() {
 
         // gets manga page
         get(MangaRoute.MANGA_PAGE.path) {
-            call.respondFile(callToFile(call, ConfigProvider.get().library.contentFile))
+            call.respondFile(call.toContentFile(ConfigProvider.get().library.contentFile))
         }
 
         // gets manga page thumbnail
         get(MangaRoute.THUMB_PAGE.path) {
-            call.respondFile(callToFile(call, ConfigProvider.get().library.thumbFile))
+            call.respondFile(call.toContentFile(ConfigProvider.get().library.thumbFile))
         }
 
         // gets where this user ended reading this title last time
@@ -91,7 +91,7 @@ fun Route.mangaRoute() {
 
         // force reload library
         get(MangaRoute.RELOAD_LIBRARY.path) {
-            isAdmin(call) {
+            call.isAdmin {
                 TODO("not implemented")
             }
         }

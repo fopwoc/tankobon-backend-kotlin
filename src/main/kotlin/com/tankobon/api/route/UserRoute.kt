@@ -5,6 +5,7 @@ import com.tankobon.domain.models.UserRoute
 import com.tankobon.domain.providers.UserServiceProvider
 import com.tankobon.utils.isAdmin
 import com.tankobon.utils.receivePayload
+import com.tankobon.utils.toUser
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -19,20 +20,20 @@ fun Route.userRoute() {
     authenticate("auth-jwt") {
         // gets info about user itself
         get(UserRoute.ME.path) {
-            call.respond(userService.callToUser(call))
+            call.respond(call.toUser())
         }
 
         // get all users
         get(UserRoute.ALL.path) {
-            isAdmin(call) {
+            call.isAdmin {
                 call.respond(userService.getAllUsers())
             }
         }
 
         // creates new user
         post(UserRoute.CREATE.path) {
-            isAdmin(call) {
-                receivePayload<CreateUserPayloadModel>(call) {
+            call.isAdmin {
+                call.receivePayload<CreateUserPayloadModel> {
                     userService.addUser(
                         username = it.username,
                         password = it.password,
@@ -45,13 +46,13 @@ fun Route.userRoute() {
         }
 
         post(UserRoute.EDIT.path) {
-            isAdmin(call) {
+            call.isAdmin {
                 TODO("not implemented")
             }
         }
 
         post(UserRoute.DELETE.path) {
-            isAdmin(call) {
+            call.isAdmin {
                 TODO("not implemented")
             }
         }

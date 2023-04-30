@@ -9,10 +9,8 @@ import com.tankobon.domain.database.models.toUser
 import com.tankobon.domain.database.models.toUserCredentials
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.DatabaseProvider
-import com.tankobon.utils.callToUserId
 import com.tankobon.utils.dbQuery
 import com.tankobon.utils.injectLogger
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.plugins.NotFoundException
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.andWhere
@@ -30,7 +28,7 @@ class UserService {
 
     val database = DatabaseProvider.get()
 
-    private suspend fun getUser(userId: UUID): UserModel = dbQuery {
+    internal suspend fun getUser(userId: UUID): UserModel = dbQuery {
         return@dbQuery UserTable.select { UserTable.id eq userId }.singleOrNull()?.toUser() ?: throw NotFoundException()
     }
 
@@ -38,9 +36,7 @@ class UserService {
         return@dbQuery UserTable.selectAll().map { it.toUser() }
     }
 
-    suspend fun callToUser(call: ApplicationCall): UserModel {
-        return getUser(callToUserId(call))
-    }
+
 
     suspend fun addUser(
         username: String,

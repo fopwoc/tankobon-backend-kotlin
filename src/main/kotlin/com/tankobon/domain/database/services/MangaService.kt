@@ -79,7 +79,7 @@ class MangaService {
     }
 
     suspend fun getManga(
-        id: UUID?,
+        id: UUID,
     ): MangaTitleModel = dbQuery {
         val mangaTitle = MangaTitleTable
             .select {
@@ -126,10 +126,10 @@ class MangaService {
     }
 
     suspend fun updateMangaInfo(
-        titleId: String?,
+        titleId: UUID,
         mangaUpdate: MangaTitleUpdatePayloadModel,
-    ) = dbQuery {
-        MangaTitleTable.update({ MangaTitleTable.id eq uuidFromString(titleId) }) {
+    ): Int = dbQuery {
+        MangaTitleTable.update({ MangaTitleTable.id eq titleId }) {
             it[this.title] = mangaUpdate.title
             it[this.description] = mangaUpdate.description
             it[this.modified] = Clock.System.now()
@@ -137,16 +137,17 @@ class MangaService {
     }
 
     suspend fun updateMangaVolumeInfo(
-        titleId: String?,
-        volumeId: String?,
+        titleId: UUID,
+        volumeId: UUID,
         mangaUpdate: MangaVolumeUpdatePayloadModel,
     ) = dbQuery {
         // TODO: check is title id correct before changing volume title
 
-        MangaVolumeTable.update({ MangaVolumeTable.id eq uuidFromString(volumeId) }) {
+
+        MangaVolumeTable.update({ MangaVolumeTable.id eq volumeId }) {
             it[this.title] = mangaUpdate.title
         }
-        updateDateMangaTitle(UUID.fromString(titleId))
+        updateDateMangaTitle(titleId)
     }
 
     suspend fun cleanupMangaByIds(

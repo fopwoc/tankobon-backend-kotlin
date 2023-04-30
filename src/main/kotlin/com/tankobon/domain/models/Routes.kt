@@ -26,9 +26,9 @@ enum class AuthRoute(override val path: String) : RoutePath {
 private enum class BaseMangaRoute(override val path: String) : RoutePath {
     MANGA("/manga"),
     THUMB("/thumb"),
-    TITLE("/{${MangaRouteType.ID_TITLE}}"),
-    VOLUME("/{${MangaRouteType.ID_TITLE}}/{${MangaRouteType.ID_VOLUME}}"),
-    PAGE("/{${MangaRouteType.ID_TITLE}}/{${MangaRouteType.ID_VOLUME}}/{${MangaRouteType.ID_PAGE}}"),
+    TITLE("/{${MangaParameterType.ID_TITLE}}"),
+    VOLUME("/{${MangaParameterType.ID_TITLE}}/{${MangaParameterType.ID_VOLUME}}"),
+    PAGE("/{${MangaParameterType.ID_TITLE}}/{${MangaParameterType.ID_VOLUME}}/{${MangaParameterType.ID_PAGE}}"),
 }
 enum class MangaRoute(override val path: String) : RoutePath {
     MANGA("${BaseRoute.MANGA.path}${BaseMangaRoute.MANGA.path}"),

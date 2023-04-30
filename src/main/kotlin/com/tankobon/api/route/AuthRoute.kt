@@ -8,10 +8,11 @@ import com.tankobon.domain.models.AuthRoute
 import com.tankobon.domain.providers.ConfigProvider
 import com.tankobon.domain.providers.TokenServiceProvider
 import com.tankobon.domain.providers.UserServiceProvider
-import com.tankobon.utils.callToTokenId
-import com.tankobon.utils.callToUserId
+import com.tankobon.utils.toTokenId
+import com.tankobon.utils.toUserId
 import com.tankobon.utils.isAdmin
 import com.tankobon.utils.receivePayload
+import com.tankobon.utils.toUser
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
@@ -31,7 +32,7 @@ fun Route.authRoute() {
 
     // login
     post(AuthRoute.LOGIN.path) {
-        receivePayload<UserLoginPayloadModel>(call) {
+        call.receivePayload<UserLoginPayloadModel>() {
             val userId = userService.authUser(it.username, it.password)
             val token = tokenService.getTokenPair(
                 userId,
@@ -66,13 +67,13 @@ fun Route.authRoute() {
     authenticate("auth-jwt") {
         // gets all sessions of current user
         get(AuthRoute.SESSIONS.path) {
-            val user = userService.callToUser(call)
+            val user = call.toUser()
             call.respond(tokenService.getUserTokens(user))
         }
 
         // get all sessions of instance
         get(AuthRoute.SESSIONS_ALL.path) {
-            isAdmin(call) {
+            call.isAdmin {
                 call.respond(tokenService.getAllTokens())
             }
         }
@@ -80,14 +81,14 @@ fun Route.authRoute() {
         // delete specific token
         post(AuthRoute.DELETE.path) {
             // admin can delete any session
-            if (isAdmin(call)) {
-                receivePayload<TokenIdPayloadModel>(call) {
+            if (call.isAdmin()) {
+                call.receivePayload<TokenIdPayloadModel> {
                     tokenService.deleteToken(it.id)
                     call.respond(HttpStatusCode.OK)
                 }
             } else {
-                receivePayload<TokenIdPayloadModel>(call) {
-                    val userId = callToUserId(call)
+                call.receivePayload<TokenIdPayloadModel> {
+                    val userId = call.toUserId()
                     tokenService.deleteToken(it.id, userId)
                     call.respond(HttpStatusCode.OK)
                 }
@@ -96,16 +97,16 @@ fun Route.authRoute() {
 
         // delete all sessions except current one
         get(AuthRoute.CLEANUP.path) {
-            val tokenId = callToTokenId(call)
-            val userId = callToUserId(call)
+            val tokenId = call.toTokenId()
+            val userId = call.toUserId()
             tokenService.deleteAllTokensExceptThis(tokenId, userId)
             call.respond(HttpStatusCode.OK)
         }
 
         // logout - delete current session
         get(AuthRoute.LOGOUT.path) {
-            val tokenId = callToTokenId(call)
-            val userId = callToUserId(call)
+            val tokenId = call.toTokenId()
+            val userId = call.toUserId()
             tokenService.deleteToken(tokenId, userId)
             call.respond(HttpStatusCode.OK)
         }
