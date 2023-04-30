@@ -22,8 +22,8 @@ fun volumeCalculate(file: File): MangaVolumeModel {
     val idOfVolume = uuidFromString(file.name)
 
     if (idOfVolume == null) {
-        log.debug("uuid ${file.name} is actually not uuid")
-        throw InternalServerError()
+        log.debug("uuid ${file.name} is not actually uuid")
+        throw InternalServerError("uuid ${file.name} is not actually uuid")
     }
 
     runBlocking {

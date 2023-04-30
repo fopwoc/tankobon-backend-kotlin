@@ -7,6 +7,7 @@ import com.tankobon.domain.database.models.toInstance
 import com.tankobon.domain.database.models.toInstanceAbout
 import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.dbQuery
+import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -52,13 +53,21 @@ class InstanceService {
         InstanceTable.selectAll().map { it.toInstanceAbout() }.first()
     }
 
-    // TODO: its broken
     suspend fun setAbout(
         payload: InstanceAboutUpdatePayloadModel,
     ) = dbQuery {
-        InstanceTable.update {
+        val instanceId = getInstanceId()
+        InstanceTable.update({ InstanceTable.id eq instanceId }) {
             it[this.title] = payload.title
             it[this.description] = payload.description
+            it[this.modified] = Clock.System.now()
+        }
+    }
+
+    suspend fun instanceModifiedUpdate() = dbQuery {
+        val instanceId = getInstanceId()
+        InstanceTable.update({ InstanceTable.id eq instanceId }) {
+            it[this.modified] = Clock.System.now()
         }
     }
 }

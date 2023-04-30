@@ -15,13 +15,10 @@ import java.util.UUID
 suspend inline fun <reified T : Any> receivePayload(call: ApplicationCall, function: (payload: T) -> Unit) {
     try {
         function(call.receive<T>())
+    } catch (e: CannotTransformContentToTypeException) {
+        throw BadRequestError()
     } catch (e: Exception) {
-        when (e) {
-            is CannotTransformContentToTypeException -> {
-                throw BadRequestError()
-            }
-            else -> throw e
-        }
+        throw e
     }
 }
 

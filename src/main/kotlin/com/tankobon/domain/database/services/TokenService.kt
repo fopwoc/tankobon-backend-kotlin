@@ -3,7 +3,6 @@ package com.tankobon.domain.database.services
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.tankobon.api.CredentialsException
-import com.tankobon.api.InternalServerError
 import com.tankobon.api.models.TokenInfoModel
 import com.tankobon.api.models.TokenPairModel
 import com.tankobon.api.models.UserModel
@@ -13,23 +12,23 @@ import com.tankobon.domain.database.models.toTokenInfo
 import com.tankobon.domain.models.TokenClaim
 import com.tankobon.domain.models.TokenData
 import com.tankobon.domain.providers.ConfigProvider
-import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.domain.providers.InstanceServiceProvider
 import com.tankobon.utils.dbQuery
 import com.tankobon.utils.injectLogger
 import com.tankobon.utils.sha256
 import com.tankobon.utils.toHex
 import io.ktor.server.plugins.NotFoundException
+import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greater
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import java.util.Date
 import java.util.UUID
-import kotlinx.datetime.Clock
 
 class TokenService {
     companion object {
@@ -50,7 +49,7 @@ class TokenService {
             tokenId = UUID.randomUUID()
             dbQuery {
                 TokenTable.insert {
-                    it[this.id] = tokenId ?: throw InternalServerError()
+                    it[this.id] = tokenId!!
                     it[this.userId] = userId
                     it[this.userAgent] = userAgent ?: "unknown"
                     it[this.userIP] = userIP ?: "unknown"
@@ -72,9 +71,9 @@ class TokenService {
         }
 
         return TokenPairModel(
-            tokenId ?: throw InternalServerError(),
+            tokenId!!,
             InstanceService().getInstanceId(),
-            createAccessToken(tokenId ?: throw InternalServerError(), userId),
+            createAccessToken(tokenId!!, userId),
             refresh,
         )
     }
@@ -87,7 +86,7 @@ class TokenService {
             ) ?: throw CredentialsException()
     }
 
-    suspend fun deleteTokens(tokenId: UUID, userId: UUID) = dbQuery {
+    suspend fun deleteToken(tokenId: UUID, userId: UUID) = dbQuery {
         val token = TokenTable.select { TokenTable.id eq tokenId }.singleOrNull()?.toRefreshTokenData()
 
         if (token?.userId == userId) {
@@ -97,10 +96,12 @@ class TokenService {
         }
     }
 
-    suspend fun cleanupRefreshTokens() = dbQuery {
-        val currentTime = System.currentTimeMillis()
-        val expireRefresh = ConfigProvider.get().api.expire.refresh
-        if (expireRefresh != 0) TokenTable.deleteWhere { this.modified greater (currentTime + expireRefresh) }
+    suspend fun deleteToken(tokenId: UUID) = dbQuery {
+        TokenTable.deleteWhere { this.id eq tokenId }
+    }
+
+    suspend fun deleteAllTokensExceptThis(tokenId: UUID, userId: UUID) = dbQuery {
+        TokenTable.deleteWhere { this.userId eq userId and (this.id neq tokenId) }
     }
 
     private suspend fun createAccessToken(tokenId: UUID, userId: UUID): String {
@@ -122,6 +123,11 @@ class TokenService {
 
     suspend fun getUserTokens(user: UserModel): List<TokenInfoModel> = dbQuery {
         return@dbQuery TokenTable.select { TokenTable.userId eq user.id }
+            .sortedByDescending { TokenTable.creation }.map { it.toTokenInfo() }
+    }
+
+    suspend fun getAllTokens(): List<TokenInfoModel> = dbQuery {
+        return@dbQuery TokenTable.selectAll()
             .sortedByDescending { TokenTable.creation }.map { it.toTokenInfo() }
     }
 }

@@ -1,7 +1,6 @@
 package com.tankobon.domain.database.services
 
 import com.tankobon.api.CredentialsException
-import com.tankobon.api.InternalServerError
 import com.tankobon.api.UserDisabledException
 import com.tankobon.api.UserExistException
 import com.tankobon.api.models.UserModel
@@ -14,13 +13,14 @@ import com.tankobon.utils.callToUserId
 import com.tankobon.utils.dbQuery
 import com.tankobon.utils.injectLogger
 import io.ktor.server.application.ApplicationCall
+import io.ktor.server.plugins.NotFoundException
+import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.mindrot.jbcrypt.BCrypt
 import java.util.UUID
-import kotlinx.datetime.Clock
 
 class UserService {
 
@@ -31,9 +31,7 @@ class UserService {
     val database = DatabaseProvider.get()
 
     private suspend fun getUser(userId: UUID): UserModel = dbQuery {
-        return@dbQuery UserTable
-            .select { UserTable.id eq userId }
-            .mapNotNull { it.toUser() }.singleOrNull() ?: throw InternalServerError()
+        return@dbQuery UserTable.select { UserTable.id eq userId }.singleOrNull()?.toUser() ?: throw NotFoundException()
     }
 
     suspend fun getAllUsers(): List<UserModel> = dbQuery {

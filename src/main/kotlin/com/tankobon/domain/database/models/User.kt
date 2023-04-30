@@ -5,8 +5,8 @@ import com.tankobon.domain.models.UserCredentials
 import com.tankobon.domain.providers.ConfigProvider
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.ResultRow
-import java.util.UUID
 import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import java.util.UUID
 
 private const val USER_MODEL_USERNAME_LENGTH = 255
 private const val USER_MODEL_PASSWORD_LENGTH = 64

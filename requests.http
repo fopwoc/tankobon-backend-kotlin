@@ -7,8 +7,8 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "instanceName": "test2",
-  "instanceDescription": "test123"
+  "title": "test2333",
+  "description": "test123"
 }
 
 
@@ -18,7 +18,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "username": "user3",
+  "username": "user",
   "password": "password"
 }
 

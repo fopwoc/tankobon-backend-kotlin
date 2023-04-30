@@ -8,9 +8,9 @@ import com.tankobon.domain.models.ImageMeta
 import com.tankobon.domain.models.MangaTitleMeta
 import com.tankobon.domain.models.MangaVolumeMeta
 import com.tankobon.utils.UUIDSerializer
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import java.util.UUID
-import kotlinx.datetime.Instant
 
 @Serializable
 data class MangaTitleModel(

@@ -71,7 +71,7 @@ fun Route.mangaRoute() {
 
         // gets manga page
         get(MangaRoute.MANGA_PAGE.path) {
-            call.respondFile(callToFile(call, ConfigProvider.get().library.mangaFile))
+            call.respondFile(callToFile(call, ConfigProvider.get().library.contentFile))
         }
 
         // gets manga page thumbnail

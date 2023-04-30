@@ -1,7 +1,7 @@
 package com.tankobon.domain.models
 
-import java.util.UUID
 import kotlinx.datetime.Instant
+import java.util.UUID
 
 enum class TokenClaim {
     TOKEN_ID,

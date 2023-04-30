@@ -12,8 +12,6 @@ class DatabaseProvider private constructor() {
                 HikariDataSource(
                     HikariConfig().apply {
                         driverClassName = "org.postgresql.Driver"
-                        dataSourceClassName
-                        //driverClassName = "org.postgresql.ds.PGSimpleDataSource"
                         jdbcUrl = ConfigProvider.get().database.url
                         username = ConfigProvider.get().database.user
                         password = ConfigProvider.get().database.password

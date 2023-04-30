@@ -1,5 +1,6 @@
 package com.tankobon.domain.library
 
+import com.tankobon.domain.providers.InstanceServiceProvider
 import com.tankobon.domain.providers.MangaServiceProvider
 import com.tankobon.utils.injectLogger
 import com.tankobon.utils.msToPrettyTime
@@ -79,7 +80,10 @@ class TaskQueue {
             val result = titleCalculate(task)
             log.debug("result for ${task.id} is ${result.content.map { it.content.size }}")
             log.trace("trace result for ${task.id} is $result")
-            runBlocking { MangaServiceProvider.get().updateManga(result) }
+            runBlocking {
+                MangaServiceProvider.get().updateManga(result)
+                InstanceServiceProvider.get().instanceModifiedUpdate()
+            }
         }
 
         log.info("Title with id ${task.id} recalculated. Time consumed ${msToPrettyTime(timeConsumed)}")
@@ -100,7 +104,7 @@ class TaskQueue {
     suspend fun runQueue() {
         keepWorking = true
 
-        //TODO: try to rewrite with coroutines and flow
+        // TODO: try to rewrite with coroutines and flow
         while (keepWorking) {
             delay(TASK_DELAY)
             log.trace("queue $queue")

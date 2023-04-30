@@ -44,7 +44,7 @@ fun Route.authRoute() {
     }
 
     // token refresh
-    post(AuthRoute.REFRESH.path) {
+    post(AuthRoute.SESSIONS.path) {
         val currentRefreshToken = call.receive<RefreshTokenPayloadModel>().refreshToken
         val time = Clock.System.now()
         val expireRefresh = ConfigProvider.get().api.expire.refresh
@@ -64,35 +64,49 @@ fun Route.authRoute() {
     }
 
     authenticate("auth-jwt") {
-        // gets all refresh tokens
-        get(AuthRoute.REFRESH.path) {
+        // gets all sessions of current user
+        get(AuthRoute.SESSIONS.path) {
             val user = userService.callToUser(call)
             call.respond(tokenService.getUserTokens(user))
         }
 
+        // get all sessions of instance
+        get(AuthRoute.SESSIONS_ALL.path) {
+            isAdmin(call) {
+                call.respond(tokenService.getAllTokens())
+            }
+        }
+
         // delete specific token
         post(AuthRoute.DELETE.path) {
-            receivePayload<TokenIdPayloadModel>(call) {
-                val user = callToUserId(call)
-                tokenService.deleteTokens(it.id, user)
-                call.respond(HttpStatusCode.OK)
+            // admin can delete any session
+            if (isAdmin(call)) {
+                receivePayload<TokenIdPayloadModel>(call) {
+                    tokenService.deleteToken(it.id)
+                    call.respond(HttpStatusCode.OK)
+                }
+            } else {
+                receivePayload<TokenIdPayloadModel>(call) {
+                    val userId = callToUserId(call)
+                    tokenService.deleteToken(it.id, userId)
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
 
-        // force cleanup expired tokenss
+        // delete all sessions except current one
         get(AuthRoute.CLEANUP.path) {
-            isAdmin(call) {
-                tokenService.cleanupRefreshTokens()
-                call.respond(HttpStatusCode.OK)
-            }
+            val tokenId = callToTokenId(call)
+            val userId = callToUserId(call)
+            tokenService.deleteAllTokensExceptThis(tokenId, userId)
+            call.respond(HttpStatusCode.OK)
         }
 
-        // possible post for logout
-        // maybe it should delete all refresh tokens
+        // logout - delete current session
         get(AuthRoute.LOGOUT.path) {
             val tokenId = callToTokenId(call)
-            val user = callToUserId(call)
-            tokenService.deleteTokens(tokenId, user)
+            val userId = callToUserId(call)
+            tokenService.deleteToken(tokenId, userId)
             call.respond(HttpStatusCode.OK)
         }
     }

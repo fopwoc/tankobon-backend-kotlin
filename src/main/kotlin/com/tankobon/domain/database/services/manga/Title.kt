@@ -3,8 +3,8 @@ package com.tankobon.domain.database.services.manga
 import com.tankobon.domain.database.models.MangaTitleTable
 import com.tankobon.domain.models.MangaUpdate
 import com.tankobon.domain.providers.ConfigProvider
-import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.dbQuery
+import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
@@ -12,7 +12,6 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 import java.io.File
 import java.util.UUID
-import kotlinx.datetime.Clock
 
 suspend fun doesTitleExists(id: UUID) = dbQuery {
     !MangaTitleTable.select { MangaTitleTable.id eq id }.none()

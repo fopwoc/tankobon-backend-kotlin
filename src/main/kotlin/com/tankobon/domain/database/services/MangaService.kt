@@ -1,6 +1,5 @@
 package com.tankobon.domain.database.services
 
-import com.tankobon.api.InternalServerError
 import com.tankobon.api.models.MangaFilterPayloadModel
 import com.tankobon.api.models.MangaTitleModel
 import com.tankobon.api.models.MangaTitleUpdatePayloadModel
@@ -27,8 +26,12 @@ import com.tankobon.utils.injectLogger
 import com.tankobon.utils.uuidFromString
 import io.ktor.server.plugins.NotFoundException
 import kotlinx.datetime.Clock
-import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
 import java.util.UUID
 
 private const val MANGA_LIST_LIMIT = 10

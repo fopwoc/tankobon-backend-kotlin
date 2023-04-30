@@ -40,4 +40,3 @@ data class TokenInfoModel(
     override val creation: Instant,
     override val modified: Instant
 ) : IdEntity<UUID>, TokenMeta
-

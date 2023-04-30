@@ -65,7 +65,7 @@ fun StatusPagesConfig.statusPages() {
             HttpStatusCode.InternalServerError,
             ExceptionMessageModel(
                 type = BackendExceptionType.UNKNOWN,
-                message = "${trace.message}",
+                message = trace.message,
             ),
         )
     }

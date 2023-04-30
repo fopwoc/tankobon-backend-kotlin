@@ -1,14 +1,13 @@
 server:
-  title: "Tankobon"
-  description: "Tankobon instance with some cool manga"
+  title: "Tankōbon"
+  description: "Tankōbon instance with some cool manga"
   user: "user"
   password: "password"
   logFile: "./data/logfile.log"
   logLevel: "INFO" # INFO, WARN, DEBUG, TRACE
 
 database:
-  #url: "jdbc:pgsql://postgres:5432/postgres"
-  url: "jdbc:postgresql://localhost:5432/postgres"
+  url: "jdbc:postgresql://postgres:5432/postgres"
   user: "postgres"
   password: "password"
   schema: "tankobon"
@@ -24,5 +23,5 @@ api:
     refresh: 1209600000
 
 library:
-  manga: "./manga"
+  content: "./content"
   data: "./data"

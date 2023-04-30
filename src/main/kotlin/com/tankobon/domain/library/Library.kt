@@ -28,7 +28,7 @@ class Library {
     }
 
     private fun pathRecursion(file: File): File {
-        return if (file.toPath().nameCount - ConfigProvider.get().library.mangaFile.toPath().nameCount > 1) {
+        return if (file.toPath().nameCount - ConfigProvider.get().library.contentFile.toPath().nameCount > 1) {
             pathRecursion(file.parentFile)
         } else {
             file
@@ -37,7 +37,7 @@ class Library {
 
     @DelicateCoroutinesApi
     fun watchLibrary() {
-        val mangaFile = ConfigProvider.get().library.mangaFile
+        val mangaFile = ConfigProvider.get().library.contentFile
         mangaFile.mkdirs()
 
         val taskQueue = TaskQueueProvider.get()
@@ -82,7 +82,7 @@ class Library {
                     log.debug("START FILE EVENT WATCH CHANNEL")
                     mangaFile.asWatchChannel(mode = KWatchChannel.Mode.Recursive).consumeEach { event ->
                         val eventNameCount = event.file.toPath().nameCount
-                        val libraryNameCount = ConfigProvider.get().library.mangaFile.toPath().nameCount
+                        val libraryNameCount = ConfigProvider.get().library.contentFile.toPath().nameCount
 
                         if (eventNameCount - libraryNameCount > 0 && !event.file.name.contains(".DS_Store")) {
                             val file = pathRecursion(event.file)

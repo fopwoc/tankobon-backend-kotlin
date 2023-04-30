@@ -5,8 +5,8 @@ import com.tankobon.domain.models.TokenData
 import com.tankobon.domain.providers.ConfigProvider
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.ResultRow
-import java.util.UUID
 import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import java.util.UUID
 
 private const val REFRESH_TOKEN_MODEL_REFRESH_TOKEN_LENGTH = 64
 private const val REFRESH_TOKEN_MODEL_IP_LENGTH = 15

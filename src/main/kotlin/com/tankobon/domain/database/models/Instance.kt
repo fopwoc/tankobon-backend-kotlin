@@ -5,8 +5,8 @@ import com.tankobon.domain.models.Instance
 import com.tankobon.domain.providers.ConfigProvider
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.ResultRow
-import java.util.UUID
 import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import java.util.UUID
 
 private const val UTILS_MODEL_INSTANCE_TITLE = 64
 

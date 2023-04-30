@@ -11,14 +11,15 @@ enum class BaseRoute(override val path: String) : RoutePath {
 }
 
 private enum class BaseAuthRoute(override val path: String) : RoutePath {
-    REFRESH("/refresh"),
+    SESSIONS("/sessions"),
 }
 
 enum class AuthRoute(override val path: String) : RoutePath {
     LOGIN("${BaseRoute.AUTH.path}/login"),
-    REFRESH("${BaseRoute.AUTH.path}${BaseAuthRoute.REFRESH.path}"),
-    DELETE("${BaseRoute.AUTH.path}${BaseAuthRoute.REFRESH.path}/delete"),
-    CLEANUP("${BaseRoute.AUTH.path}${BaseAuthRoute.REFRESH.path}/cleanup"),
+    SESSIONS("${BaseRoute.AUTH.path}${BaseAuthRoute.SESSIONS.path}"),
+    SESSIONS_ALL("${BaseRoute.AUTH.path}${BaseAuthRoute.SESSIONS.path}/all"),
+    DELETE("${BaseRoute.AUTH.path}${BaseAuthRoute.SESSIONS.path}/delete"),
+    CLEANUP("${BaseRoute.AUTH.path}${BaseAuthRoute.SESSIONS.path}/cleanup"),
     LOGOUT("${BaseRoute.AUTH.path}/logout")
 }
 

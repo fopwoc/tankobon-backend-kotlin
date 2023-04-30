@@ -1,7 +1,7 @@
 package com.tankobon.domain.database.models
 
-import com.tankobon.api.models.MangaTitleModel
 import com.tankobon.api.models.MangaPageModel
+import com.tankobon.api.models.MangaTitleModel
 import com.tankobon.api.models.MangaVolumeModel
 import com.tankobon.domain.providers.ConfigProvider
 import org.jetbrains.exposed.dao.id.IdTable
