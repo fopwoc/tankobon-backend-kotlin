@@ -1,5 +1,6 @@
 package com.tankobon.domain.database.services
 
+import com.tankobon.api.BadRequestError
 import com.tankobon.api.models.MangaFilterPayloadModel
 import com.tankobon.api.models.MangaTitleModel
 import com.tankobon.api.models.MangaTitleUpdatePayloadModel
@@ -23,7 +24,6 @@ import com.tankobon.domain.models.MangaUpdate
 import com.tankobon.domain.providers.DatabaseProvider
 import com.tankobon.utils.dbQuery
 import com.tankobon.utils.injectLogger
-import com.tankobon.utils.uuidFromString
 import io.ktor.server.plugins.NotFoundException
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -141,13 +141,16 @@ class MangaService {
         volumeId: UUID,
         mangaUpdate: MangaVolumeUpdatePayloadModel,
     ) = dbQuery {
-        // TODO: check is title id correct before changing volume title
-
-
-        MangaVolumeTable.update({ MangaVolumeTable.id eq volumeId }) {
-            it[this.title] = mangaUpdate.title
+        if (MangaTitleTable.select { MangaTitleTable.id eq titleId }.singleOrNull() != null &&
+            MangaVolumeTable.select { MangaVolumeTable.id eq volumeId }.singleOrNull() != null
+        ) {
+            MangaVolumeTable.update({ MangaVolumeTable.id eq volumeId }) {
+                it[this.title] = mangaUpdate.title
+            }
+            updateDateMangaTitle(titleId)
+        } else {
+            throw BadRequestError()
         }
-        updateDateMangaTitle(titleId)
     }
 
     suspend fun cleanupMangaByIds(

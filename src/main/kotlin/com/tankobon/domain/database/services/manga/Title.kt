@@ -34,7 +34,7 @@ suspend fun updateDateMangaTitle(
     id: UUID,
 ) = dbQuery {
     MangaTitleTable.update({ MangaTitleTable.id eq id }) {
-        it[this.created] = Clock.System.now()
+        it[this.modified] = Clock.System.now()
     }
 }
 
