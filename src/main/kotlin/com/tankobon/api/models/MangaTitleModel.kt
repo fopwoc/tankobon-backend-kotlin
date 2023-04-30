@@ -13,7 +13,7 @@ import java.util.UUID
 import kotlinx.datetime.Instant
 
 @Serializable
-data class Manga(
+data class MangaTitleModel(
     @Serializable(with = UUIDSerializer::class)
     override val id: UUID,
     override val title: String,
@@ -22,16 +22,6 @@ data class Manga(
     override val modified: Instant,
     override val content: List<MangaVolumeModel>
 ) : IdEntity<UUID>, ContentEntity<MangaVolumeModel>, DateEntity<Instant>, MangaTitleMeta
-
-@Serializable
-data class MangaTitle(
-    @Serializable(with = UUIDSerializer::class)
-    override val id: UUID,
-    override val title: String,
-    override val description: String,
-    override val creation: Instant,
-    override val modified: Instant,
-) : IdEntity<UUID>, DateEntity<Instant>, MangaTitleMeta
 
 @Serializable
 data class MangaVolumeModel(

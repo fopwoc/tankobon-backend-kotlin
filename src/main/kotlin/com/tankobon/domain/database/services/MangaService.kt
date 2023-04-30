@@ -1,14 +1,13 @@
 package com.tankobon.domain.database.services
 
-import com.tankobon.api.models.Manga
+import com.tankobon.api.InternalServerError
 import com.tankobon.api.models.MangaFilterPayloadModel
-import com.tankobon.api.models.MangaTitle
+import com.tankobon.api.models.MangaTitleModel
 import com.tankobon.api.models.MangaTitleUpdatePayloadModel
 import com.tankobon.api.models.MangaVolumeUpdatePayloadModel
 import com.tankobon.domain.database.models.MangaPageTable
 import com.tankobon.domain.database.models.MangaTitleTable
 import com.tankobon.domain.database.models.MangaVolumeTable
-import com.tankobon.domain.database.models.toManga
 import com.tankobon.domain.database.models.toMangaPage
 import com.tankobon.domain.database.models.toMangaTitle
 import com.tankobon.domain.database.models.toMangaVolume
@@ -28,11 +27,8 @@ import com.tankobon.utils.injectLogger
 import com.tankobon.utils.uuidFromString
 import io.ktor.server.plugins.NotFoundException
 import kotlinx.datetime.Clock
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.update
 import java.util.UUID
 
 private const val MANGA_LIST_LIMIT = 10
@@ -46,26 +42,46 @@ class MangaService {
 
     suspend fun getMangaList(
         payload: MangaFilterPayloadModel?,
-    ): List<MangaTitle> = dbQuery {
-        val query = if (!payload?.search.isNullOrBlank()) {
-            MangaTitleTable.select { MangaTitleTable.title match payload?.search.toString() }
-        } else {
-            MangaTitleTable.selectAll()
+    ): List<MangaTitleModel> {
+        val mangaTitle = dbQuery {
+            val query = if (!payload?.search.isNullOrBlank()) {
+                MangaTitleTable.select { MangaTitleTable.title match payload?.search.toString() }
+            } else {
+                MangaTitleTable.selectAll()
+            }
+
+            return@dbQuery query.limit(
+                payload?.limit ?: MANGA_LIST_LIMIT,
+                offset = payload?.offset ?: 0
+            ).map { it.toMangaTitle() }
         }
 
-        return@dbQuery query.limit(
-            payload?.limit ?: MANGA_LIST_LIMIT,
-            offset = payload?.offset ?: 0
-        ).map { it.toMangaTitle() }
+        return mangaTitle.map {
+            dbQuery {
+                val mangaVolume = MangaVolumeTable.select {
+                    MangaVolumeTable.titleId eq it.id and (MangaVolumeTable.order eq 0)
+                }.firstOrNull()?.toMangaVolume()
+
+                val mangaPage = MangaPageTable.select {
+                    MangaPageTable.volumeId eq mangaVolume?.id and (MangaPageTable.order eq 0)
+                }.firstOrNull()?.toMangaPage()
+
+                if (mangaVolume != null && mangaPage != null) {
+                    return@dbQuery it.copy(content = listOf(mangaVolume.copy(content = listOf(mangaPage))))
+                } else {
+                    return@dbQuery null
+                }
+            }
+        }.filterIsInstance<MangaTitleModel>()
     }
 
     suspend fun getManga(
         id: UUID?,
-    ): Manga = dbQuery {
+    ): MangaTitleModel = dbQuery {
         val mangaTitle = MangaTitleTable
             .select {
                 MangaTitleTable.id eq id
-            }.firstOrNull()?.toManga()
+            }.firstOrNull()?.toMangaTitle()
             ?: throw NotFoundException()
 
         val mangaVolume = MangaVolumeTable.select {

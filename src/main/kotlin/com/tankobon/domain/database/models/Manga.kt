@@ -1,8 +1,7 @@
 package com.tankobon.domain.database.models
 
-import com.tankobon.api.models.Manga
+import com.tankobon.api.models.MangaTitleModel
 import com.tankobon.api.models.MangaPageModel
-import com.tankobon.api.models.MangaTitle
 import com.tankobon.api.models.MangaVolumeModel
 import com.tankobon.domain.providers.ConfigProvider
 import org.jetbrains.exposed.dao.id.IdTable
@@ -48,21 +47,13 @@ object MangaPageTable : IdTable<UUID>(
     val hash = varchar("hash", MANGA_LIBRARY_PAGE_MODEL_HASH_LENGTH)
 }
 
-fun ResultRow.toManga() = Manga(
+fun ResultRow.toMangaTitle() = MangaTitleModel(
     id = this[MangaTitleTable.id].value,
     title = this[MangaTitleTable.title],
     description = this[MangaTitleTable.description],
     creation = this[MangaTitleTable.created],
     modified = this[MangaTitleTable.modified],
     content = listOf()
-)
-
-fun ResultRow.toMangaTitle() = MangaTitle(
-    id = this[MangaTitleTable.id].value,
-    title = this[MangaTitleTable.title],
-    description = this[MangaTitleTable.description],
-    creation = this[MangaTitleTable.created],
-    modified = this[MangaTitleTable.modified],
 )
 
 fun ResultRow.toMangaVolume() = MangaVolumeModel(
