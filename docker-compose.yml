@@ -15,7 +15,7 @@ services:
   tankobon-server:
     build: ./
     volumes:
-      - ./test/manga:/opt/app/manga
+      - ./test/content:/opt/app/content
       - tankobon-data:/opt/app/data
       - ./tankobon-config.yml:/opt/app/tankobon-config.yml
     depends_on:
