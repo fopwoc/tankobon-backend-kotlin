@@ -45,7 +45,7 @@ fun Route.authRoute() {
     }
 
     // token refresh
-    post(AuthRoute.SESSIONS.path) {
+    post(AuthRoute.REFRESH.path) {
         val currentRefreshToken = call.receive<RefreshTokenPayloadModel>().refreshToken
         val time = Clock.System.now()
         val expireRefresh = ConfigProvider.get().api.expire.refresh

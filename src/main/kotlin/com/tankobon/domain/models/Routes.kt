@@ -18,6 +18,7 @@ private enum class BaseAuthRoute(override val path: String) : RoutePath {
 
 enum class AuthRoute(override val path: String) : RoutePath {
     LOGIN("${BaseRoute.AUTH.path}/login"),
+    REFRESH("${BaseRoute.AUTH.path}/refresh"),
     SESSIONS("${BaseRoute.AUTH.path}${BaseAuthRoute.SESSIONS.path}"),
     SESSIONS_ALL("${BaseRoute.AUTH.path}${BaseAuthRoute.SESSIONS.path}/all"),
     DELETE("${BaseRoute.AUTH.path}${BaseAuthRoute.SESSIONS.path}/delete"),

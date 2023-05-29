@@ -13,3 +13,4 @@ class MangaServiceProvider private constructor() {
         }
     }
 }
+
