@@ -67,7 +67,7 @@ dependencies {
 
     implementation("com.lordcodes.turtle:turtle:0.8.0")
 
-    implementation("com.sksamuel.scrimage:scrimage-core:4.0.36")
+    implementation("com.sksamuel.scrimage:scrimage-core:4.0.37")
 
     implementation("ch.qos.logback:logback-core:$logbackVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
